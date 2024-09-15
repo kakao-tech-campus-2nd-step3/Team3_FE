@@ -9,6 +9,7 @@ lerna-debug.log*
 
 # Node modules
 node_modules
+vite-project/node_modules/
 
 # Build output
 dist
@@ -33,6 +34,8 @@ dist-ssr
 
 # TypeScript cache
 *.tsbuildinfo
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo
 
 # Storybook
 storybook-static/
