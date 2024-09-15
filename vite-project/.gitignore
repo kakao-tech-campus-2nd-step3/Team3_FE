@@ -7,10 +7,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node modules
 node_modules
+
+# Build output
 dist
 dist-ssr
+.vite/
+
+# Local environment files
 *.local
+.env
+.env.*.local
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +30,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Storybook
+storybook-static/
+
+# ESLint cache
+.eslintcache
