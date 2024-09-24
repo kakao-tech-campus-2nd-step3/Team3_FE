@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from "@storybook/react";
-import ButtonComponent, { Props } from "./index";
+import ButtonComponent, { Props } from "@/components/common/button";
 
 // Storybook의 메타데이터 설정
 export default {
