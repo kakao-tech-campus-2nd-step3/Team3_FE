@@ -29,7 +29,7 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
       case "large":
         return {
           height: "65px",
-          fontSize: "20px",
+          fontSize: "32px",
         };
       case "small":
         return {
