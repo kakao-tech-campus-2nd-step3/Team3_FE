@@ -43,7 +43,7 @@ const StyledTextArea = styled.textarea<Pick<Props, "size">>(
             height: "623px",
             fontSize: "26px",
           },
-          "@media (min-width: 1024px)": {
+          "@media (min-width: 1280px)": {
             height: "392px",
             fontSize: "32px",
           },

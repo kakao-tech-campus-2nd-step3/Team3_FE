@@ -20,7 +20,6 @@ const ListItem: React.FC<Props> = ({
       <ProfileImageWrapper>
         <ProfileImage src={profileSrc} alt={name} size={size} />
       </ProfileImageWrapper>
-
       <UserInfoWrapper>
         <UserInfo name={name} date={date} size={size} />
       </UserInfoWrapper>
@@ -31,52 +30,17 @@ const ListItem: React.FC<Props> = ({
 const ListItemWrapper = styled.div<Pick<Props, "size">>`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: #f4f4f4;
-  border-radius: 16px;
-
-  ${(props) => {
-    switch (props.size) {
-      case "small":
-        return `
-          width: 320px;
-          padding: 10px;
-        `;
-      case "large":
-        return `
-          width: 1065px;
-          padding: 10px;
-        `;
-      case "responsive":
-        return `
-          width: 320px;
-          padding: 10px;
-
-          @media (min-width: 768px) {
-            width: 524px;
-            padding: 10px;
-          }
-
-          @media (min-width: 1024px) {
-            width: 1065px;
-            padding: 10px;
-          }
-        `;
-      default: // medium이 기본값
-        return `
-          width: 524px;
-          padding: 10px;
-        `;
-    }
-  }}
 `;
 
 const ProfileImageWrapper = styled.div`
-  margin-right: 10px;
+  margin-right: 10px; // 프로필 이미지와 리스트 간의 간격
 `;
 
 const UserInfoWrapper = styled.div`
   flex-grow: 1;
+  background-color: #f5f5f5; // 회색 배경
+  border-radius: 16px;
+  padding: 10px;
 `;
 
 export default ListItem;

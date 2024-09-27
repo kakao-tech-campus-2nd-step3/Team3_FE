@@ -45,10 +45,10 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
             height: "50px",
             fontSize: "16px",
           },
-          "@media (min-width: 1024px)": {
+          "@media (min-width: 1280px)": {
             //데스크탑
-            height: "65px",
-            fontSize: "20px",
+            height: "65px !important",
+            fontSize: "20px !important",
           },
         };
       }
