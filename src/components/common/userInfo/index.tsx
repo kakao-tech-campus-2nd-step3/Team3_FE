@@ -19,8 +19,8 @@ const UserInfoWrapper = styled.div<Pick<Props, "size">>`
     switch (props.size) {
       case "large":
         return `
-          width: 125px;
-          height: 74px;
+          width: 114px;
+          height: 67px;
         `;
       case "small":
         return `
@@ -36,8 +36,8 @@ const UserInfoWrapper = styled.div<Pick<Props, "size">>`
             height: 68px;
           }
           @media (min-width: 1024px) {
-            width: 125px;
-            height: 74px;
+            width: 114px;
+            height: 67px;
           }
         `;
       default:
