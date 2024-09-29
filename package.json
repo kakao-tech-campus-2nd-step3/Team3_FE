@@ -28,7 +28,6 @@
     "moment": "^2.30.1",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
-    "react-big-calendar": "^1.14.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
