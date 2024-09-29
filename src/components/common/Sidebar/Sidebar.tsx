@@ -18,6 +18,7 @@ const SidebarContainer = styled.div<{ isOpen: boolean; isMobile: boolean; isTabl
   padding: ${props => props.isMobile ? '0' : '15px'};
   overflow: hidden;
   transition: height 0.3s ease, width 0.3s ease; /* 사이드바 높이와 너비 전환 효과 */
+  z-index: 1000;
 `;
 
 // 메뉴 아이템 컨테이너
@@ -30,10 +31,11 @@ const MenuItemsContainer = styled.div<{ isMobile: boolean; isOpen: boolean }>`
   box-sizing: border-box;
   padding: ${props => props.isMobile ? '10px' : '0'};
   padding-top: ${props => props.isMobile ? '70px' : '0'}; /* 헤더 아래에서 시작하도록 여백 추가 */
-
-  height: ${props => props.isMobile && props.isOpen ? 'auto' : '0'};
-  opacity: ${props => props.isMobile && props.isOpen ? 1 : 0};
+  
+  max-height: ${props => props.isMobile && props.isOpen ? '500px' : '0'}; 
+  opacity: ${props => props.isMobile && props.isOpen ? 1 : 0}; 
   visibility: ${props => props.isMobile && props.isOpen ? 'visible' : 'hidden'};
+  transition: max-height 0.3s ease, opacity 0.3s ease; 
 
   ${props => !props.isMobile && `
     height: auto;
@@ -57,7 +59,7 @@ const MenuItem = styled.div<{ selected: boolean }>`
   cursor: pointer;
   box-sizing: border-box;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-
+  margin-bottom: 10px;
   &:hover {
     background-color: ${props => props.selected ? '#39A7F7' : '#E0E0E0'};
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -91,7 +93,7 @@ const MobileHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  height: 60px;
+  height: 70px;
   background-color: #F5F5F5;
   position: fixed; /* 로고와 햄버거 메뉴가 고정되도록 설정 */
   top: 0;
@@ -162,7 +164,7 @@ export default function Sidebar() {
         </MobileHeader>
       )}
       {!isMobile && (
-        <img src={logo} alt="Logo" width="170" height="59" />
+        <img src={logo} alt="Logo" width="170" height="59" style={{ marginBottom: '15px' }}/>
       )}
       <MenuItemsContainer isMobile={isMobile} isOpen={isOpen}>
         {menuItems.map((item) => (
