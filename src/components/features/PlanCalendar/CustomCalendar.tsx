@@ -1,18 +1,21 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useCallback } from 'react';
-import FullCalendar from '@fullcalendar/react';
+import React, { useState, useCallback, useEffect } from 'react';
+import FullCalendar from '@fullcalendar/react'; 
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { css, Global } from '@emotion/react';
 import koLocale from '@fullcalendar/core/locales/ko';
 
+// Event 인터페이스
 interface Event {
-  id: string;
+  id: string; // id를 string으로 변경
   title: string;
+  description: string;
   start: Date;
   end: Date;
-  description: string;
+  accessibility: boolean | null;
+  complete: boolean;
   status: 'completed' | 'upcoming' | 'incomplete';
 }
 
@@ -79,8 +82,9 @@ const calendarStyles = css`
     text-decoration: line-through;
   }
 
+  /* 시간 슬롯 높이 설정 */
   .fc-timegrid-slot {
-    height: 3rem;
+    height: 3rem; /* 각 시간 슬롯의 높이 */
     border-bottom: 1px solid #e5e7eb;
   }
 
@@ -89,7 +93,7 @@ const calendarStyles = css`
   }
 
   .fc-timegrid-axis {
-    width: 3rem;
+    width: 3rem; /* 시간대 폭 */
   }
 
   .fc-timegrid-col {
@@ -112,6 +116,7 @@ const calendarStyles = css`
     margin: 0px !important;
   }
 
+  /* 오늘 날짜 배경색 제거, 헤더 하이라이트 */
   .fc-day-today {
     background-color: inherit !important;
   }
@@ -121,25 +126,28 @@ const calendarStyles = css`
     color: white;
   }
 
+  /* 버튼 스타일 */
   .fc-button {
-    border: none;               /* 테두리 제거 */
-    padding: 0.5rem 1rem;       /* 버튼 패딩 조절 */
+    border: none;
+    padding: 0.5rem 1rem;
+    background-color: #39A7F7;
+    color: white;
+    transition: background-color 0.3s ease;
   }
 
   .fc-button:hover {
-    background-color: #338bd0;  /* 버튼 hover 효과 */
+    background-color: #338bd0;
   }
-  
+
   .fc-toolbar-chunk {
-    display: flex;                  /* flex 레이아웃 사용 */
-    justify-content: center;        /* 가운데 정렬 */
-    align-items: center;            /* 수직 가운데 정렬 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .fc-toolbar-title {
     font-size: 1.25rem !important;
   }
-
 `;
 
 const eventItemStyles = (status: string, isDragging: boolean) => css`
@@ -168,32 +176,83 @@ const eventItemStyles = (status: string, isDragging: boolean) => css`
 
 const CustomCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<Event[]>([ 
-    {
-      id: '1',
-      title: '완료한 일정',
-      start: new Date(2024, 8, 23, 10), //月은 -1후 입력
-      end: new Date(2024, 8, 23, 14),
-      description: '추가 Description',
-      status: 'completed',
-    },
-    {
-      id: '2',
-      title: '예정 일정',
-      start: new Date(2024, 8, 24, 13),
-      end: new Date(2024, 8, 24, 17),
-      description: '추가 Description',
-      status: 'upcoming',
-    },
-    {
-      id: '3',
-      title: '미완료 일정',
-      start: new Date(2024, 8, 25, 15),
-      end: new Date(2024, 8, 25, 18),
-      description: '추가 Description',
-      status: 'incomplete',
-    },
-  ]);
+  const [events, setEvents] = useState<any[]>([]); 
+
+  // 상태를 계산하는 함수
+  const calculateEventStatus = (event: Event): 'completed' | 'upcoming' | 'incomplete' => {
+    const now = new Date(); // 실제 현재 시간
+
+    if (event.complete) {
+      return 'completed';
+    } else if (event.start > now) {
+      return 'upcoming';
+    } else if (!event.complete && event.end < now) {
+      return 'incomplete';
+    }
+
+    return 'incomplete';
+  };
+
+  // 날짜 문자열을 Date 객체로 변환하는 함수 (id를 string으로 변환)
+  const parseEventDates = (event: any): Event => ({
+    ...event,
+    id: event.id.toString(), // id를 문자열로 변환
+    start: new Date(event.start_date),
+    end: new Date(event.end_date),
+  });
+
+  useEffect(() => {
+    // 백엔드에서 데이터를 가져온다고 가정
+    const fetchedEvents = [
+      {
+        id: 1,
+        title: '책 5장 정리',
+        description: '집에서 공부',
+        start_date: "2024-09-27T22:00:00Z",
+        end_date: "2024-09-28T01:00:00Z",
+        accessibility: true,
+        complete: true,
+      },
+      {
+        id: 2,
+        title: '팀 미팅',
+        description: '팀 프로젝트 미팅',
+        start_date: "2024-09-29T00:00:00Z",
+        end_date: "2024-09-29T03:00:00Z",
+        accessibility: false,
+        complete: false,
+      },
+      {
+        id: 3,
+        title: '개인 운동',
+        description: '헬스장 운동',
+        start_date: "2024-09-29T23:00:00Z",
+        end_date: "2024-09-30T02:00:00Z",
+        accessibility: true,
+        complete: false,
+      }
+    ];
+
+    // 상태를 계산하여 events 배열을 업데이트
+    const updatedEvents = fetchedEvents.map(event => {
+      const parsedEvent = parseEventDates(event); // 날짜 변환
+      return {
+        ...parsedEvent,
+        status: calculateEventStatus(parsedEvent),
+      };
+    });
+
+    // FullCalendar에서 요구하는 형식으로 변환
+    const eventInputs = updatedEvents.map(event => ({
+      id: event.id,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      className: `fc-event-${event.status}`,
+    }));
+
+    setEvents(eventInputs); // 이벤트 설정
+  }, []);
 
   const handleEventDrop = useCallback((info: any) => {
     setEvents(prevEvents =>
@@ -250,21 +309,17 @@ const CustomCalendar: React.FC = () => {
             dayMaxEvents={true}
             weekends={true}
             firstDay={1}
-            events={events.map(event => ({
-              ...event,
-              className: `fc-event-${event.status}`,
-            }))}
+            events={events} 
             eventResizableFromStart={true}
             eventContent={(eventInfo) => {
-              const event = events.find(e => e.id === eventInfo.event.id);
+              const event = events.find(e => e.id === eventInfo.event.id); // id를 string으로 비교
               return (
-                <div css={eventItemStyles(event ? event.status : '', false)}>
+                <div css={eventItemStyles(event ? event.className : '', false)}>
                   <div>{eventInfo.timeText}</div>
                   <div>{eventInfo.event.title}</div>
-                  {event && <div>{event.description}</div>}
-                  
+                  {event && <div>{eventInfo.event.extendedProps.description}</div>}
                 </div>
-              )
+              );
             }}
             eventDrop={handleEventDrop}
             eventResize={handleEventResize}
