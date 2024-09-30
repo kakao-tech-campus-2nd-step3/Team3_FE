@@ -23,17 +23,17 @@ const ButtonContainer = styled(motion.button)`
   }
 
    /* 반응형 설정 */
-  width: 65px; 
-  height: 65px; 
+  width: 50px;
+  height: 50px; 
 
   @media (min-width: 768px) {
-    width: 80px; 
-    height: 80px; 
+    width: 58px;
+    height: 58px;
   }
 
   @media (min-width: 1280px) {
-    width: 86px; 
-    height: 86px; 
+    width: 64px; 
+    height: 64px; 
   }
 `;
 
@@ -62,17 +62,17 @@ const Wave = styled(motion.div)`
   border-radius: 5.625px;
 
   /* 반응형 설정 */
-  width: 6px; 
-  height: 6px; 
+  width: 4px;
+  height: 4px;
 
   @media (min-width: 768px) {
-    width: 7px; 
-    height: 7px; 
+    width: 6px;
+    height: 6px;
   }
 
   @media (min-width: 1280px) {
-    width: 9px; 
-    height: 9px; 
+    width: 8px;
+    height: 8px;
   }
 `;
 
