@@ -32,7 +32,7 @@ const MenuItemsContainer = styled.div<{ isMobile: boolean; isOpen: boolean }>`
   padding: ${props => props.isMobile ? '10px' : '0'};
   padding-top: ${props => props.isMobile ? '70px' : '0'}; /* 헤더 아래에서 시작하도록 여백 추가 */
   
-  max-height: ${props => props.isMobile && props.isOpen ? '500px' : '0'}; 
+  max-height: ${props => props.isMobile && props.isOpen ? '500px' : 'auto'}; 
   opacity: ${props => props.isMobile && props.isOpen ? 1 : 0}; 
   visibility: ${props => props.isMobile && props.isOpen ? 'visible' : 'hidden'};
   transition: max-height 0.3s ease, opacity 0.3s ease; 
