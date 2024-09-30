@@ -226,8 +226,8 @@ const CustomCalendar: React.FC = () => {
         id: 3,
         title: '개인 운동',
         description: '헬스장 운동',
-        start_date: "2024-09-29T23:00:00Z",
-        end_date: "2024-09-30T02:00:00Z",
+        start_date: "2024-10-01T23:00:00Z",
+        end_date: "2024-10-02T02:00:00Z",
         accessibility: true,
         complete: false,
       }
