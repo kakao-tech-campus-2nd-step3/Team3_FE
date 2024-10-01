@@ -249,6 +249,9 @@ const CustomCalendar: React.FC = () => {
       start: event.start,
       end: event.end,
       className: `fc-event-${event.status}`,
+      extendedProps: {
+        description: event.description, // extendedProps에 description 추가
+      }
     }));
 
     setEvents(eventInputs); // 이벤트 설정
