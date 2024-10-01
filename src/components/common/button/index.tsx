@@ -9,9 +9,14 @@ export type Props = {
 const Button: React.FC<Props> = ({
   theme = "primary",
   size = "medium",
+  children,
   ...props
 }) => {
-  return <StyledButton theme={theme} size={size} {...props} />;
+  return (
+    <StyledButton theme={theme} size={size} {...props}>
+      {children}
+    </StyledButton>
+  );
 };
 
 const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
@@ -28,33 +33,39 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
     switch (size) {
       case "large":
         return {
-          height: "65px",
-          fontSize: "32px",
+          width: "150px",
+          height: "50px",
+          fontSize: "20px",
         };
       case "small":
         return {
-          height: "30px",
+          width: "80px",
+          height: "40px",
           fontSize: "14px",
         };
       case "responsive": {
         return {
-          height: "30px",
+          width: "80px",
+          height: "40px",
           fontSize: "14px",
           "@media (min-width: 768px)": {
             //테블릿
-            height: "50px",
+            width: "120px",
+            height: "48px",
             fontSize: "16px",
           },
           "@media (min-width: 1280px)": {
             //데스크탑
-            height: "65px !important",
-            fontSize: "20px !important",
+            width: "150px",
+            height: "50px",
+            fontSize: "20px",
           },
         };
       }
       default:
         return {
-          height: "50px",
+          width: "120px",
+          height: "48px",
           fontSize: "16px",
         };
     }
