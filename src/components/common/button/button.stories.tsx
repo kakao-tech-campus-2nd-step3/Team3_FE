@@ -1,10 +1,10 @@
 import { Meta, StoryFn } from "@storybook/react";
-import ButtonComponent, { Props } from "@/components/common/button";
+import Button, { Props } from "@/components/common/Button";
 
 // Storybook의 메타데이터 설정
 export default {
   title: "Components/Button",
-  component: ButtonComponent,
+  component: Button,
   argTypes: {
     theme: {
       control: {
@@ -22,10 +22,10 @@ export default {
       control: "text",
     },
   },
-} as Meta<typeof ButtonComponent>;
+} as Meta<typeof Button>;
 
 // Template 생성 (StoryFn으로 대체)
-const Template: StoryFn<Props> = (args) => <ButtonComponent {...args} />;
+const Template: StoryFn<Props> = (args) => <Button {...args} />;
 
 //각 스토리 생성
 export const PrimaryLarge = Template.bind({});

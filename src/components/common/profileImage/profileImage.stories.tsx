@@ -1,7 +1,7 @@
 import { Meta, StoryFn } from "@storybook/react";
 import ProfileImage, {
   ProfileImageProps,
-} from "@/components/common/profileImage";
+} from "@/components/common/ProfileImage";
 
 export default {
   title: "Components/ProfileImage",

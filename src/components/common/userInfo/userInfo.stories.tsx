@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from "@storybook/react";
-import UserInfo, { Props } from "@/components/common/userInfo";
+import UserInfo, { Props } from "@/components/common/UserInfo";
 
 // 스토리북 메타데이터 설정
 export default {

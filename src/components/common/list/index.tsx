@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import ProfileImage from "@/components/common/profileImage";
-import UserInfo from "@/components/common/userInfo";
+import ProfileImage from "@/components/common/ProfileImage";
+import UserInfo from "@/components/common/UserInfo";
 
 export type Props = {
   profileSrc: string;
@@ -9,12 +9,7 @@ export type Props = {
   size?: "small" | "medium" | "large" | "responsive";
 };
 
-const ListItem: React.FC<Props> = ({
-  profileSrc,
-  name,
-  date,
-  size = "medium",
-}) => {
+const List: React.FC<Props> = ({ profileSrc, name, date, size = "medium" }) => {
   return (
     <ListItemWrapper size={size}>
       <ProfileImageWrapper>
@@ -43,4 +38,4 @@ const UserInfoWrapper = styled.div`
   padding: 10px;
 `;
 
-export default ListItem;
+export default List;

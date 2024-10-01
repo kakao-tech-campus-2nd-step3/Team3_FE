@@ -6,7 +6,7 @@ export type Props = {
   size?: "large" | "medium" | "small" | "responsive";
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-const ButtonComponent: React.FC<Props> = ({
+const Button: React.FC<Props> = ({
   theme = "primary",
   size = "medium",
   ...props
@@ -89,4 +89,4 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
   },
 );
 
-export default ButtonComponent;
+export default Button;

@@ -5,10 +5,7 @@ export type Props = {
   size?: "large" | "medium" | "small" | "responsive";
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-const VoiceInputComponent: React.FC<Props> = ({
-  size = "medium",
-  ...props
-}) => {
+const Input: React.FC<Props> = ({ size = "medium", ...props }) => {
   return <StyledTextArea size={size} {...props} />;
 };
 
@@ -57,4 +54,4 @@ const StyledTextArea = styled.textarea<Pick<Props, "size">>(
   },
 );
 
-export default VoiceInputComponent;
+export default Input;
