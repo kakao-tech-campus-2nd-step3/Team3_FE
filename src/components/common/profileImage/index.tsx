@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
+import { breakpoints } from "@/variants";
 
 export type ProfileImageProps = {
   src: string;
@@ -37,11 +38,11 @@ const StyledImage = styled.img<Pick<ProfileImageProps, "size">>(
         return {
           width: "30px",
           height: "30px",
-          "@media (min-width: 768px)": {
+          [breakpoints.tablet]: {
             width: "50px",
             height: "50px",
           },
-          "@media (min-width: 1024px)": {
+          [breakpoints.desktop]: {
             width: "60px",
             height: "60px",
           },

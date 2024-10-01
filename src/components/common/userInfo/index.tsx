@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { breakpoints } from "@/variants";
 
 export type Props = {
   name: string;
@@ -18,33 +19,33 @@ const UserInfoWrapper = styled.div<Pick<Props, "size">>`
   ${(props) => {
     switch (props.size) {
       case "large":
-        return `
-          width: 114px;
-          height: 67px;
-        `;
+        return {
+          width: "114px",
+          height: "67px",
+        };
       case "small":
-        return `
-          width: 76px;
-          height: 39px;
-        `;
+        return {
+          width: "76px",
+          height: "39px",
+        };
       case "responsive":
-        return `
-          width: 76px;
-          height: 39px;
-          @media (min-width: 768px) {
-            width: 113px;
-            height: 68px;
-          }
-          @media (min-width: 1024px) {
-            width: 114px;
-            height: 67px;
-          }
-        `;
+        return {
+          width: "76px",
+          height: "39px",
+          [breakpoints.tablet]: {
+            width: "113px",
+            height: "68px",
+          },
+          [breakpoints.desktop]: {
+            width: "114px",
+            height: "67px",
+          },
+        };
       default:
-        return `
-          width: 113px;
-          height: 68px;
-        `;
+        return {
+          width: "113px",
+          height: "68px",
+        };
     }
   }}
 `;
@@ -55,21 +56,21 @@ const NameText = styled.div<Pick<Props, "size">>`
   ${(props) => {
     switch (props.size) {
       case "large":
-        return `font-size: 18px;`;
+        return { fontSize: "18px" };
       case "small":
-        return `font-size: 12px;`;
+        return { fontSize: "12px" };
       case "responsive":
-        return `
-          font-size: 12px;
-          @media (min-width: 768px) {
-            font-size: 16px;
-          }
-          @media (min-width: 1024px) {
-            font-size: 18px;
-          }
-        `;
+        return {
+          fontSize: "12px",
+          [breakpoints.tablet]: {
+            fontSize: "16px",
+          },
+          [breakpoints.desktop]: {
+            fontSize: "18px",
+          },
+        };
       default:
-        return `font-size: 16px;`;
+        return { fontSize: "16px" };
     }
   }}
 `;
@@ -80,21 +81,21 @@ const DateText = styled.div<Pick<Props, "size">>`
   ${(props) => {
     switch (props.size) {
       case "large":
-        return `font-size: 18px;`;
+        return { fontSize: "18px" };
       case "small":
-        return `font-size: 12px;`;
+        return { fontSize: "12px" };
       case "responsive":
-        return `
-          font-size: 12px;
-          @media (min-width: 768px) {
-            font-size: 16px;
-          }
-          @media (min-width: 1024px) {
-            font-size: 18px;
-          }
-        `;
+        return {
+          fontSize: "12px",
+          [breakpoints.tablet]: {
+            fontSize: "16px",
+          },
+          [breakpoints.desktop]: {
+            fontSize: "18px",
+          },
+        };
       default:
-        return `font-size: 16px;`;
+        return { fontSize: "16px" };
     }
   }}
 `;

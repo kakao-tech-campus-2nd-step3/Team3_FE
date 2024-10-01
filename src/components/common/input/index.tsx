@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { breakpoints } from "@/variants";
 
 export type Props = {
   size?: "large" | "medium" | "small" | "responsive";
@@ -36,11 +37,11 @@ const StyledTextArea = styled.textarea<Pick<Props, "size">>(
         return {
           height: "187px",
           fontSize: "16px",
-          "@media (min-width: 768px)": {
+          [breakpoints.tablet]: {
             height: "623px",
             fontSize: "26px",
           },
-          "@media (min-width: 1280px)": {
+          [breakpoints.desktop]: {
             height: "392px",
             fontSize: "32px",
           },

@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { breakpoints } from "@/variants";
 
 export type Props = {
   theme?: "primary" | "secondary";
@@ -48,13 +49,13 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
           width: "80px",
           height: "40px",
           fontSize: "14px",
-          "@media (min-width: 768px)": {
+          [breakpoints.tablet]: {
             //테블릿
             width: "120px",
             height: "48px",
             fontSize: "16px",
           },
-          "@media (min-width: 1280px)": {
+          [breakpoints.desktop]: {
             //데스크탑
             width: "150px",
             height: "50px",

@@ -1,82 +1,85 @@
-import React, { useState } from 'react';
-import styled from '@emotion/styled';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from "react";
+import styled from "@emotion/styled";
+import { motion, AnimatePresence } from "framer-motion";
+import { breakpoints } from "@/variants";
 
 export interface MicrophoneButtonProps {
   onClick?: () => void;
 }
 
-const ButtonContainer = styled(motion.button)`
-  border: none;
-  background: none;
-  cursor: pointer;
-  position: relative;
-  overflow: visible;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  outline: none;
-  padding: 0;
+const ButtonContainer = styled(motion.button)({
+  border: "none",
+  background: "none",
+  cursor: "pointer",
+  position: "relative",
+  overflow: "visible",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  outline: "none",
+  padding: 0,
 
-  &:focus {
-    outline: none;
-  }
+  "&:focus": {
+    outline: "none",
+  },
 
-   /* 반응형 설정 */
-  width: 50px;
-  height: 50px; 
+  // 반응형 설정
+  width: "50px",
+  height: "50px",
 
-  @media (min-width: 768px) {
-    width: 58px;
-    height: 58px;
-  }
+  [breakpoints.tablet]: {
+    width: "58px",
+    height: "58px",
+  },
 
-  @media (min-width: 1280px) {
-    width: 64px; 
-    height: 64px; 
-  }
-`;
+  [breakpoints.desktop]: {
+    width: "64px",
+    height: "64px",
+  },
+});
 
-const Circle = styled(motion.ellipse)`
-  fill: #39a7f7;
-  filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2)); 
-`;
+const Circle = styled(motion.ellipse)({
+  fill: "#39a7f7",
+  filter: "drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))",
+});
 
-const MicrophoneIcon = styled(motion.g)`
-  fill: white;
-`;
+const MicrophoneIcon = styled(motion.g)({
+  fill: "white",
+});
 
-const WaveContainer = styled(motion.div)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-`;
+const WaveContainer = styled(motion.div)({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  justifyContent: "space-around",
+  alignItems: "center",
+});
 
-const Wave = styled(motion.div)`
-  background-color: white;
-  border-radius: 5.625px;
+const Wave = styled(motion.div)({
+  backgroundColor: "white",
+  borderRadius: "5.625px",
 
-  /* 반응형 설정 */
-  width: 4px;
-  height: 4px;
+  // 반응형 설정
+  width: "4px",
+  height: "4px",
 
-  @media (min-width: 768px) {
-    width: 6px;
-    height: 6px;
-  }
+  [breakpoints.tablet]: {
+    width: "6px",
+    height: "6px",
+  },
 
-  @media (min-width: 1280px) {
-    width: 8px;
-    height: 8px;
-  }
-`;
+  [breakpoints.desktop]: {
+    width: "8px",
+    height: "8px",
+  },
+});
 
-export const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({ onClick }) => {
+export const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
+  onClick,
+}) => {
   const [isRecording, setIsRecording] = useState(false);
 
   const handleClick = () => {
@@ -86,7 +89,12 @@ export const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({ onClick }) =
 
   return (
     <ButtonContainer onClick={handleClick}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92.045 90" fill="none" overflow="visible">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 92.045 90"
+        fill="none"
+        overflow="visible"
+      >
         <Circle cx="46.0225" cy="45" rx="46.0225" ry="45" />
         <AnimatePresence>
           {!isRecording && (
@@ -115,14 +123,14 @@ export const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({ onClick }) =
               <Wave
                 key={i}
                 animate={{
-                  height: ['8px', '20px', '8px'],
+                  height: ["8px", "20px", "8px"],
                 }}
                 transition={{
                   repeat: Infinity,
-                  repeatType: 'reverse',
+                  repeatType: "reverse",
                   duration: 0.6,
                   delay: i * 0.1,
-                  ease: 'easeInOut',
+                  ease: "easeInOut",
                 }}
               />
             ))}
