@@ -11,7 +11,8 @@
     "format": "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
