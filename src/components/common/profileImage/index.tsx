@@ -1,6 +1,5 @@
-import styled from "@emotion/styled";
 import React from "react";
-import { breakpoints } from "@/variants";
+import { StyledImage } from "./ProfileImage.styles";
 
 export type ProfileImageProps = {
   src: string;
@@ -11,49 +10,10 @@ export type ProfileImageProps = {
 const ProfileImage: React.FC<ProfileImageProps> = ({
   src,
   alt = "Profile Image",
-  size = "medium",
+  size = "responsive",
   ...props
 }) => {
   return <StyledImage src={src} alt={alt} size={size} {...props} />;
 };
-
-const StyledImage = styled.img<Pick<ProfileImageProps, "size">>(
-  {
-    borderRadius: "50%",
-    objectFit: "cover",
-  },
-  ({ size }) => {
-    switch (size) {
-      case "large":
-        return {
-          width: "60px",
-          height: "60px",
-        };
-      case "small":
-        return {
-          width: "30px",
-          height: "30px",
-        };
-      case "responsive":
-        return {
-          width: "30px",
-          height: "30px",
-          [breakpoints.tablet]: {
-            width: "50px",
-            height: "50px",
-          },
-          [breakpoints.desktop]: {
-            width: "60px",
-            height: "60px",
-          },
-        };
-      default:
-        return {
-          widht: "50px",
-          height: "50px",
-        };
-    }
-  },
-);
 
 export default ProfileImage;

@@ -1,81 +1,16 @@
 import React, { useState } from "react";
-import styled from "@emotion/styled";
-import { motion, AnimatePresence } from "framer-motion";
-import { breakpoints } from "@/variants";
+import {
+  ButtonContainer,
+  Circle,
+  MicrophoneIcon,
+  WaveContainer,
+  Wave,
+} from "./Mic.styles";
+import { AnimatePresence } from "framer-motion";
 
 export interface MicrophoneButtonProps {
   onClick?: () => void;
 }
-
-const ButtonContainer = styled(motion.button)({
-  border: "none",
-  background: "none",
-  cursor: "pointer",
-  position: "relative",
-  overflow: "visible",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  outline: "none",
-  padding: 0,
-
-  "&:focus": {
-    outline: "none",
-  },
-
-  // 반응형 설정
-  width: "50px",
-  height: "50px",
-
-  [breakpoints.tablet]: {
-    width: "58px",
-    height: "58px",
-  },
-
-  [breakpoints.desktop]: {
-    width: "64px",
-    height: "64px",
-  },
-});
-
-const Circle = styled(motion.ellipse)({
-  fill: "#39a7f7",
-  filter: "drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2))",
-});
-
-const MicrophoneIcon = styled(motion.g)({
-  fill: "white",
-});
-
-const WaveContainer = styled(motion.div)({
-  position: "absolute",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  display: "flex",
-  justifyContent: "space-around",
-  alignItems: "center",
-});
-
-const Wave = styled(motion.div)({
-  backgroundColor: "white",
-  borderRadius: "5.625px",
-
-  // 반응형 설정
-  width: "4px",
-  height: "4px",
-
-  [breakpoints.tablet]: {
-    width: "6px",
-    height: "6px",
-  },
-
-  [breakpoints.desktop]: {
-    width: "8px",
-    height: "8px",
-  },
-});
 
 export const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
   onClick,
