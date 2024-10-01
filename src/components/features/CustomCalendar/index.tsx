@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useCallback, useEffect } from 'react';
-import FullCalendar from '@fullcalendar/react'; 
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import { css, Global } from '@emotion/react';
-import koLocale from '@fullcalendar/core/locales/ko';
+import React, { useState, useCallback, useEffect } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import { css, Global } from "@emotion/react";
+import koLocale from "@fullcalendar/core/locales/ko";
 
 // Event 인터페이스
 interface Event {
@@ -16,15 +16,15 @@ interface Event {
   end: Date;
   accessibility: boolean | null;
   complete: boolean;
-  status: 'completed' | 'upcoming' | 'incomplete';
+  status: "completed" | "upcoming" | "incomplete";
 }
 
 const globalStyles = css`
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -49,8 +49,40 @@ const calendarStyles = css`
   height: calc(100vh - 8rem);
   font-size: 0.875rem;
 
-  .fc-toolbar-title {
-    font-size: 1.25rem !important;
+  /* 모바일 화면 */
+  @media (max-width: 768px) {
+    font-size: 0.75rem; /* 폰트 크기 조정 */
+    .fc-toolbar-title {
+      font-size: 1rem !important;
+    }
+    .fc-event-main {
+      padding: 0.2rem; /* 이벤트 패딩 조정 */
+    }
+    .fc-timegrid-slot {
+      height: 2rem; /* 시간 슬롯 높이 */
+    }
+  }
+
+  /* 태블릿 화면 */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    font-size: 0.875rem;
+    .fc-toolbar-title {
+      font-size: 1.25rem !important;
+    }
+    .fc-timegrid-slot {
+      height: 2.5rem;
+    }
+  }
+
+  /* 데스크탑 화면 */
+  @media (min-width: 1025px) {
+    font-size: 1rem;
+    .fc-toolbar-title {
+      font-size: 1.5rem !important;
+    }
+    .fc-timegrid-slot {
+      height: 3rem;
+    }
   }
 
   .fc-event {
@@ -122,7 +154,7 @@ const calendarStyles = css`
   }
 
   .fc-col-header-cell.fc-day-today {
-    background-color: #39A7F7 !important;
+    background-color: #39a7f7 !important;
     color: white;
   }
 
@@ -130,7 +162,7 @@ const calendarStyles = css`
   .fc-button {
     border: none;
     padding: 0.5rem 1rem;
-    background-color: #39A7F7;
+    background-color: #39a7f7;
     color: white;
     transition: background-color 0.3s ease;
   }
@@ -160,15 +192,18 @@ const eventItemStyles = (status: string, isDragging: boolean) => css`
   box-sizing: border-box;
   opacity: ${isDragging ? 0.5 : 1};
 
-  ${status === 'completed' && `
+  ${status === "completed" &&
+  `
     background-color: #e5e7eb;
     border-left-color: #9ca3af;
   `}
-  ${status === 'upcoming' && `
+  ${status === "upcoming" &&
+  `
     background-color: #dbeafe;
     border-left-color: #3b82f6;
   `}
-  ${status === 'incomplete' && `
+  ${status === "incomplete" &&
+  `
     background-color: #fee2e2;
     border-left-color: #ef4444;
   `}
@@ -176,21 +211,23 @@ const eventItemStyles = (status: string, isDragging: boolean) => css`
 
 const CustomCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<any[]>([]); 
+  const [events, setEvents] = useState<any[]>([]);
 
   // 상태를 계산하는 함수
-  const calculateEventStatus = (event: Event): 'completed' | 'upcoming' | 'incomplete' => {
+  const calculateEventStatus = (
+    event: Event,
+  ): "completed" | "upcoming" | "incomplete" => {
     const now = new Date(); // 실제 현재 시간
 
     if (event.complete) {
-      return 'completed';
+      return "completed";
     } else if (event.start > now) {
-      return 'upcoming';
+      return "upcoming";
     } else if (!event.complete && event.end < now) {
-      return 'incomplete';
+      return "incomplete";
     }
 
-    return 'incomplete';
+    return "incomplete";
   };
 
   // 날짜 문자열을 Date 객체로 변환하는 함수 (id를 string으로 변환)
@@ -206,8 +243,8 @@ const CustomCalendar: React.FC = () => {
     const fetchedEvents = [
       {
         id: 1,
-        title: '책 5장 정리',
-        description: '집에서 공부',
+        title: "책 5장 정리",
+        description: "집에서 공부",
         start_date: "2024-09-27T22:00:00Z",
         end_date: "2024-09-28T01:00:00Z",
         accessibility: true,
@@ -215,8 +252,8 @@ const CustomCalendar: React.FC = () => {
       },
       {
         id: 2,
-        title: '팀 미팅',
-        description: '팀 프로젝트 미팅',
+        title: "팀 미팅",
+        description: "팀 프로젝트 미팅",
         start_date: "2024-09-29T00:00:00Z",
         end_date: "2024-09-29T03:00:00Z",
         accessibility: false,
@@ -224,17 +261,17 @@ const CustomCalendar: React.FC = () => {
       },
       {
         id: 3,
-        title: '개인 운동',
-        description: '헬스장 운동',
+        title: "개인 운동",
+        description: "헬스장 운동",
         start_date: "2024-10-01T23:00:00Z",
         end_date: "2024-10-02T02:00:00Z",
         accessibility: true,
         complete: false,
-      }
+      },
     ];
 
     // 상태를 계산하여 events 배열을 업데이트
-    const updatedEvents = fetchedEvents.map(event => {
+    const updatedEvents = fetchedEvents.map((event) => {
       const parsedEvent = parseEventDates(event); // 날짜 변환
       return {
         ...parsedEvent,
@@ -243,7 +280,7 @@ const CustomCalendar: React.FC = () => {
     });
 
     // FullCalendar에서 요구하는 형식으로 변환
-    const eventInputs = updatedEvents.map(event => ({
+    const eventInputs = updatedEvents.map((event) => ({
       id: event.id,
       title: event.title,
       start: event.start,
@@ -251,29 +288,29 @@ const CustomCalendar: React.FC = () => {
       className: `fc-event-${event.status}`,
       extendedProps: {
         description: event.description, // extendedProps에 description 추가
-      }
+      },
     }));
 
     setEvents(eventInputs); // 이벤트 설정
   }, []);
 
   const handleEventDrop = useCallback((info: any) => {
-    setEvents(prevEvents =>
-      prevEvents.map(event =>
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
         event.id === info.event.id
           ? { ...event, start: info.event.start, end: info.event.end }
-          : event
-      )
+          : event,
+      ),
     );
   }, []);
 
   const handleEventResize = useCallback((info: any) => {
-    setEvents(prevEvents =>
-      prevEvents.map(event =>
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
         event.id === info.event.id
           ? { ...event, start: info.event.start, end: info.event.end }
-          : event
-      )
+          : event,
+      ),
     );
   }, []);
 
@@ -288,22 +325,22 @@ const CustomCalendar: React.FC = () => {
             initialView="timeGridWeek"
             initialDate={currentDate}
             headerToolbar={{
-              left: 'title',
-              center: '',
-              right: 'prev next today'
+              left: "title",
+              center: "",
+              right: "prev next today",
             }}
             locale={koLocale}
             slotDuration="00:30:00"
             slotLabelInterval="01:00:00"
             slotLabelFormat={{
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
             }}
             eventTimeFormat={{
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
             }}
             allDaySlot={false}
             editable={true}
@@ -312,15 +349,17 @@ const CustomCalendar: React.FC = () => {
             dayMaxEvents={true}
             weekends={true}
             firstDay={1}
-            events={events} 
+            events={events}
             eventResizableFromStart={true}
             eventContent={(eventInfo) => {
-              const event = events.find(e => e.id === eventInfo.event.id); // id를 string으로 비교
+              const event = events.find((e) => e.id === eventInfo.event.id); // id를 string으로 비교
               return (
-                <div css={eventItemStyles(event ? event.className : '', false)}>
+                <div css={eventItemStyles(event ? event.className : "", false)}>
                   <div>{eventInfo.timeText}</div>
                   <div>{eventInfo.event.title}</div>
-                  {event && <div>{eventInfo.event.extendedProps.description}</div>}
+                  {event && (
+                    <div>{eventInfo.event.extendedProps.description}</div>
+                  )}
                 </div>
               );
             }}
@@ -328,7 +367,12 @@ const CustomCalendar: React.FC = () => {
             eventResize={handleEventResize}
             datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
             duration={{ days: 7 }}
-            dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true }}
+            dayHeaderFormat={{
+              weekday: "short",
+              month: "numeric",
+              day: "numeric",
+              omitCommas: true,
+            }}
           />
         </div>
       </div>
