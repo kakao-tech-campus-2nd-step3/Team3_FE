@@ -6,23 +6,22 @@ export type Props = {
   profileSrc: string;
   name: string;
   date: string;
-  size?: "small" | "medium" | "large" | "responsive";
 };
 
-const List: React.FC<Props> = ({ profileSrc, name, date, size = "medium" }) => {
+export const List: React.FC<Props> = ({ profileSrc, name, date }) => {
   return (
-    <ListItemWrapper size={size}>
+    <ListItemWrapper>
       <ProfileImageWrapper>
-        <ProfileImage src={profileSrc} alt={name} size={size} />
+        <ProfileImage src={profileSrc} alt={name} />
       </ProfileImageWrapper>
       <UserInfoWrapper>
-        <UserInfo name={name} date={date} size={size} />
+        <UserInfo name={name} date={date} />
       </UserInfoWrapper>
     </ListItemWrapper>
   );
 };
 
-const ListItemWrapper = styled.div<Pick<Props, "size">>`
+const ListItemWrapper = styled.div`
   display: flex;
   align-items: center;
 `;

@@ -9,13 +9,7 @@ export default {
     theme: {
       control: {
         type: "select",
-        options: ["primary", "secondary"], //theme 옵션 정의
-      },
-    },
-    size: {
-      control: {
-        type: "select",
-        options: ["large", "medium", "small", "responsive"], //옵션 정의
+        options: ["primary", "secondary"], // theme 옵션 정의
       },
     },
     children: {
@@ -27,52 +21,21 @@ export default {
 // Template 생성 (StoryFn으로 대체)
 const Template: StoryFn<Props> = (args) => <Button {...args} />;
 
-//각 스토리 생성
-export const PrimaryLarge = Template.bind({});
-PrimaryLarge.args = {
+// 각 스토리 생성
+export const PrimaryButton = Template.bind({});
+PrimaryButton.args = {
   theme: "primary",
-  size: "large",
-  children: "Primary Large",
+  children: "Primary Button",
 };
 
-export const PrimaryMedium = Template.bind({});
-PrimaryMedium.args = {
-  theme: "primary",
-  size: "medium",
-  children: "Primary Medium",
-};
-
-export const PrimarySmall = Template.bind({});
-PrimarySmall.args = {
-  theme: "primary",
-  size: "small",
-  children: "Primary Small",
-};
-
-export const SecondaryLarge = Template.bind({});
-SecondaryLarge.args = {
+export const SecondaryButton = Template.bind({});
+SecondaryButton.args = {
   theme: "secondary",
-  size: "large",
-  children: "Secondary Large",
-};
-
-export const SecondaryMedium = Template.bind({});
-SecondaryMedium.args = {
-  theme: "secondary",
-  size: "medium",
-  children: "Secondary Medium",
-};
-
-export const SecondarySmall = Template.bind({});
-SecondarySmall.args = {
-  theme: "secondary",
-  size: "small",
-  children: "Secondary Small",
+  children: "Secondary Button",
 };
 
 export const ResponsiveButton = Template.bind({});
 ResponsiveButton.args = {
   theme: "primary",
-  size: "responsive",
   children: "Responsive Button",
 };

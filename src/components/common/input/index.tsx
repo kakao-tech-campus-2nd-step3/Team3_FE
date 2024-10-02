@@ -1,12 +1,10 @@
 import React from "react";
 import { StyledTextArea } from "./Input.styles";
 
-export type Props = {
-  size?: "large" | "medium" | "small" | "responsive";
-} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+export type Props = {} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-const Input: React.FC<Props> = ({ size = "responsive", ...props }) => {
-  return <StyledTextArea size={size} {...props} />;
+const Input: React.FC<Props> = (props) => {
+  return <StyledTextArea {...props} />;
 };
 
 export default Input;

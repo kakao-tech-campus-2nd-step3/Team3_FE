@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { breakpoints } from "@/variants";
 import { Props } from "@/components/common/Button";
 
-export const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
+export const StyledButton = styled.button<Pick<Props, "theme">>(
   {
     borderRadius: "16px",
     display: "flex",
@@ -11,47 +11,27 @@ export const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
     cursor: "pointer",
     transition: "background-color 200ms",
     padding: "0 16px",
+    outline: "none", // 클릭 시 포커스 테두리 제거
+    "&:focus": {
+      outline: "none", // 추가로 focus 상태에서도 테두리 제거
+    },
   },
-  ({ size }) => {
-    switch (size) {
-      case "large":
-        return {
-          width: "150px",
-          height: "50px",
-          fontSize: "20px",
-        };
-      case "small":
-        return {
-          width: "80px",
-          height: "40px",
-          fontSize: "14px",
-        };
-      case "responsive": {
-        return {
-          width: "80px",
-          height: "40px",
-          fontSize: "14px",
-          [breakpoints.tablet]: {
-            //테블릿
-            width: "120px",
-            height: "48px",
-            fontSize: "16px",
-          },
-          [breakpoints.desktop]: {
-            //데스크탑
-            width: "150px",
-            height: "50px",
-            fontSize: "20px",
-          },
-        };
-      }
-      default:
-        return {
-          width: "120px",
-          height: "48px",
-          fontSize: "16px",
-        };
-    }
+  {
+    width: "80px",
+    height: "40px",
+    fontSize: "14px",
+    [breakpoints.tablet]: {
+      // 테블릿
+      width: "120px",
+      height: "48px",
+      fontSize: "16px",
+    },
+    [breakpoints.desktop]: {
+      // 데스크탑
+      width: "150px",
+      height: "50px",
+      fontSize: "20px",
+    },
   },
   ({ theme }) => {
     switch (theme) {
