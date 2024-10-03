@@ -1,17 +1,6 @@
 import { css } from "@emotion/react";
 import { breakpoints } from "@/variants"; // Breakpoints 파일을 import
 
-export const globalStyles = css`
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-      "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-`;
-
 export const appContainerStyles = css`
   max-width: 1200px;
   margin: 0 auto;
@@ -29,26 +18,42 @@ export const calendarStyles = css`
   flex-direction: column;
   width: 100%;
   height: calc(100vh - 8rem);
-  font-size: 0.75rem; /* 모바일에서 기본 폰트 크기 설정 */
+  font-size: 0.75rem;
 
   .fc-toolbar-title {
-    font-size: 1rem !important; /* 모바일에서 기본 설정 */
+    font-size: 1rem !important;
   }
 
   .fc-event-main {
-    padding: 0.2rem; /* 모바일 기본 설정 */
+    padding: 0.2rem;
   }
 
-  /* 1시간 단위 슬롯 (실선) */
+  /* 가로 스크롤을 강제 적용 */
+  .fc-scroller {
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    display: block;
+  }
+
+  .fc-timegrid {
+    min-width: 800px;
+  }
+
+  .fc-timegrid-col {
+    min-width: 250px;
+    border-right: 1px solid #e5e7eb;
+  }
+
+  /* 30분 단위 슬롯 (실선) */
   .fc-timegrid-slot {
-    height: 3rem; /* 1시간 단위 슬롯 */
-    border-bottom: 1px solid #e5e7eb !important; /* 실선 */
+    height: 3rem;
+    border-bottom: 1px dashed rgba(229, 231, 235, 0.5) !important; /* 실선 */
   }
 
-  /* 30분 단위 슬롯 (점선) */
+  /* 1시간 단위 슬롯 (점선) */
   .fc-timegrid-slot-minor {
-    height: 1.5rem; /* 30분 단위 슬롯 */
-    border-bottom: 1px dashed rgba(229, 231, 235, 0.5) !important; /* 점선 */
+    height: 3rem;
+    border-bottom: 1px solid #e5e7eb !important; /* 점선 */
   }
 
   /* 태블릿 화면 */
@@ -103,32 +108,21 @@ export const calendarStyles = css`
   }
 
   .fc-timegrid-axis {
-    width: 3rem; /* 시간대 폭 */
-  }
-
-  .fc-timegrid-col {
-    border-right: 1px solid #e5e7eb;
-  }
-
-  .fc-timegrid-col-frame {
-    position: relative;
-  }
-
-  .fc-timegrid-event {
-    border-radius: 0;
-  }
-
-  .fc-timegrid-event-harness {
-    margin-right: 1px;
+    width: 3rem;
   }
 
   .fc-direction-ltr .fc-timegrid-col-events {
     margin: 0px !important;
   }
 
-  /* 오늘 날짜 배경색 제거, 헤더 하이라이트 */
   .fc-day-today {
     background-color: inherit !important;
+  }
+
+  .fc-col-header-cell {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
   }
 
   .fc-col-header-cell.fc-day-today {
@@ -136,17 +130,28 @@ export const calendarStyles = css`
     color: white;
   }
 
-  /* 버튼 스타일 */
   .fc-button {
     border: none;
     padding: 0.5rem 1rem;
     background-color: #39a7f7;
     color: white;
     transition: background-color 0.3s ease;
+    outline: none;
+  }
+
+  .fc-button:focus {
+    outline: none;
+    box-shadow: none;
   }
 
   .fc-button:hover {
-    background-color: #338bd0;
+    background-color: #8fd0ff;
+  }
+
+  .fc-button:active {
+    background-color: #39a7f7;
+    box-shadow: none;
+    transform: none;
   }
 
   .fc-toolbar-chunk {
@@ -175,11 +180,13 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
     background-color: #e5e7eb;
     border-left-color: #9ca3af;
   `}
+
   ${status === "upcoming" &&
   `
     background-color: #dbeafe;
     border-left-color: #3b82f6;
   `}
+
   ${status === "incomplete" &&
   `
     background-color: #fee2e2;

@@ -1,7 +1,8 @@
 import React from "react";
+import "./index.css";
 
-const AnotherComponent: React.FC = () => {
-  return <div></div>;
+const App: React.FC = () => {
+  return <></>;
 };
 
-export default AnotherComponent;
+export default App;
