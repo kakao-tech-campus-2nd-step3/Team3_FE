@@ -1,25 +1,42 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { Global } from "@emotion/react";
+import koLocale from "@fullcalendar/core/locales/ko";
 import {
   appContainerStyles,
   appTitleStyles,
   calendarStyles,
   eventItemStyles,
 } from "./CustomCalendar.styles";
-import koLocale from "@fullcalendar/core/locales/ko";
 
+// Event 인터페이스
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  start: Date;
+  end: Date;
+  accessibility: boolean | null;
+  complete: boolean;
+  status: "completed" | "upcoming" | "incomplete";
+}
+
+const mobileBreakpoint = 768;
 const CustomCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<any[]>([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const calendarRef = useRef<FullCalendar>(null);
 
   const calculateEventStatus = (
-    event: any,
+    event: Event,
   ): "completed" | "upcoming" | "incomplete" => {
     const now = new Date();
+
     if (event.complete) {
       return "completed";
     } else if (event.start > now) {
@@ -27,10 +44,11 @@ const CustomCalendar: React.FC = () => {
     } else if (!event.complete && event.end < now) {
       return "incomplete";
     }
+
     return "incomplete";
   };
 
-  const parseEventDates = (event: any): any => ({
+  const parseEventDates = (event: any): Event => ({
     ...event,
     id: event.id.toString(),
     start: new Date(event.start_date),
@@ -110,19 +128,66 @@ const CustomCalendar: React.FC = () => {
     );
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= mobileBreakpoint);
+      if (calendarRef.current) {
+        const calendarApi = calendarRef.current.getApi();
+        calendarApi.updateSize();
+        calendarApi.changeView(
+          window.innerWidth <= mobileBreakpoint
+            ? "timeGridDay"
+            : "timeGridWeek",
+        );
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= mobileBreakpoint);
+      if (calendarRef.current) {
+        const calendarApi = calendarRef.current.getApi();
+        // 모바일에서는 3일 뷰, 데스크탑에서는 주간 뷰로 전환
+        calendarApi.changeView(
+          window.innerWidth <= mobileBreakpoint
+            ? "timeGridThreeDay"
+            : "timeGridWeek",
+        );
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
       <div css={appContainerStyles}>
         <h1 css={appTitleStyles}>계획표 예시</h1>
         <div css={calendarStyles}>
           <FullCalendar
+            ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
+            views={{
+              timeGridThreeDay: {
+                type: "timeGrid",
+                duration: { days: 3 }, // 3일 뷰 설정
+              },
+            }}
+            initialView={isMobile ? "timeGridThreeDay" : "timeGridWeek"}
             initialDate={currentDate}
             headerToolbar={{
               left: "title",
               center: "",
-              right: "prev,next,today",
+              right: isMobile ? "prev,next,today" : "prev,next,today",
             }}
             locale={koLocale}
             slotDuration="00:30:00"
@@ -146,13 +211,6 @@ const CustomCalendar: React.FC = () => {
             firstDay={1}
             events={events}
             eventResizableFromStart={true}
-            views={{
-              timeGridFourDay: {
-                type: "timeGrid",
-                duration: { days: 4 }, // 4일만 표시
-                buttonText: "4일",
-              },
-            }}
             eventContent={(eventInfo) => {
               const event = events.find((e) => e.id === eventInfo.event.id);
               return (
@@ -168,13 +226,13 @@ const CustomCalendar: React.FC = () => {
             eventDrop={handleEventDrop}
             eventResize={handleEventResize}
             datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
-            duration={{ days: 7 }}
             dayHeaderFormat={{
               weekday: "short",
               month: "numeric",
               day: "numeric",
               omitCommas: true,
             }}
+            height={isMobile ? "85%" : "100%"}
           />
         </div>
       </div>
