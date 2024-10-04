@@ -23,7 +23,8 @@ export const calendarStyles = css`
   font-size: 0.7rem;
   margin-bottom: 40px;
 
-  @media (max-width: 768px) { //모바일
+  @media (max-width: 768px) {
+    //모바일
     font-size: 0.6rem;
     height: calc(100vh - 4.8rem - 40px);
     min-height: 320px;
@@ -104,13 +105,13 @@ export const calendarStyles = css`
   .fc-event-completed .fc-event-time {
     text-decoration: line-through;
   }
-  
+
   .fc-timegrid-slot {
     border-bottom: 1px solid rgba(229, 231, 235, 0.5);
   }
 
   // 1시간 간격
-  .fc-timegrid-slot-minor { 
+  .fc-timegrid-slot-minor {
     border-bottom: 1px dashed rgba(229, 231, 235, 0.8);
   }
 

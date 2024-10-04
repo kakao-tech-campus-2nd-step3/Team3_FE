@@ -4,13 +4,19 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { Global } from "@emotion/react";
 import koLocale from "@fullcalendar/core/locales/ko";
-import {appContainerStyles, appTitleStyles, calendarStyles, eventItemStyles} from "./CustomCalendar.styles"
+import {
+  appContainerStyles,
+  appTitleStyles,
+  calendarStyles,
+  eventItemStyles,
+} from "./CustomCalendar.styles";
 
 // Event 인터페이스
 interface Event {
   id: string;
-  title: string;  
+  title: string;
   description: string;
   start: Date;
   end: Date;
@@ -128,30 +134,38 @@ const CustomCalendar: React.FC = () => {
       if (calendarRef.current) {
         const calendarApi = calendarRef.current.getApi();
         calendarApi.updateSize();
-        calendarApi.changeView(window.innerWidth <= mobileBreakpoint ? 'timeGridDay' : 'timeGridWeek');
+        calendarApi.changeView(
+          window.innerWidth <= mobileBreakpoint
+            ? "timeGridDay"
+            : "timeGridWeek",
+        );
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
-  
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= mobileBreakpoint);
       if (calendarRef.current) {
         const calendarApi = calendarRef.current.getApi();
         // 모바일에서는 3일 뷰, 데스크탑에서는 주간 뷰로 전환
-        calendarApi.changeView(window.innerWidth <= mobileBreakpoint ? 'timeGridThreeDay' : 'timeGridWeek');
+        calendarApi.changeView(
+          window.innerWidth <= mobileBreakpoint
+            ? "timeGridThreeDay"
+            : "timeGridWeek",
+        );
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
@@ -164,9 +178,9 @@ const CustomCalendar: React.FC = () => {
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             views={{
               timeGridThreeDay: {
-                type: 'timeGrid',
+                type: "timeGrid",
                 duration: { days: 3 }, // 3일 뷰 설정
-              }
+              },
             }}
             initialView={isMobile ? "timeGridThreeDay" : "timeGridWeek"}
             initialDate={currentDate}

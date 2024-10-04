@@ -10,7 +10,7 @@ import FriendPage from "@/pages/Friend";
 import MyPage from "@/pages/Mypage";
 import { Layout } from "@/components/features/Layout";
 import MainPage from "@/pages/Main";
-import PrivateRoute from "@/components/common/PrivateRoute/PrivateRoute";
+import PrivateRoute from "@/components/common/PrivateRoute";
 
 export const Router = () => {
   const router = createBrowserRouter([
