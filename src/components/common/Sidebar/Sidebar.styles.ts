@@ -1,5 +1,14 @@
 import styled from "@emotion/styled";
 import { breakpoints } from "@/variants";
+import { Link } from "react-router-dom";
+
+export const StyledLink = styled(Link)<{ selected: boolean }>`
+  color: ${({ selected }) => (selected ? "#fff" : "#000")};
+  text-decoration: none;
+  display: block; /* 블록 요소로 변경하여 전체 영역을 클릭 가능하게 만듦 */
+  width: 100%;
+  height: 100%;
+`;
 
 // 사이드바 컨테이너
 export const SidebarContainer = styled.div<{ isOpen: boolean }>(

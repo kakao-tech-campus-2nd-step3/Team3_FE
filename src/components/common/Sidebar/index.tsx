@@ -8,6 +8,7 @@ import {
   MenuItem,
   TimeDisplay,
   DateDisplay,
+  StyledLink,
 } from "./Sidebar.styles";
 
 import {
@@ -57,11 +58,11 @@ export default function Sidebar() {
   };
 
   const menuItems = [
-    { name: "메인", icon: <Home /> },
-    { name: "개인 플랜", icon: <CalendarMonth /> },
-    { name: "팀 플랜", icon: <Diversity3 /> },
-    { name: "친구", icon: <People /> },
-    { name: "마이페이지", icon: <Person /> },
+    { name: "메인", icon: <Home />, path: "/main" },
+    { name: "개인 플랜", icon: <CalendarMonth />, path: "/plan" },
+    { name: "팀 플랜", icon: <Diversity3 />, path: "/team-plan" },
+    { name: "친구", icon: <People />, path: "/friend" },
+    { name: "마이페이지", icon: <Person />, path: "/mypage" },
   ];
 
   return (
@@ -99,7 +100,9 @@ export default function Sidebar() {
             onClick={() => setSelectedMenu(item.name)}
           >
             <div className="icon">{item.icon}</div>
-            {item.name}
+            <StyledLink to={item.path} selected={selectedMenu === item.name}>
+              {item.name}
+            </StyledLink>
           </MenuItem>
         ))}
       </MenuItemsContainer>

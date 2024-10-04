@@ -1,8 +1,8 @@
 import React from "react";
-import "./index.css";
+import { Router } from "./router";
 
 const App: React.FC = () => {
-  return <></>;
+  return <Router />;
 };
 
 export default App;
