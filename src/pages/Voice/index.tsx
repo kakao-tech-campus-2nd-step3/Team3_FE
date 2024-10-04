@@ -1,6 +1,6 @@
 import React from "react";
 
-const VoiceRecognitionPage: React.FC = () => {
+const VoicePage: React.FC = () => {
   return (
     <div>
       <h1>Voice Recognition Page</h1>
@@ -9,4 +9,4 @@ const VoiceRecognitionPage: React.FC = () => {
   );
 };
 
-export default VoiceRecognitionPage;
+export default VoicePage;

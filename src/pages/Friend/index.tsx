@@ -1,6 +1,6 @@
 import React from "react";
 
-const FriendsPage: React.FC = () => {
+const FriendPage: React.FC = () => {
   return (
     <div>
       <h1>Friends Page</h1>
@@ -9,4 +9,4 @@ const FriendsPage: React.FC = () => {
   );
 };
 
-export default FriendsPage;
+export default FriendPage;
