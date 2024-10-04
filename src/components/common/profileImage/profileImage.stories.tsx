@@ -1,18 +1,12 @@
 import { Meta, StoryFn } from "@storybook/react";
 import ProfileImage, {
   ProfileImageProps,
-} from "@/components/common/profileImage";
+} from "@/components/common/ProfileImage";
 
 export default {
   title: "Components/ProfileImage",
   component: ProfileImage,
   argTypes: {
-    size: {
-      control: {
-        type: "select",
-        options: ["small", "medium", "large", "responsive"],
-      },
-    },
     src: {
       control: "text",
     },
@@ -27,27 +21,9 @@ const Template: StoryFn<ProfileImageProps> = (args) => (
   <ProfileImage {...args} />
 );
 
-// 각 크기에 대한 스토리 정의
-export const Small = Template.bind({});
-Small.args = {
-  src: "https://via.placeholder.com/30",
-  size: "small",
-};
-
-export const Medium = Template.bind({});
-Medium.args = {
-  src: "https://via.placeholder.com/50",
-  size: "medium",
-};
-
-export const Large = Template.bind({});
-Large.args = {
-  src: "https://via.placeholder.com/60",
-  size: "large",
-};
-
+// Responsive 크기 스토리 정의
 export const Responsive = Template.bind({});
 Responsive.args = {
   src: "https://via.placeholder.com/60",
-  size: "responsive",
+  alt: "Responsive Profile Image",
 };
