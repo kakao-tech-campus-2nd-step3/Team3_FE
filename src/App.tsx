@@ -1,11 +1,8 @@
-import "./App.css";
-import "normalize.css";
+import React from "react";
+import { Router } from "./router";
 
 const App: React.FC = () => {
-  return <></>;
+  return <Router />;
 };
 
-function App() {
-  return <></>;
-}
 export default App;
