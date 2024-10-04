@@ -42,6 +42,4 @@ const ContentWrapper = styled.div`
   ${breakpoints.desktop} {
     padding-left: 350px; /* 데스크탑 크기 */
   }
-
-  background-color: #f9f9f9;
 `;

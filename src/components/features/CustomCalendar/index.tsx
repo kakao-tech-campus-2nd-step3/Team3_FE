@@ -189,6 +189,7 @@ const CustomCalendar: React.FC = () => {
               center: "",
               right: isMobile ? "prev,next,today" : "prev,next,today",
             }}
+            
             locale={koLocale}
             slotDuration="00:30:00"
             slotLabelInterval="01:00:00"
@@ -234,6 +235,7 @@ const CustomCalendar: React.FC = () => {
             }}
             height={isMobile ? "85%" : "100%"}
           />
+          
         </div>
       </div>
     </>

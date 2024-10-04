@@ -1,10 +1,9 @@
 import React from "react";
-
+import CustomCalendar from "@/components/features/CustomCalendar";
 const MainPage: React.FC = () => {
   return (
     <div>
-      <h1>Main Page</h1>
-      <p>This is your profile page.</p>
+      <CustomCalendar></CustomCalendar>
     </div>
   );
 };
