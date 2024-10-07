@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { breakpoints } from "@/variants";
+import {
+  Home,
+  CalendarMonth,
+  Diversity3,
+  Person,
+  People,
+  Menu,
+} from "@mui/icons-material";
+import breakpoints from "@/variants";
 import {
   SidebarContainer,
   MobileHeader,
@@ -11,14 +19,6 @@ import {
   StyledLink,
 } from "./Sidebar.styles";
 
-import {
-  Home,
-  CalendarMonth,
-  Diversity3,
-  Person,
-  People,
-  Menu,
-} from "@mui/icons-material";
 import logo from "@/assets/logo.svg";
 
 export default function Sidebar() {
@@ -31,16 +31,16 @@ export default function Sidebar() {
     return () => clearInterval(timer);
   }, []);
 
-  //화면 크기 변경 시 실행되는 효과
+  // 화면 크기 변경 시 실행되는 효과
   useEffect(() => {
     const handelResize = () => {
       // 화면 크기가 768px 이상일 때 햄버거 메뉴를 닫기
-      if (window.innerWidth >= parseInt(breakpoints.tablet) && isOpen) {
+      if (window.innerWidth >= parseInt(breakpoints.tablet, 10) && isOpen) {
         setIsOpen(false);
       }
     };
 
-    //윈도우 크기 변화 감지
+    // 윈도우 크기 변화 감지
     window.addEventListener("resize", handelResize);
 
     return () => {

@@ -1,17 +1,18 @@
 import React from "react";
-import { StyledImage } from "./ProfileImage.styles";
+import StyledImage from "./ProfileImage.styles";
 
 export type ProfileImageProps = {
   src: string;
   alt?: string;
-} & React.ImgHTMLAttributes<HTMLImageElement>;
+  onClick?: React.MouseEventHandler<HTMLImageElement>;
+};
 
 const ProfileImage: React.FC<ProfileImageProps> = ({
   src,
   alt = "Profile Image",
-  ...props
+  onClick,
 }) => {
-  return <StyledImage src={src} alt={alt} {...props} />;
+  return <StyledImage src={src} alt={alt} onClick={onClick} />;
 };
 
 export default ProfileImage;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import {
   ButtonContainer,
   Circle,
@@ -6,7 +7,6 @@ import {
   WaveContainer,
   Wave,
 } from "./Mic.styles";
-import { AnimatePresence } from "framer-motion";
 
 export interface MicrophoneButtonProps {
   onClick?: () => void;

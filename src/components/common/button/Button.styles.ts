@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
-import { breakpoints } from "@/variants";
-import { Props } from "@/components/common/Button";
+import breakpoints from "@/variants";
+import { Props } from "@/components/common/Button/Button";
 
-export const StyledButton = styled.button<Pick<Props, "theme">>(
+const StyledButton = styled.button<Pick<Props, "theme">>(
   {
     borderRadius: "16px",
     display: "flex",
@@ -62,3 +62,5 @@ export const StyledButton = styled.button<Pick<Props, "theme">>(
     }
   },
 );
+
+export default StyledButton;

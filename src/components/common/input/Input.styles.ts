@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { breakpoints } from "@/variants";
+import breakpoints from "@/variants";
 
 const StyledTextArea = styled.textarea(
   {

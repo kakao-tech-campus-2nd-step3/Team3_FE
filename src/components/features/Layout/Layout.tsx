@@ -1,23 +1,7 @@
 import styled from "@emotion/styled";
 import { Outlet, useLocation } from "react-router-dom";
-import Sidebar from "@/components/common/Sidebar";
-import { breakpoints } from "@/variants";
-
-export const Layout: React.FC = ({}) => {
-  const location = useLocation();
-
-  // 사이드바를 숨길 경로 목록
-  const hideSidebarPaths = ["/", "/login", "/plan/preview"];
-
-  return (
-    <Wrapper>
-      {!hideSidebarPaths.includes(location.pathname) && <Sidebar />}
-      <ContentWrapper>
-        <Outlet />
-      </ContentWrapper>
-    </Wrapper>
-  );
-};
+import Sidebar from "@/components/common/Sidebar/Sidebar";
+import breakpoints from "@/variants";
 
 const Wrapper = styled.div`
   display: flex;
@@ -43,3 +27,20 @@ const ContentWrapper = styled.div`
     padding-left: 350px; /* 데스크탑 크기 */
   }
 `;
+
+const Layout: React.FC = () => {
+  const location = useLocation();
+
+  // 사이드바를 숨길 경로 목록
+  const hideSidebarPaths = ["/", "/login", "/plan/preview"];
+
+  return (
+    <Wrapper>
+      {!hideSidebarPaths.includes(location.pathname) && <Sidebar />}
+      <ContentWrapper>
+        <Outlet />
+      </ContentWrapper>
+    </Wrapper>
+  );
+};
+export default Layout;
