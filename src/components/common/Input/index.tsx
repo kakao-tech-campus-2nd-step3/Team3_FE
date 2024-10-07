@@ -1,5 +1,5 @@
 import React from "react";
-import { StyledTextArea } from "./Input.styles";
+import StyledTextArea from "./Input.styles";
 
 export type Props = {} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
