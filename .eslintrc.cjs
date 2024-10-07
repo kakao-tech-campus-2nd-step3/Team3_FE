@@ -10,6 +10,9 @@ module.exports = {
     'airbnb-typescript', // TypeScript와 함께 사용
     'plugin:prettier/recommended' // Prettier와의 통합
   ],
+  parserOptions: {
+    project: './tsconfig.json', 
+  },
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
   plugins: [
