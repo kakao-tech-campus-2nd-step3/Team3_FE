@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import { breakpoints } from "@/variants";
 
-const StyledInput = styled.textarea(
+export const StyledTextArea = styled.textarea(
   {
     borderRadius: "16px",
     padding: "10px",
@@ -25,5 +25,3 @@ const StyledInput = styled.textarea(
     },
   },
 );
-
-export default StyledInput;
