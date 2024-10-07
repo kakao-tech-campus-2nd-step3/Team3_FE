@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { Meta, StoryObj } from '@storybook/react';
-import CustomCalendar from './index'; 
-import '@/index.css';
+import { Meta, StoryObj } from "@storybook/react";
+import CustomCalendar from "./CustomCalendar";
+import "@/index.css";
+
 const meta: Meta<typeof CustomCalendar> = {
-  title: 'Components/CustomCalendar', 
+  title: "Components/CustomCalendar",
   component: CustomCalendar,
 };
 

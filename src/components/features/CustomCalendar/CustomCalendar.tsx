@@ -38,9 +38,11 @@ const CustomCalendar: React.FC = () => {
 
     if (event.complete) {
       return "completed";
-    } else if (event.start > now) {
+    }
+    if (event.start > now) {
       return "upcoming";
-    } else if (!event.complete && event.end < now) {
+    }
+    if (!event.complete && event.end < now) {
       return "incomplete";
     }
 
@@ -168,76 +170,72 @@ const CustomCalendar: React.FC = () => {
   }, []);
 
   return (
-    <>
-      <div css={appContainerStyles}>
-        <h1 css={appTitleStyles}>계획표 예시</h1>
-        <div css={calendarStyles}>
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            views={{
-              timeGridThreeDay: {
-                type: "timeGrid",
-                duration: { days: 3 }, // 3일 뷰 설정
-              },
-            }}
-            initialView={isMobile ? "timeGridThreeDay" : "timeGridWeek"}
-            initialDate={currentDate}
-            headerToolbar={{
-              left: "title",
-              center: "",
-              right: isMobile ? "prev,next,today" : "prev,next,today",
-            }}
-            
-            locale={koLocale}
-            slotDuration="00:30:00"
-            slotLabelInterval="01:00:00"
-            slotLabelFormat={{
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            }}
-            eventTimeFormat={{
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            }}
-            allDaySlot={false}
-            editable={true}
-            selectable={false}
-            selectMirror={false}
-            dayMaxEvents={true}
-            weekends={true}
-            firstDay={1}
-            events={events}
-            eventResizableFromStart={true}
-            eventContent={(eventInfo) => {
-              const event = events.find((e) => e.id === eventInfo.event.id);
-              return (
-                <div css={eventItemStyles(event ? event.className : "", false)}>
-                  <div>{eventInfo.timeText}</div>
-                  <div>{eventInfo.event.title}</div>
-                  {event && (
-                    <div>{eventInfo.event.extendedProps.description}</div>
-                  )}
-                </div>
-              );
-            }}
-            eventDrop={handleEventDrop}
-            eventResize={handleEventResize}
-            datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
-            dayHeaderFormat={{
-              weekday: "short",
-              month: "numeric",
-              day: "numeric",
-              omitCommas: true,
-            }}
-            height={isMobile ? "85%" : "100%"}
-          />
-          
-        </div>
+    <div css={appContainerStyles}>
+      <h1 css={appTitleStyles}>계획표 예시</h1>
+      <div css={calendarStyles}>
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          views={{
+            timeGridThreeDay: {
+              type: "timeGrid",
+              duration: { days: 3 }, // 3일 뷰 설정
+            },
+          }}
+          initialView={isMobile ? "timeGridThreeDay" : "timeGridWeek"}
+          initialDate={currentDate}
+          headerToolbar={{
+            left: "title",
+            center: "",
+            right: isMobile ? "prev,next,today" : "prev,next,today",
+          }}
+          locale={koLocale}
+          slotDuration="00:30:00"
+          slotLabelInterval="01:00:00"
+          slotLabelFormat={{
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }}
+          eventTimeFormat={{
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }}
+          allDaySlot={false}
+          editable
+          selectable={false}
+          selectMirror={false}
+          dayMaxEvents
+          weekends
+          firstDay={1}
+          events={events}
+          eventResizableFromStart
+          eventContent={(eventInfo) => {
+            const event = events.find((e) => e.id === eventInfo.event.id);
+            return (
+              <div css={eventItemStyles(event ? event.className : "", false)}>
+                <div>{eventInfo.timeText}</div>
+                <div>{eventInfo.event.title}</div>
+                {event && (
+                  <div>{eventInfo.event.extendedProps.description}</div>
+                )}
+              </div>
+            );
+          }}
+          eventDrop={handleEventDrop}
+          eventResize={handleEventResize}
+          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
+          dayHeaderFormat={{
+            weekday: "short",
+            month: "numeric",
+            day: "numeric",
+            omitCommas: true,
+          }}
+          height={isMobile ? "85%" : "100%"}
+        />
       </div>
-    </>
+    </div>
   );
 };
 

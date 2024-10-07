@@ -1,4 +1,4 @@
-export const RouterPath = {
+const routerPath = {
   home: "/",
   main: "/main",
   login: "/login",
@@ -8,3 +8,5 @@ export const RouterPath = {
   friend: "/friend",
   myPage: "/mypage",
 };
+
+export default routerPath;

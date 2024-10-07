@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Outlet, useLocation } from "react-router-dom";
-import Sidebar from "@/components/common/Sidebar";
-import { breakpoints } from "@/variants";
+import Sidebar from "@/components/common/Sidebar/Sidebar";
+import { breakpoints } from "@/variants/variants";
 
 export const Layout: React.FC = ({}) => {
   const location = useLocation();

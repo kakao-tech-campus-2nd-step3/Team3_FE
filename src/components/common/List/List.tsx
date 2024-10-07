@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import ProfileImage from "@/components/common/ProfileImage";
+import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
 import UserInfo from "@/components/common/UserInfo";
 
 export type Props = {
