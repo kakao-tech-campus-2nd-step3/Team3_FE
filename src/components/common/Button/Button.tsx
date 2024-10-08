@@ -1,12 +1,6 @@
 import React from "react";
 import StyledButton from "./Button.styles";
-
-export type Props = {
-  theme?: "primary" | "secondary";
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  disabled?: boolean;
-  type?: "button" | "submit" | "reset";
-} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+import { Props } from "./Button.types";
 
 const Button: React.FC<Props> = ({
   theme = "primary",

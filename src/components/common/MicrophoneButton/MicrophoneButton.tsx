@@ -12,9 +12,7 @@ export interface MicrophoneButtonProps {
   onClick?: () => void;
 }
 
-export const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
-  onClick,
-}) => {
+const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({ onClick }) => {
   const [isRecording, setIsRecording] = useState(false);
 
   const handleClick = () => {
