@@ -1,10 +1,22 @@
 import React from "react";
-import StyledInput from "./Input.styles";
+import StyledTextArea from "./Input.styles";
 
-export type Props = React.InputHTMLAttributes<HTMLInputElement>;
+export type Props = {
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+  value: string;
+  placeholder?: string;
+  disabled?: boolean;
+};
 
-const Input: React.FC<Props> = (props) => {
-  return <StyledInput {...props} />;
+const Input: React.FC<Props> = ({ onChange, value, placeholder, disabled }) => {
+  return (
+    <StyledTextArea
+      onChange={onChange}
+      value={value}
+      placeholder={placeholder}
+      disabled={disabled}
+    />
+  );
 };
 
 export default Input;

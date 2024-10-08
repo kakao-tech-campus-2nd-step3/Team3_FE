@@ -16,7 +16,9 @@ const LoginModal: React.FC = () => {
       <p>Please login to access your account.</p>
       <input type="text" placeholder="Username" />
       <input type="password" placeholder="Password" />
-      <button onClick={handleLogin}>Login</button>
+      <button type="button" onClick={handleLogin}>
+        Login
+      </button>
     </div>
   );
 };

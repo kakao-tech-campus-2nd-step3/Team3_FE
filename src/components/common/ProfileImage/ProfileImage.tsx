@@ -9,9 +9,8 @@ export type ProfileImageProps = {
 const ProfileImage: React.FC<ProfileImageProps> = ({
   src,
   alt = "Profile Image",
-  ...props
 }) => {
-  return <StyledImage src={src} alt={alt} {...props} />;
+  return <StyledImage src={src} alt={alt} />;
 };
 
 export default ProfileImage;

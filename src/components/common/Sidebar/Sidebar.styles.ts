@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
-import { breakpoints } from "@/variants/variants";
+import breakpoints from "@/variants/variants";
 
 export const StyledLink = styled(Link)<{ selected: boolean }>`
   color: ${({ selected }) => (selected ? "#fff" : "#000")};

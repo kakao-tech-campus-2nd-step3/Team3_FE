@@ -24,7 +24,18 @@ module.exports = {
       "warn",
       { allowConstantExport: true },
     ],
-    "prettier/prettier": "warn",
-    "react/react-in-jsx-scope": "off", // Prettier 관련 오류를 ESLint 경고로 표시
+    "prettier/prettier": "warn", // Prettier 관련 오류를 ESLint 경고로 표시
+    "react/react-in-jsx-scope": "off", // React 17 이상에서는 필요 없음
+    "react/function-component-definition": "off", // 화살표 함수 사용 허용
+    "import/extensions": "off",
+    "react/require-default-props": "off",
+    "react/prop-types": "off",
+    "react/no-unknown-property": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+  },
+  settings: {
+    react: {
+      version: "detect", // React 버전 자동 감지
+    },
   },
 };

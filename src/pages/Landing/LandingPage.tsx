@@ -4,37 +4,6 @@ import styled from "@emotion/styled";
 import circleSVG from "@/assets/circle (1).svg"; // 원형 이미지
 import mockSVG from "@/assets/mock.svg"; // 목업 이미지
 
-const LandingPage: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handleStartClick = () => {
-    navigate("/plan/preview");
-  };
-
-  const handleLoginClick = () => {
-    navigate("/login");
-  };
-
-  return (
-    <LandingContainer>
-      <ContentWrapper>
-        <TextWrapper>
-          <Title>간편하고 빠른 플랜 생성</Title>
-          <SubTitle>내 목소리로 일정을 만들고, 쉽게 관리하세요.</SubTitle>
-          <ButtonContainer>
-            <LoginButton onClick={handleLoginClick}>로그인</LoginButton>
-            <StartButton onClick={handleStartClick}>시작하기</StartButton>
-          </ButtonContainer>
-        </TextWrapper>
-        <MockupImage src={mockSVG} alt="목업 이미지" />
-      </ContentWrapper>
-      <BackgroundCircle src={circleSVG} alt="배경 원" />
-    </LandingContainer>
-  );
-};
-
-export default LandingPage;
-
 // 스타일 정의
 const LandingContainer = styled.div`
   position: relative;
@@ -111,3 +80,34 @@ const StartButton = styled(Button)`
 const MockupImage = styled.img`
   width: 500px;
 `;
+
+const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleStartClick = () => {
+    navigate("/plan/preview");
+  };
+
+  const handleLoginClick = () => {
+    navigate("/login");
+  };
+
+  return (
+    <LandingContainer>
+      <ContentWrapper>
+        <TextWrapper>
+          <Title>간편하고 빠른 플랜 생성</Title>
+          <SubTitle>내 목소리로 일정을 만들고, 쉽게 관리하세요.</SubTitle>
+          <ButtonContainer>
+            <LoginButton onClick={handleLoginClick}>로그인</LoginButton>
+            <StartButton onClick={handleStartClick}>시작하기</StartButton>
+          </ButtonContainer>
+        </TextWrapper>
+        <MockupImage src={mockSVG} alt="목업 이미지" />
+      </ContentWrapper>
+      <BackgroundCircle src={circleSVG} alt="배경 원" />
+    </LandingContainer>
+  );
+};
+
+export default LandingPage;

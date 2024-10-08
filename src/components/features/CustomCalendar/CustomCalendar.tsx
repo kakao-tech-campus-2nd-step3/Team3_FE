@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
+import { EventInput } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -13,7 +14,7 @@ import {
 } from "./CustomCalendar.styles";
 
 // Event 인터페이스
-interface Event {
+interface CalendarEvent {
   id: string;
   title: string;
   description: string;
@@ -24,15 +25,43 @@ interface Event {
   status: "completed" | "upcoming" | "incomplete";
 }
 
+const renderEventContent =
+  (events: EventInput[]) => (eventInfo: { event: any; timeText: string }) => {
+    const { event, timeText } = eventInfo;
+
+    const foundEvent = events.find((e) => e.id === event.id);
+
+    let className = "";
+
+    if (foundEvent) {
+      if (Array.isArray(foundEvent.className)) {
+        className = foundEvent.className.join(" ");
+      } else {
+        className = foundEvent.className || "";
+      }
+    }
+
+    return (
+      <div css={eventItemStyles(className, false)}>
+        <div>{timeText}</div>
+        <div>{event.title}</div>
+        {foundEvent && <div>{event.extendedProps.description}</div>}
+      </div>
+    );
+  };
+
 const mobileBreakpoint = 768;
+
 const CustomCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<any[]>([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [events, setEvents] = useState<EventInput[]>([]);
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth <= mobileBreakpoint,
+  );
   const calendarRef = useRef<FullCalendar>(null);
 
   const calculateEventStatus = (
-    event: Event,
+    event: CalendarEvent,
   ): "completed" | "upcoming" | "incomplete" => {
     const now = new Date();
 
@@ -49,7 +78,7 @@ const CustomCalendar: React.FC = () => {
     return "incomplete";
   };
 
-  const parseEventDates = (event: any): Event => ({
+  const parseEventDates = (event: any): CalendarEvent => ({
     ...event,
     id: event.id.toString(),
     start: new Date(event.start_date),
@@ -109,7 +138,7 @@ const CustomCalendar: React.FC = () => {
     setEvents(eventInputs);
   }, []);
 
-  const handleEventDrop = useCallback((info: any) => {
+  const handleEventDrop = useCallback((info: { event: any }) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
         event.id === info.event.id
@@ -119,7 +148,7 @@ const CustomCalendar: React.FC = () => {
     );
   }, []);
 
-  const handleEventResize = useCallback((info: any) => {
+  const handleEventResize = useCallback((info: { event: any }) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
         event.id === info.event.id
@@ -129,40 +158,20 @@ const CustomCalendar: React.FC = () => {
     );
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= mobileBreakpoint);
-      if (calendarRef.current) {
-        const calendarApi = calendarRef.current.getApi();
-        calendarApi.updateSize();
-        calendarApi.changeView(
-          window.innerWidth <= mobileBreakpoint
-            ? "timeGridDay"
-            : "timeGridWeek",
-        );
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= mobileBreakpoint);
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.updateSize();
+      calendarApi.changeView(
+        window.innerWidth <= mobileBreakpoint
+          ? "timeGridThreeDay"
+          : "timeGridWeek",
+      );
+    }
+  };
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= mobileBreakpoint);
-      if (calendarRef.current) {
-        const calendarApi = calendarRef.current.getApi();
-        // 모바일에서는 3일 뷰, 데스크탑에서는 주간 뷰로 전환
-        calendarApi.changeView(
-          window.innerWidth <= mobileBreakpoint
-            ? "timeGridThreeDay"
-            : "timeGridWeek",
-        );
-      }
-    };
-
     window.addEventListener("resize", handleResize);
     handleResize();
 
@@ -179,7 +188,7 @@ const CustomCalendar: React.FC = () => {
           views={{
             timeGridThreeDay: {
               type: "timeGrid",
-              duration: { days: 3 }, // 3일 뷰 설정
+              duration: { days: 3 },
             },
           }}
           initialView={isMobile ? "timeGridThreeDay" : "timeGridWeek"}
@@ -187,7 +196,7 @@ const CustomCalendar: React.FC = () => {
           headerToolbar={{
             left: "title",
             center: "",
-            right: isMobile ? "prev,next,today" : "prev,next,today",
+            right: "prev,next,today",
           }}
           locale={koLocale}
           slotDuration="00:30:00"
@@ -211,20 +220,9 @@ const CustomCalendar: React.FC = () => {
           firstDay={1}
           events={events}
           eventResizableFromStart
-          eventContent={(eventInfo) => {
-            const event = events.find((e) => e.id === eventInfo.event.id);
-            return (
-              <div css={eventItemStyles(event ? event.className : "", false)}>
-                <div>{eventInfo.timeText}</div>
-                <div>{eventInfo.event.title}</div>
-                {event && (
-                  <div>{eventInfo.event.extendedProps.description}</div>
-                )}
-              </div>
-            );
-          }}
           eventDrop={handleEventDrop}
           eventResize={handleEventResize}
+          eventContent={renderEventContent(events)}
           datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
           dayHeaderFormat={{
             weekday: "short",

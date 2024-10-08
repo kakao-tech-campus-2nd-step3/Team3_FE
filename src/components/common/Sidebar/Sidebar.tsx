@@ -7,7 +7,7 @@ import {
   People,
   Menu,
 } from "@mui/icons-material";
-import { breakpoints } from "@/variants/variants";
+import breakpoints from "@/variants/variants";
 import {
   SidebarContainer,
   MobileHeader,
@@ -35,7 +35,7 @@ export default function Sidebar() {
   useEffect(() => {
     const handelResize = () => {
       // 화면 크기가 768px 이상일 때 햄버거 메뉴를 닫기
-      if (window.innerWidth >= parseInt(breakpoints.tablet) && isOpen) {
+      if (window.innerWidth >= parseInt(breakpoints.tablet, 10) && isOpen) {
         setIsOpen(false);
       }
     };

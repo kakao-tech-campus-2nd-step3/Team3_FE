@@ -1,4 +1,4 @@
-const routerPath = {
+const RouterPath = {
   home: "/",
   main: "/main",
   login: "/login",
@@ -9,4 +9,4 @@ const routerPath = {
   myPage: "/mypage",
 };
 
-export default routerPath;
+export default RouterPath;
