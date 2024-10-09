@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import LandingPage from "@/pages/Landing/LandingPage";
 import RouterPath from "./RouterPath";
 import LoginModal from "@/pages/LoginModal/LoginModal";
@@ -9,11 +10,10 @@ import FriendPage from "@/pages/Friend/FriendPage";
 import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
-import PrivateRoute from "@/router/PrivateRoute/PrivateRoute";
+import PrivateRoute from "./PrivateRoute";
+import CheckAuth from "./CheckAuth";
 
 function Router() {
-  const isAuthenticated = Boolean(localStorage.getItem("authToken"));
-
   const router = createBrowserRouter([
     {
       path: RouterPath.home,
@@ -26,17 +26,24 @@ function Router() {
         {
           path: RouterPath.main,
           element: (
-            <PrivateRoute isAuthenticated={isAuthenticated}>
+            <PrivateRoute CheckAuth={CheckAuth}>
               <MainPage />
             </PrivateRoute>
           ),
         },
         { path: RouterPath.login, element: <LoginModal /> },
-        { path: RouterPath.previewPlan, element: <PreviewPlanPage /> },
+        {
+          path: RouterPath.previewPlan,
+          element: (
+            <PrivateRoute CheckAuth={CheckAuth}>
+              <PreviewPlanPage />
+            </PrivateRoute>
+          ),
+        },
         {
           path: RouterPath.teamPlan,
           element: (
-            <PrivateRoute isAuthenticated={isAuthenticated}>
+            <PrivateRoute CheckAuth={CheckAuth}>
               <TeamPlan />
             </PrivateRoute>
           ),
@@ -44,7 +51,7 @@ function Router() {
         {
           path: RouterPath.plan,
           element: (
-            <PrivateRoute isAuthenticated={isAuthenticated}>
+            <PrivateRoute CheckAuth={CheckAuth}>
               <PlanPage />
             </PrivateRoute>
           ),
@@ -52,7 +59,7 @@ function Router() {
         {
           path: RouterPath.friend,
           element: (
-            <PrivateRoute isAuthenticated={isAuthenticated}>
+            <PrivateRoute CheckAuth={CheckAuth}>
               <FriendPage />
             </PrivateRoute>
           ),
@@ -60,7 +67,7 @@ function Router() {
         {
           path: RouterPath.myPage,
           element: (
-            <PrivateRoute isAuthenticated={isAuthenticated}>
+            <PrivateRoute CheckAuth={CheckAuth}>
               <MyPage />
             </PrivateRoute>
           ),
