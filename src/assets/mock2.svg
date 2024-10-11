@@ -1,8 +1,5 @@
-<svg width="753" height="503" viewBox="0 0 753 503" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="753" height="471" viewBox="0 0 753 471" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g filter="url(#filter0_d_2062_11776)">
-<g filter="url(#filter1_f_2062_11776)">
-<ellipse cx="373.623" cy="452.673" rx="323.452" ry="3.86476" fill="black"/>
-</g>
 <path d="M84.0943 38.2174C84.0943 22.6574 96.7081 10.0435 112.268 10.0435H637.118C652.678 10.0435 665.292 22.6574 665.292 38.2174V433.041C665.292 434.77 663.891 436.171 662.162 436.171H87.2247C85.4958 436.171 84.0943 434.77 84.0943 433.041V38.2174Z" fill="#1A202C" stroke="#4A5568" stroke-width="2.08696"/>
 <path d="M86.623 35.8218C86.623 23.1432 96.901 12.8652 109.58 12.8652H639.803C652.482 12.8652 662.76 23.1432 662.76 35.8218V420.983H86.623V35.8218Z" fill="black"/>
 <rect x="101.635" y="34.5078" width="543.971" height="369.471" fill="white"/>
@@ -17,7 +14,7 @@
 </g>
 <rect x="101.949" y="34" width="509" height="369" fill="url(#pattern0_2062_11776)"/>
 <defs>
-<filter id="filter0_d_2062_11776" x="0.478262" y="0.652175" width="751.834" height="478.843" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter0_d_2062_11776" x="0.478262" y="0.652175" width="751.834" height="470.34" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset dx="3.13043" dy="7.30435"/>
@@ -26,11 +23,6 @@
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.39 0"/>
 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2062_11776"/>
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2062_11776" result="shape"/>
-</filter>
-<filter id="filter1_f_2062_11776" x="4.25884" y="402.896" width="738.728" height="99.5565" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="22.9565" result="effect1_foregroundBlur_2062_11776"/>
 </filter>
 <pattern id="pattern0_2062_11776" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_2062_11776" transform="matrix(0.000971784 0 0 0.00134048 -0.0160173 0)"/>

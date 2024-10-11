@@ -10,7 +10,8 @@ import FriendPage from "@/pages/Friend/FriendPage";
 import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
-import PrivateRoute from "./PrivateRoute/PrivateRoute";
+import PrivateRoute from "./PrivateRoute";
+
 import CheckAuth from "./CheckAuth";
 
 function Router() {
