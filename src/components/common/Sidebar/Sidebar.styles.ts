@@ -34,10 +34,6 @@ export const SidebarContainer = styled.div<{ isOpen: boolean }>(
       justifyContent: "space-between",
       padding: "15px",
     },
-
-    [breakpoints.desktop]: {
-      width: "265px",
-    },
   }),
 );
 
@@ -102,6 +98,7 @@ export const TimeDisplay = styled.div({
   textAlign: "center",
   marginTop: "auto",
   width: "100%",
+  fontFamily: "monospace",
 });
 
 export const DateDisplay = styled.div({
