@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Home,
   CalendarMonth,
@@ -21,49 +21,57 @@ import {
 
 import logo from "@/assets/logo.svg";
 
+// 고정된 메뉴 항목
+const menuItems = [
+  { name: "메인", icon: <Home />, path: "/main" },
+  { name: "개인 플랜", icon: <CalendarMonth />, path: "/plan" },
+  { name: "팀 플랜", icon: <Diversity3 />, path: "/team-plan" },
+  { name: "친구", icon: <People />, path: "/friend" },
+  { name: "마이페이지", icon: <Person />, path: "/mypage" },
+];
+
+// 시간을 포맷팅
+const getFormattedTime = (date: Date) => {
+  return date.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+};
+
 export default function Sidebar() {
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState(() => new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState("메인");
 
+  // 시간 업데이트
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
-  // 화면 크기 변경 시 실행되는 효과
-  useEffect(() => {
-    const handelResize = () => {
-      // 화면 크기가 768px 이상일 때 햄버거 메뉴를 닫기
-      if (window.innerWidth >= parseInt(breakpoints.tablet, 10) && isOpen) {
-        setIsOpen(false);
-      }
-    };
-
-    // 윈도우 크기 변화 감지
-    window.addEventListener("resize", handelResize);
-
-    return () => {
-      window.removeEventListener("resize", handelResize);
-    };
+  const handleResize = useCallback(() => {
+    if (window.innerWidth >= breakpoints.sm && isOpen) {
+      setIsOpen(false);
+    }
   }, [isOpen]);
 
-  const getFormattedTime = (date: Date) => {
-    return date.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-  };
+  // 윈도우 크기 변화 감지
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
 
-  const menuItems = [
-    { name: "메인", icon: <Home />, path: "/main" },
-    { name: "개인 플랜", icon: <CalendarMonth />, path: "/plan" },
-    { name: "팀 플랜", icon: <Diversity3 />, path: "/team-plan" },
-    { name: "친구", icon: <People />, path: "/friend" },
-    { name: "마이페이지", icon: <Person />, path: "/mypage" },
-  ];
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [handleResize]);
+
+  const handleMenuClick = useCallback((menuName: string) => {
+    setSelectedMenu(menuName);
+  }, []);
 
   return (
     <SidebarContainer isOpen={isOpen}>
@@ -97,7 +105,7 @@ export default function Sidebar() {
           <MenuItem
             key={item.name}
             selected={selectedMenu === item.name}
-            onClick={() => setSelectedMenu(item.name)}
+            onClick={() => handleMenuClick(item.name)}
           >
             <div className="icon">{item.icon}</div>
             <StyledLink to={item.path} selected={selectedMenu === item.name}>
