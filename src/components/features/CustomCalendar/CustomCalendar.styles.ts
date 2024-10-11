@@ -1,10 +1,10 @@
 import { css } from "@emotion/react";
-import { breakpoints } from "@/variants";
+import breakpoints from "@/variants/variants";
 
 export const appContainerStyles = css`
   max-width: 960px;
   margin: 0 auto;
-  padding: 0.8rem;
+  padding-bottom: 0.4rem;
 `;
 
 export const appTitleStyles = css`
