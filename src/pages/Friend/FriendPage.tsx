@@ -97,45 +97,6 @@ const friendItemStyles = css`
   flex-wrap: wrap;
 `;
 
-const buttonContainerStyles = css`
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-`;
-
-const buttonStyles = css`
-  width: 100px;
-  height: 50px;
-  padding: 8px 24px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-sizing: border-box;
-`;
-
-const primaryButtonStyles = css`
-  ${buttonStyles}
-  background: #39A7F7;
-  color: white;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border: none;
-  outline: none;
-`;
-
-const secondaryButtonStyles = css`
-  ${buttonStyles}
-  background: white;
-  color: #39a7f7;
-  border: 1.5px solid #39a7f7;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  outline: none;
-  margin-right: 10px;
-`; // button을 list에 포함예정
-
 // List 아이템을 렌더링하는 컴포넌트
 const FriendItem = ({ friend }: { friend: Friend }) => (
   <div key={friend.friend_id} css={friendItemStyles}>
@@ -143,15 +104,12 @@ const FriendItem = ({ friend }: { friend: Friend }) => (
       profileSrc={friend.friend_profile_image}
       name={friend.friend_name}
       date={new Date(friend.created_at).toLocaleString()}
+      buttons={[
+        { label: "방문", onClick: () => console.log("방문 clicked"), theme: "primary" },
+        { label: "삭제", onClick: () => console.log("삭제 clicked"), theme: "secondary" },
+      ]}
     />
-    <div css={buttonContainerStyles}>
-      <button type="button" css={primaryButtonStyles}>
-        방문
-      </button>
-      <button type="button" css={secondaryButtonStyles}>
-        삭제
-      </button>
-    </div>
+    
   </div>
 );
 
@@ -167,27 +125,31 @@ const RequestItem = ({
 }: {
   request: SentRequest | ReceivedRequest;
   type: "sent" | "received";
-}) => (
-  <div key={request.id} css={friendItemStyles}>
+}) => {
+  const buttons =
+    type === "sent"
+      ? [
+          { label: "취소", onClick: () => console.log("취소 clicked"), theme: "primary" as const} //리터럴 타입
+        ]
+      : [
+          { label: "수락", onClick: () => console.log("수락 clicked"), theme: "primary" as const},
+          { label: "거절", onClick: () => console.log("거절 clicked"), theme: "secondary" as const}
+        ];
+
+  return (
+    <div key={request.id} css={friendItemStyles}>
     <List
-      profileSrc="https://example.com/default.jpg"
+      profileSrc={request.friend_profile_image}
       name={
         isSentRequest(request) ? request.receiver_name : request.requester_name
       }
       date={request.status}
+      buttons={buttons}
     />
-    <div css={buttonContainerStyles}>
-      <button type="button" css={primaryButtonStyles}>
-        {type === "sent" ? "취소" : "수락"}
-      </button>
-      {type === "received" && (
-        <button type="button" css={secondaryButtonStyles}>
-          거절
-        </button>
-      )}
     </div>
-  </div>
-);
+  );
+};
+
 
 export default function FriendListPage() {
   const [activeTab, setActiveTab] = useState("friendList");
