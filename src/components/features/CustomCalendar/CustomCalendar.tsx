@@ -6,6 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
+import breakpoints from "@/variants/variants";
 import {
   appContainerStyles,
   appTitleStyles,
@@ -24,21 +25,48 @@ interface CalendarEvent {
   complete: boolean;
   status: "completed" | "upcoming" | "incomplete";
 }
+// 주간 뷰 및
+const VIEW_MODES = {
+  THREEDAY: "timeGridThreeDay",
+  WEEK: "timeGridWeek",
+};
 
+// 이벤트 상태 계산 함수
+const calculateEventStatus = (event: CalendarEvent) => {
+  const now = new Date();
+
+  if (event.complete) {
+    return "completed";
+  }
+  if (event.start > now) {
+    return "upcoming";
+  }
+  if (!event.complete && event.end < now) {
+    return "incomplete";
+  }
+
+  return "incomplete";
+};
+
+// 날짜 변환 함수
+const parseEventDates = (event: any): CalendarEvent => ({
+  ...event,
+  id: event.id.toString(),
+  start: new Date(event.start_date),
+  end: new Date(event.end_date),
+});
+
+// 이벤트 렌더링 함수
 const renderEventContent =
   (events: EventInput[]) => (eventInfo: { event: any; timeText: string }) => {
     const { event, timeText } = eventInfo;
-
     const foundEvent = events.find((e) => e.id === event.id);
-
     let className = "";
 
     if (foundEvent) {
-      if (Array.isArray(foundEvent.className)) {
-        className = foundEvent.className.join(" ");
-      } else {
-        className = foundEvent.className || "";
-      }
+      className = Array.isArray(foundEvent.className)
+        ? foundEvent.className.join(" ")
+        : foundEvent.className || "";
     }
 
     return (
@@ -50,41 +78,34 @@ const renderEventContent =
     );
   };
 
-const mobileBreakpoint = 768;
+const handleResizeEvent = (
+  setIsMobile: React.Dispatch<React.SetStateAction<boolean>>,
+  calendarRef: React.RefObject<FullCalendar>,
+) => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= breakpoints.sm);
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.updateSize();
+      calendarApi.changeView(
+        window.innerWidth <= breakpoints.sm
+          ? VIEW_MODES.THREEDAY
+          : VIEW_MODES.WEEK,
+      );
+    }
+  };
+  return handleResize;
+};
 
 const CustomCalendar: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(() => new Date());
   const [events, setEvents] = useState<EventInput[]>([]);
   const [isMobile, setIsMobile] = useState(
-    window.innerWidth <= mobileBreakpoint,
+    () => window.innerWidth <= breakpoints.sm,
   );
   const calendarRef = useRef<FullCalendar>(null);
 
-  const calculateEventStatus = (
-    event: CalendarEvent,
-  ): "completed" | "upcoming" | "incomplete" => {
-    const now = new Date();
-
-    if (event.complete) {
-      return "completed";
-    }
-    if (event.start > now) {
-      return "upcoming";
-    }
-    if (!event.complete && event.end < now) {
-      return "incomplete";
-    }
-
-    return "incomplete";
-  };
-
-  const parseEventDates = (event: any): CalendarEvent => ({
-    ...event,
-    id: event.id.toString(),
-    start: new Date(event.start_date),
-    end: new Date(event.end_date),
-  });
-
+  // 이벤트 데이터 fetch 및 초기화
   useEffect(() => {
     const fetchedEvents = [
       {
@@ -138,6 +159,7 @@ const CustomCalendar: React.FC = () => {
     setEvents(eventInputs);
   }, []);
 
+  // 이벤트 drop 처리
   const handleEventDrop = useCallback((info: { event: any }) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
@@ -148,6 +170,7 @@ const CustomCalendar: React.FC = () => {
     );
   }, []);
 
+  // 이벤트 resize 처리
   const handleEventResize = useCallback((info: { event: any }) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
@@ -158,24 +181,13 @@ const CustomCalendar: React.FC = () => {
     );
   }, []);
 
-  const handleResize = () => {
-    setIsMobile(window.innerWidth <= mobileBreakpoint);
-    if (calendarRef.current) {
-      const calendarApi = calendarRef.current.getApi();
-      calendarApi.updateSize();
-      calendarApi.changeView(
-        window.innerWidth <= mobileBreakpoint
-          ? "timeGridThreeDay"
-          : "timeGridWeek",
-      );
-    }
-  };
-
+  // 화면 크기 변경 처리
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    handleResize();
+    const resizeHandler = handleResizeEvent(setIsMobile, calendarRef);
+    window.addEventListener("resize", resizeHandler);
+    resizeHandler(); // 초기화 시에도 실행
 
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", resizeHandler);
   }, []);
 
   return (
@@ -191,7 +203,7 @@ const CustomCalendar: React.FC = () => {
               duration: { days: 3 },
             },
           }}
-          initialView={isMobile ? "timeGridThreeDay" : "timeGridWeek"}
+          initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
           initialDate={currentDate}
           headerToolbar={{
             left: "title",

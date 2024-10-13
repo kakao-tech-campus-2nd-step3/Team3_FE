@@ -20,11 +20,7 @@ const ContentWrapper = styled.div`
   padding: 60px 20px;
 
   ${breakpoints.tablet} {
-    padding-left: 250px;
-  }
-
-  ${breakpoints.desktop} {
-    padding-left: 350px; /* 데스크탑 크기 */
+    padding-left: 225px;
   }
 `;
 

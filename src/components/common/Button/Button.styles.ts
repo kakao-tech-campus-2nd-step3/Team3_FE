@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import breakpoints from "@/variants/variants";
-import { Props } from "@/components/common/Button/Button.types";
+import { Props } from "./Button.types";
 
 const StyledButton = styled.button<Pick<Props, "theme">>(
   {
