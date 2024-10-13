@@ -43,44 +43,33 @@ const NavLink = styled.a`
 `;
 
 const LandingContainer = styled.div`
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 120px;
-`;
-
-const ContentWrapper = styled.div`
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1;
-  position: relative;
-  margin: 0 auto;
+  height: 100%;
+  margin-top: 100px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 const BackgroundCircle = styled.img`
   position: absolute;
-  left: -360px;
-  bottom: -100px;
+  left: 0px;
   width: 400px;
-  height: auto;
   z-index: 0;
   opacity: 0.5;
+  bottom: -110px;
+  margin-bottom: 115px;
 `;
 
 const TextWrapper = styled.div`
   max-width: 600px;
-  margin-right: 20px;
-  margin-left: -150px;
-  margin-top: -200px;
+  margin-left: 150px;
+  margin-top: 100px;
 `;
 
 const TitleWithImage = styled.div`
   display: flex;
   align-items: center;
-  white-space: nowrap;
   margin-left: -100px;
   margin-top: -60px;
 `;
@@ -106,7 +95,6 @@ const AdditionalText = styled.p`
   font-weight: bold;
   color: #3f3f3f;
   margin-top: 20px;
-  margin-bottom: 40px;
   margin-left: -80px;
 `;
 
@@ -124,12 +112,16 @@ margin-left: 10px
 const ButtonContainer = styled.div`
   display: flex;
   gap: 20px;
+  position: absolute;
+  bottom: 250px;
+  z-index: 1;
+  margin-left: 80px;
 `;
 
 const MockupImage = styled.img`
   width: 700px;
-  margin-top: 50px;
-  margin-left: -50px;
+  margin-top: -190px;
+  margin-left: 600px;
 `;
 
 const LandingPage: React.FC = () => {
@@ -156,25 +148,24 @@ const LandingPage: React.FC = () => {
       </NavBar>
 
       <LandingContainer>
-        <ContentWrapper>
-          <TextWrapper>
-            <TitleWithImage>
-              <Title>간편하고 빠른 플랜 생성</Title>
-              <EffectImage src={effectSVG} alt="효과 이미지" />
-            </TitleWithImage>
-            <SubTitle>Speak, and Plan it!</SubTitle>
-            <AdditionalText>
-              <HighlightText>내 목소리</HighlightText>로 일정을 만들고, <br />
-              쉽게 관리해보세요!
-            </AdditionalText>
-            <ButtonContainer>
-              <Button onClick={handleLoginClick}>로그인</Button>
-              <Button onClick={handleStartClick}>시작하기</Button>
-            </ButtonContainer>
-          </TextWrapper>
-          <MockupImage src={mockSVG} alt="목업 이미지" />
-          <BackgroundCircle src={circleSVG} alt="배경 원" />
-        </ContentWrapper>
+        <TextWrapper>
+          <TitleWithImage>
+            <Title>간편하고 빠른 플랜 생성</Title>
+            <EffectImage src={effectSVG} alt="효과 이미지" />
+          </TitleWithImage>
+          <SubTitle>Speak, and Plan it!</SubTitle>
+          <AdditionalText>
+            <HighlightText>내 목소리</HighlightText>로 일정을 만들고, <br />
+            쉽게 관리해보세요!
+          </AdditionalText>
+        </TextWrapper>
+
+        <ButtonContainer>
+          <Button onClick={handleLoginClick}>로그인</Button>
+          <Button onClick={handleStartClick}>시작하기</Button>
+        </ButtonContainer>
+        <MockupImage src={mockSVG} alt="목업 이미지" />
+        <BackgroundCircle src={circleSVG} alt="배경 원" />
       </LandingContainer>
       <HowToUse />
     </>

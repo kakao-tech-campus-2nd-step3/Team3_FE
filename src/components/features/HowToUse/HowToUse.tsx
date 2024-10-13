@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-
 import step1SVG from "../../../assets/step1.svg";
 import step2SVG from "../../../assets/step2.svg";
 import step3SVG from "../../../assets/step3.svg";
@@ -11,9 +10,8 @@ const HowToUseContainer = styled.div`
   left: 0;
   right: 0
   margin: 0 auto;
-  margin-top: 120px;
+  margin-top: 890px;
   position: absolute;
-
 `;
 
 const TextWrapper = styled.div`
