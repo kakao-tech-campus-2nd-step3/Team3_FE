@@ -17,6 +17,8 @@ import {
   TimeDisplay,
   DateDisplay,
   StyledLink,
+  MenuItemIcon,
+  MenuItemText
 } from "./Sidebar.styles";
 
 import logo from "@/assets/logo.svg";
@@ -107,10 +109,12 @@ export default function Sidebar() {
             selected={selectedMenu === item.name}
             onClick={() => handleMenuClick(item.name)}
           >
-            <div className="icon">{item.icon}</div>
+             <MenuItemIcon>{item.icon}</MenuItemIcon>
+            <MenuItemText>
             <StyledLink to={item.path} selected={selectedMenu === item.name}>
               {item.name}
             </StyledLink>
+            </MenuItemText>
           </MenuItem>
         ))}
       </MenuItemsContainer>

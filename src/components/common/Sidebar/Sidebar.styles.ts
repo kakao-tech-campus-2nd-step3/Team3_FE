@@ -52,7 +52,7 @@ export const MenuItemsContainer = styled.div<{ isOpen: boolean }>(
     opacity: isOpen ? 1 : 0,
     visibility: isOpen ? "visible" : "hidden",
     transition: "max-height 0.3s ease, opacity 0.3s ease",
-
+    alignItems: "center",
     [breakpoints.tablet]: {
       padding: 0,
       paddingTop: 0,
@@ -74,7 +74,7 @@ export const MenuItem = styled.div<{ selected: boolean }>(({ selected }) => ({
   color: selected ? "#FFFFFF" : "#000000",
   fontSize: "14px",
   fontWeight: 600,
-  lineHeight: "22.52px",
+
   cursor: "pointer",
   boxSizing: "border-box",
   transition: "background-color 0.3s ease, box-shadow 0.3s ease",
@@ -136,3 +136,14 @@ export const HamburgerMenu = styled.div({
   width: "40px",
   height: "40px",
 });
+
+export const MenuItemIcon = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+`;
+
+export const MenuItemText = styled.span`
+  display: flex;
+  align-items: center;
+`;
