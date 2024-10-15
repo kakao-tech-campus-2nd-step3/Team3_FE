@@ -12,63 +12,57 @@ import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
 import PrivateRoute from "./PrivateRoute";
 
-import CheckAuth from "./CheckAuth";
-
 function Router() {
   const router = createBrowserRouter([
     {
-      path: RouterPath.home,
+      path: RouterPath.HOME,
       element: <Layout />,
       children: [
         {
-          path: RouterPath.home,
+          path: RouterPath.HOME,
           element: <LandingPage />,
         },
         {
-          path: RouterPath.main,
+          path: RouterPath.MAIN,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <MainPage />
             </PrivateRoute>
           ),
         },
-        { path: RouterPath.login, element: <LoginModal /> },
+        { path: RouterPath.LOGIN, element: <LoginModal /> },
         {
-          path: RouterPath.previewPlan,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <PreviewPlanPage />
-            </PrivateRoute>
-          ),
+          path: RouterPath.PREVIEW_PLAN,
+          element: <PreviewPlanPage />,
         },
         {
-          path: RouterPath.teamPlan,
+          path: RouterPath.TEAM_PLAN,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <TeamPlan />
             </PrivateRoute>
           ),
         },
         {
-          path: RouterPath.plan,
+          path: RouterPath.PLAN,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <PlanPage />
             </PrivateRoute>
           ),
         },
         {
-          path: RouterPath.friend,
+          path: RouterPath.FRIEND,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <FriendPage />
             </PrivateRoute>
           ),
         },
         {
-          path: RouterPath.myPage,
+          path: RouterPath.MY_PAGE,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <MyPage />
             </PrivateRoute>
           ),

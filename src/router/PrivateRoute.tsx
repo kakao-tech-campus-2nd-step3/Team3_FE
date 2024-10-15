@@ -1,31 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { PropsWithChildren } from "react";
 import { Navigate } from "react-router-dom";
+import { useLoginContext } from "@/provider/Auth";
 
-interface PrivateRouteProps {
-  children: React.ReactElement;
-  CheckAuth: () => Promise<boolean>;
-}
+const PrivateRoute = ({
+  children,
+}: PropsWithChildren<{ children: React.ReactElement }>) => {
+  const { Authenticated } = useLoginContext();
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, CheckAuth }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const authResult = await CheckAuth();
-        setIsAuthenticated(authResult);
-      } catch (error) {
-        setIsAuthenticated(false);
-      }
-    };
-    verifyAuth();
-  }, [CheckAuth]);
-
-  if (isAuthenticated === null) {
+  if (Authenticated === null) {
     return <div>Loading</div>;
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return Authenticated ? children : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;

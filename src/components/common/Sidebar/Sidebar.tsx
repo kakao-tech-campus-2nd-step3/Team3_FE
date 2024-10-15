@@ -7,7 +7,7 @@ import {
   People,
   Menu,
 } from "@mui/icons-material";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import {
   SidebarContainer,
   MobileHeader,

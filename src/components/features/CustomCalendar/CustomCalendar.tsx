@@ -6,7 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
   appTitleStyles,

@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const appContainerStyles = css`
   max-width: 960px;

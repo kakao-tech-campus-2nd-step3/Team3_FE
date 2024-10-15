@@ -1,36 +1,35 @@
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import { Props } from "./Button.types";
 
 const StyledButton = styled.button<Pick<Props, "theme">>(
   {
-    borderRadius: "16px",
+    borderRadius: "8px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     cursor: "pointer",
     transition: "background-color 200ms",
     padding: "0 16px",
+    width: "100%",
+    fontWeight: "bold",
     outline: "none", // 클릭 시 포커스 테두리 제거
     "&:focus": {
       outline: "none", // 추가로 focus 상태에서도 테두리 제거
     },
   },
   {
-    width: "80px",
     height: "40px",
     fontSize: "14px",
     [breakpoints.tablet]: {
       // 테블릿
-      width: "120px",
       height: "48px",
       fontSize: "16px",
     },
     [breakpoints.desktop]: {
       // 데스크탑
-      width: "150px",
       height: "50px",
-      fontSize: "20px",
+      fontSize: "15px",
     },
   },
   ({ theme }) => {

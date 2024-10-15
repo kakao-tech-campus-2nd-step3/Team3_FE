@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "@/components/common/Sidebar/Sidebar";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 const Wrapper = styled.div`
   display: flex;
@@ -23,12 +23,10 @@ const ContentWrapper = styled.div`
     padding-left: 225px;
   }
 `;
+const hideSidebarPaths = ["/", "/login", "/plan/preview"];
 
 const Layout: React.FC = () => {
   const location = useLocation();
-
-  // 사이드바를 숨길 경로 목록
-  const hideSidebarPaths = ["/", "/login", "/plan/preview"];
 
   return (
     <Wrapper>

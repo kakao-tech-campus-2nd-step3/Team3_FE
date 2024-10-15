@@ -10,7 +10,7 @@ async function enableMocking(): Promise<void> {
     return;
   }
 
-  const worker = (await import("@/api/mocks/browser")).default; // 서비스 워커 임포트
+  const { default: worker } = await import("@/api/mocks/browser");
 
   await worker.start(); // 서비스 워커 시작
 }

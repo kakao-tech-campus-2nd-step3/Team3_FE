@@ -1,5 +1,3 @@
-import React from "react";
-
 const TeamPlan: React.FC = () => {
   return (
     <div>

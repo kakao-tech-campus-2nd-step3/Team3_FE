@@ -4,14 +4,14 @@ import step2SVG from "../../../assets/step2.svg";
 import step3SVG from "../../../assets/step3.svg";
 
 const HowToUseContainer = styled.div`
-  width: 100%;
-  height: auto;
+  width: 1440px;
+  align-items: center;
+  justify-content: space-between;
   text-align: center;
-  left: 0;
-  right: 0
+  z-index: 1;
+  position: relative;
   margin: 0 auto;
-  margin-top: 890px;
-  position: absolute;
+  margin-top: 100px;
 `;
 
 const TextWrapper = styled.div`

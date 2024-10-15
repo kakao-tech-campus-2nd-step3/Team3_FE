@@ -1,5 +1,4 @@
-import React from "react";
-import StyledInput from "./Input.styles";
+import StyledInput from "./StyledInput.styles";
 
 export type Props = {
   onChange: React.ChangeEventHandler<HTMLInputElement>;

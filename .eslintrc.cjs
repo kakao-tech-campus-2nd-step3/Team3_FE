@@ -31,9 +31,13 @@ module.exports = {
     "react/require-default-props": "off",
     "react/prop-types": "off",
     "react/no-unknown-property": "off",
+    "react/jsx-props-no-spreading": "off",
     "@typescript-eslint/no-explicit-any": "off",
   },
   settings: {
+    node: {
+      allowModules: ["react-cookie"],
+    },
     react: {
       version: "detect", // React 버전 자동 감지
     },

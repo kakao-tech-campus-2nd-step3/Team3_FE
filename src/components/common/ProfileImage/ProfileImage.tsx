@@ -1,5 +1,4 @@
-import React from "react";
-import StyledImage from "./ProfileImage.styles";
+import StyledImage from "./StyledImage.styles";
 
 export type ProfileImageProps = {
   src: string;
