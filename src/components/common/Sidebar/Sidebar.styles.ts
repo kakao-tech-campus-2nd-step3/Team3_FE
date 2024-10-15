@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import { breakpoints } from "@/variants";
 import { Link } from "react-router-dom";
+import breakpoints from "@/variants/variants";
 
 export const StyledLink = styled(Link)<{ selected: boolean }>`
   color: ${({ selected }) => (selected ? "#fff" : "#000")};
@@ -33,10 +33,6 @@ export const SidebarContainer = styled.div<{ isOpen: boolean }>(
       height: "100%",
       justifyContent: "space-between",
       padding: "15px",
-    },
-
-    [breakpoints.desktop]: {
-      width: "265px",
     },
   }),
 );
@@ -102,6 +98,7 @@ export const TimeDisplay = styled.div({
   textAlign: "center",
   marginTop: "auto",
   width: "100%",
+  fontFamily: "monospace",
 });
 
 export const DateDisplay = styled.div({
