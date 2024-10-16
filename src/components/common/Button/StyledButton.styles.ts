@@ -2,8 +2,9 @@ import styled from "@emotion/styled";
 import breakpoints from "@/variants/breakpoints";
 import { Props } from "./Button.types";
 
-const StyledButton = styled.button<Pick<Props, "theme">>(
-  {
+const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
+  ({ width }) => ({
+    width: width || "100%", // 전달받은 width 값을 사용하고, 기본값은 100%로 설정
     borderRadius: "8px",
     display: "flex",
     justifyContent: "center",
@@ -11,13 +12,12 @@ const StyledButton = styled.button<Pick<Props, "theme">>(
     cursor: "pointer",
     transition: "background-color 200ms",
     padding: "0 16px",
-    width: "100%",
     fontWeight: "bold",
-    outline: "none", // 클릭 시 포커스 테두리 제거
+    outline: "none",
     "&:focus": {
-      outline: "none", // 추가로 focus 상태에서도 테두리 제거
+      outline: "none",
     },
-  },
+  }),
   {
     height: "40px",
     fontSize: "14px",

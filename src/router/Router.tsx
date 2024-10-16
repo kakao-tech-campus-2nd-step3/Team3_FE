@@ -16,12 +16,16 @@ function Router() {
   const router = createBrowserRouter([
     {
       path: RouterPath.HOME,
+      element: <LandingPage />,
+    },
+    {
+      path: RouterPath.PREVIEW_PLAN,
+      element: <PreviewPlanPage />,
+    },
+    {
+      path: RouterPath.HOME,
       element: <Layout />,
       children: [
-        {
-          path: RouterPath.HOME,
-          element: <LandingPage />,
-        },
         {
           path: RouterPath.MAIN,
           element: (
@@ -31,10 +35,6 @@ function Router() {
           ),
         },
         { path: RouterPath.LOGIN, element: <LoginModal /> },
-        {
-          path: RouterPath.PREVIEW_PLAN,
-          element: <PreviewPlanPage />,
-        },
         {
           path: RouterPath.TEAM_PLAN,
           element: (

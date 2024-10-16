@@ -9,6 +9,7 @@ const HowToUseContainer = styled.div`
   justify-content: space-between;
   text-align: center;
   z-index: 1;
+
   position: relative;
   margin: 0 auto;
   margin-top: 100px;
