@@ -58,17 +58,23 @@ const PreviewPlanPage: React.FC = () => {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
 
-  // 타이머 실헹
+  // 타이머 실행
   useEffect(() => {
+    // 메세지 전환
     const interval = setInterval(() => {
+      setCurrentMessageIndex((prevIndex) =>
+        prevIndex === subTitleMessages.length - 1 ? 0 : prevIndex + 1,
+      );
+
+      // 애니메이션 시작
       setAnimate(true);
+
+      // 애니메이션이 끝난 후 에니메이션 초기화
       setTimeout(() => {
         setAnimate(false);
-        setCurrentMessageIndex((prevIndex) =>
-          prevIndex === subTitleMessages.length - 1 ? 0 : prevIndex + 1,
-        );
       }, 1000);
-    }, 5000);
+    }, 3000);
+
     return () => clearInterval(interval);
   }, []);
 
