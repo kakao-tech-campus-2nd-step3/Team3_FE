@@ -19,15 +19,18 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
     },
   }),
   {
+    width: "100px",
     height: "40px",
     fontSize: "14px",
     [breakpoints.tablet]: {
       // 테블릿
       height: "48px",
       fontSize: "16px",
+      width: "187px",
     },
     [breakpoints.desktop]: {
       // 데스크탑
+      width: "250px",
       height: "50px",
       fontSize: "15px",
     },

@@ -88,7 +88,7 @@ const PreviewPlanPage: React.FC = () => {
         <Input />
         <MicrophoneButton />
         <ButtonContainer>
-          <Button width="250px">다음</Button>
+          <Button>다음</Button>
           <Button theme="secondary" width="250px">
             취소
           </Button>
