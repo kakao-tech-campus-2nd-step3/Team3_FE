@@ -14,14 +14,12 @@ const slideDown = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
-`;
-
+  `;
 const PreviewPlanPageContainer = styled.div`
   display: grid;
   justify-content: center;
   align-items: center;
 `;
-
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -29,7 +27,6 @@ const InputWrapper = styled.div`
   justify-content: center;
   gap: 40px;
 `;
-
 const Title = styled.p`
   font-size: 36px;
   font-weight: bold;
@@ -37,7 +34,6 @@ const Title = styled.p`
   text-align: center;
   margin: 50px 0 0 0;
 `;
-
 const SubTitle = styled.p`
   font-size: 36px;
   font-weight: bold;
@@ -49,12 +45,10 @@ const SubTitle = styled.p`
     animation: ${slideDown} 1s ease-in-out;
   }
 `;
-
 const ButtonContainer = styled.div`
   display: flex;
   gap: 130px;
 `;
-
 const PreviewPlanPage: React.FC = () => {
   const subTitleMessages = [
     "일정의 예상 소요 시간을 말해주시면 더 정확해요.",
@@ -66,7 +60,7 @@ const PreviewPlanPage: React.FC = () => {
 
   // 타이머 실헹
   useEffect(() => {
-    const changeMessage = () => {
+    const interval = setInterval(() => {
       setAnimate(true);
       setTimeout(() => {
         setAnimate(false);
@@ -74,8 +68,7 @@ const PreviewPlanPage: React.FC = () => {
           prevIndex === subTitleMessages.length - 1 ? 0 : prevIndex + 1,
         );
       }, 1000);
-    };
-    const interval = setInterval(changeMessage, 5000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
