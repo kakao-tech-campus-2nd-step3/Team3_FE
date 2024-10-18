@@ -4,7 +4,7 @@ import breakpoints from "@/variants/breakpoints";
 
 const NavBar = styled.div`
   position: fixed;
-  top: 10px;
+  top: 0px;
   width: 100%;
   height: 120px;
   background-color: white;
