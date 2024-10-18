@@ -11,6 +11,7 @@ import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
 import PrivateRoute from "./PrivateRoute";
+import PreviewPlanSelectPage from "@/pages/PreviewPlan/PreviewPlanSelectPage";
 
 function Router() {
   const router = createBrowserRouter([
@@ -22,6 +23,11 @@ function Router() {
       path: RouterPath.PREVIEW_PLAN,
       element: <PreviewPlanPage />,
     },
+    {
+      path: RouterPath.PREVIEW_PLAN_SELECT,
+      element: <PreviewPlanSelectPage />,
+    },
+
     {
       path: RouterPath.HOME,
       element: <Layout />,
