@@ -7,6 +7,7 @@ const RouterPath = {
   plan: "/plan",
   friend: "/friend",
   myPage: "/mypage",
+  speechRecognition: "/speech-recognition"  // 새로운 경로 추가
 };
 
 export default RouterPath;

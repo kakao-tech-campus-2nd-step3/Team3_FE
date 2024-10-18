@@ -11,6 +11,8 @@ import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
 import PrivateRoute from "./PrivateRoute";
+import SpeechRecognitionPage from "@/pages/Speech/SpeechRecognitionPage";  // SpeechRecognitionPage 임포트
+
 
 import CheckAuth from "./CheckAuth";
 
@@ -72,6 +74,10 @@ function Router() {
               <MyPage />
             </PrivateRoute>
           ),
+        },
+        {
+          path: RouterPath.speechRecognition,  // 새로운 경로 추가
+          element: <SpeechRecognitionPage />,  // 해당 경로에 페이지 등록
         },
       ],
     },
