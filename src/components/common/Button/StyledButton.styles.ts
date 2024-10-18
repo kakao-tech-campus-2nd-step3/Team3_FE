@@ -30,7 +30,7 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
     },
     [breakpoints.desktop]: {
       // 데스크탑
-      width: "250px",
+      width: "200px",
       height: "50px",
       fontSize: "15px",
     },
