@@ -5,8 +5,8 @@ const StyledNumberButton = styled.button`
   width: 50px;
   height: 50px;
   background-color: #fff;
-  border: #39a7f7;
-  border-radius: 16x;
+  border: 2px solid #39a7f7;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,12 +27,15 @@ const StyledNumberButton = styled.button`
     width: 60px;
     height: 60px;
     font-size: 20px;
+    font-size: 20px;
+    border-radius: 16px;
   }
 
   ${breakpoints.desktop} {
-  width: 70px;
-  height: 70px;
-  font-sizeL 20px;
+    width: 70px;
+    height: 70px;
+    font-size: 20px;
+    border-radius: 16px;
   }
 `;
 
