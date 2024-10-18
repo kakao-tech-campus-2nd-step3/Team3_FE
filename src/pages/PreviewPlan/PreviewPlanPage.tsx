@@ -1,9 +1,11 @@
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Input from "@/components/common/Input/Input";
 import MicrophoneButton from "@/components/common/MicrophoneButton/MicrophoneButton";
 import Button from "@/components/common/Button/Button";
+import RouterPath from "@/router/RouterPath";
 
 const slideDown = keyframes`
   0% {
@@ -60,13 +62,12 @@ const PreviewPlanPage: React.FC = () => {
 
   // 타이머 실행
   useEffect(() => {
-    // 메세지 전환
     const interval = setInterval(() => {
       setCurrentMessageIndex((prevIndex) =>
         prevIndex === subTitleMessages.length - 1 ? 0 : prevIndex + 1,
       );
 
-      // 애니메이션 시작
+      // 에니메이션 시작
       setAnimate(true);
 
       // 애니메이션이 끝난 후 에니메이션 초기화
@@ -78,6 +79,9 @@ const PreviewPlanPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // useNavigate 선언
+  const navigate = useNavigate();
+
   return (
     <PreviewPlanPageContainer>
       <InputWrapper>
@@ -88,8 +92,10 @@ const PreviewPlanPage: React.FC = () => {
         <Input />
         <MicrophoneButton />
         <ButtonContainer>
-          <Button>다음</Button>
-          <Button theme="secondary" width="250px">
+          <Button onClick={() => navigate(RouterPath.PREVIEW_PLAN_SELECT)}>
+            다음
+          </Button>
+          <Button onClick={() => navigate(-1)} theme="secondary" width="250px">
             취소
           </Button>
         </ButtonContainer>
