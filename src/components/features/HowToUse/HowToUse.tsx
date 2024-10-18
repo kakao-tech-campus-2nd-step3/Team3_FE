@@ -37,7 +37,7 @@ const HowToUseDescription = styled.p`
   color: #333;
   margin-bottom: -30px;
 `;
-const HighlightText = styled.p`
+const HighlightText = styled.span`
   color: #39a7f7;
   display: inline;
 `;

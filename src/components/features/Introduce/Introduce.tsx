@@ -74,7 +74,7 @@ const AdditionalText = styled.p`
   margin-left: -80px;
 `;
 
-const HighlightText = styled.p`
+const HighlightText = styled.span`
   color: #39a7f7;
   display: inline;
 `;
