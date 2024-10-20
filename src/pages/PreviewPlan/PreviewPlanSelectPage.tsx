@@ -1,8 +1,10 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
 import Button from "@/components/common/Button/Button";
+import RouterPath from "@/router/RouterPath";
 
 const PreviewPlanSelectPageContainer = styled.div`
   display: grid;
@@ -48,6 +50,7 @@ const ButtonContainer = styled.div`
 const PreviewPlanSelectPage = () => {
   // 선택된 버튼 번호를 저장할 상태
   const [clickedNumber, setClickedNumber] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const handleNumberButtonClick = (number: number) => {
     setClickedNumber(number);
@@ -81,8 +84,12 @@ const PreviewPlanSelectPage = () => {
           />
         </NumberButtonContainer>
         <ButtonContainer>
-          <Button>확인</Button>
-          <Button theme="secondary">취소</Button>
+          <Button onClick={() => navigate(RouterPath.PREVIEW_PLAN_UPDATE)}>
+            확인
+          </Button>
+          <Button theme="secondary" onClick={() => navigate(-1)}>
+            취소
+          </Button>
         </ButtonContainer>
       </SidebarSection>
     </PreviewPlanSelectPageContainer>

@@ -50,6 +50,7 @@ const SubTitle = styled.p`
 const ButtonContainer = styled.div`
   display: flex;
   gap: 130px;
+  margin-bottom: 40px;
 `;
 const PreviewPlanPage: React.FC = () => {
   const subTitleMessages = [
