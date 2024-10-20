@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { useState } from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
 import Button from "@/components/common/Button/Button";
@@ -45,6 +46,13 @@ const ButtonContainer = styled.div`
 `;
 
 const PreviewPlanSelectPage = () => {
+  // 선택된 버튼 번호를 저장할 상태
+  const [clickedNumber, setClickedNumber] = useState<number | null>(null);
+
+  const handleNumberButtonClick = (number: number) => {
+    setClickedNumber(number);
+  };
+
   return (
     <PreviewPlanSelectPageContainer>
       <CalendarSection>
@@ -56,9 +64,21 @@ const PreviewPlanSelectPage = () => {
           선택하세요.
         </StyledText>
         <NumberButtonContainer>
-          <NumberButton number={1} />
-          <NumberButton number={2} />
-          <NumberButton number={3} />
+          <NumberButton
+            number={1}
+            clicked={clickedNumber === 1}
+            onClick={() => handleNumberButtonClick(1)}
+          />
+          <NumberButton
+            number={2}
+            clicked={clickedNumber === 2}
+            onClick={() => handleNumberButtonClick(2)}
+          />
+          <NumberButton
+            number={3}
+            clicked={clickedNumber === 3}
+            onClick={() => handleNumberButtonClick(3)}
+          />
         </NumberButtonContainer>
         <ButtonContainer>
           <Button>확인</Button>
