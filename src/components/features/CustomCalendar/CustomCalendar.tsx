@@ -9,7 +9,6 @@ import koLocale from "@fullcalendar/core/locales/ko";
 import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
-  appTitleStyles,
   calendarStyles,
   eventItemStyles,
 } from "./CustomCalendar.styles";
@@ -192,7 +191,6 @@ const CustomCalendar: React.FC = () => {
 
   return (
     <div css={appContainerStyles}>
-      <h1 css={appTitleStyles}>계획표 예시</h1>
       <div css={calendarStyles}>
         <FullCalendar
           ref={calendarRef}

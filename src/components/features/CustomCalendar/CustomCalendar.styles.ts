@@ -7,12 +7,6 @@ export const appContainerStyles = css`
   padding-bottom: 0.4rem;
 `;
 
-export const appTitleStyles = css`
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 0.8rem;
-`;
-
 export const calendarStyles = css`
   display: flex;
   flex-direction: column;
