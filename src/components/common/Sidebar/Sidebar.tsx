@@ -70,6 +70,11 @@ const Sidebar = () => {
     };
   }, [handleResize]);
 
+  // URL 이 특정 경로를 포함하는지 확인하는 함수
+  const isPathActive = (path: string) => {
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <SidebarContainer isOpen={isOpen}>
       <MobileHeader>
@@ -101,14 +106,11 @@ const Sidebar = () => {
         {menuItems.map((item) => (
           <MenuItem
             key={item.name}
-            selected={location.pathname === item.path}
+            selected={isPathActive(item.path)}
             onClick={() => setIsOpen(false)}
           >
             <div className="icon">{item.icon}</div>
-            <StyledLink
-              to={item.path}
-              selected={location.pathname === item.path}
-            >
+            <StyledLink to={item.path} selected={isPathActive(item.path)}>
               {item.name}
             </StyledLink>
           </MenuItem>
