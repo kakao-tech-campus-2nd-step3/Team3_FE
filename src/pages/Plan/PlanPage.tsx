@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "@/components/common/Input/Input";
 import MicrophoneButton from "@/components/common/MicrophoneButton/MicrophoneButton";
@@ -17,7 +17,7 @@ const slideDown = keyframes`
     transform: translateY(0);
   }
   `;
-const PreviewPlanPageContainer = styled.div`
+const PlanPageContainer = styled.div`
   display: grid;
   justify-content: center;
   align-items: center;
@@ -36,7 +36,7 @@ const Title = styled.p`
   text-align: center;
   margin: 50px 0 0 0;
 `;
-const SubTitle = styled.p`
+const SubTitle = styled.p<{ animate: boolean }>`
   font-size: 36px;
   font-weight: bold;
   color: #000;
@@ -44,7 +44,7 @@ const SubTitle = styled.p`
   margin: 0;
 
   &.animate {
-    animation: ${slideDown} 1s ease-in-out;
+    animation: ${({ animate }) => (animate ? slideDown : "none")} 1s ease-in-out;
   }
 `;
 const ButtonContainer = styled.div`
@@ -52,6 +52,33 @@ const ButtonContainer = styled.div`
   gap: 130px;
   margin-bottom: 40px;
 `;
+
+// 고정된 부분들에 대해 memoization 적용
+const MemoizedTitle = memo(() => {
+  return <Title>마이크 버튼을 누르고 자세히 얘기해주세요.</Title>;
+});
+
+const MemoizedPlanPageContainer = memo(PlanPageContainer);
+const MemoizedInput = memo(Input);
+const MemoizedMicrophoneButton = memo(MicrophoneButton);
+const MemoizedButton = memo(Button);
+const MemoizedButtonContainer = memo(({ navigate }: { navigate: any }) => {
+  return (
+    <ButtonContainer>
+      <MemoizedButton onClick={() => navigate(RouterPath.PLAN_SELECT)}>
+        다음
+      </MemoizedButton>
+      <MemoizedButton
+        onClick={() => navigate(-1)}
+        theme="secondary"
+        width="250px"
+      >
+        취소
+      </MemoizedButton>
+    </ButtonContainer>
+  );
+});
+
 const PlanPage: React.FC = () => {
   const subTitleMessages = [
     "일정의 예상 소요 시간을 말해주시면 더 정확해요.",
@@ -84,22 +111,17 @@ const PlanPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <PreviewPlanPageContainer>
+    <MemoizedPlanPageContainer>
       <InputWrapper>
-        <Title>마이크 버튼을 누르고 자세히 얘기해주세요.</Title>
-        <SubTitle className={animate ? "animate" : ""}>
+        <MemoizedTitle />
+        <SubTitle animate={animate}>
           {subTitleMessages[currentMessageIndex]}
         </SubTitle>
-        <Input />
-        <MicrophoneButton />
-        <ButtonContainer>
-          <Button onClick={() => navigate(RouterPath.PLAN_SELECT)}>다음</Button>
-          <Button onClick={() => navigate(-1)} theme="secondary" width="250px">
-            취소
-          </Button>
-        </ButtonContainer>
+        <MemoizedInput />
+        <MemoizedMicrophoneButton />
+        <MemoizedButtonContainer navigate={navigate} />
       </InputWrapper>
-    </PreviewPlanPageContainer>
+    </MemoizedPlanPageContainer>
   );
 };
 
