@@ -11,7 +11,7 @@ const PreviewPlanSelectPageContainer = styled.div`
   justify-content: center;
   align-items: center;
   grid-template-columns: 1fr 310px;
-  width: 1440px;
+  max-width: 1440px;
   gap: 20px;
   margin: 0 auto;
 `;
