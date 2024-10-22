@@ -22,7 +22,7 @@ import {
 } from "./Sidebar.styles";
 
 import logo from "@/assets/logo.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation } from "react-router-dom";
 
 // 고정된 메뉴 항목
 const menuItems = [
@@ -48,7 +48,12 @@ export default function Sidebar() {
   const [time, setTime] = useState(() => new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState("메인");
-
+  useEffect(() => {
+    const currentItem = menuItems.find((item) => item.path === location.pathname);
+    if (currentItem) {
+      setSelectedMenu(currentItem.name);
+    }
+  }, [location.pathname]);
   // 시간 업데이트
   useEffect(() => {
     const timer = setInterval(() => {
@@ -78,6 +83,10 @@ export default function Sidebar() {
     navigate(path); // 페이지 이동 처리
   }, [navigate]);
 
+  const handleLogoClick = () => {
+    navigate("/main"); 
+  };
+
   return (
     <SidebarContainer isOpen={isOpen}>
       <MobileHeader>
@@ -87,7 +96,8 @@ export default function Sidebar() {
           alt="Logo"
           width="170"
           height="59"
-          style={{ paddingTop: "10px" }}
+          style={{ paddingTop: "10px", cursor: "pointer" }}
+          onClick={handleLogoClick}
         />
         <HamburgerMenu onClick={() => setIsOpen(!isOpen)}>
           <Menu />
@@ -101,7 +111,8 @@ export default function Sidebar() {
           alt="Logo"
           width="170"
           height="59"
-          style={{ marginBottom: "15px" }}
+          style={{ marginBottom: "15px", cursor: "pointer" }}
+          onClick={handleLogoClick}
         />
       )}
 

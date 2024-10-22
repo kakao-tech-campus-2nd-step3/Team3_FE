@@ -114,32 +114,32 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ calendarOwner }) => {
   useEffect(() => {
     const fetchedEvents = [
       {
-        id: 1,
-        title: "책 5장 정리",
-        description: "집에서 공부",
-        start_date: "2024-09-27T22:00:00Z",
-        end_date: "2024-09-28T01:00:00Z",
-        accessibility: true,
-        complete: true,
-      },
-      {
-        id: 2,
-        title: "팀 미팅",
-        description: "팀 프로젝트 미팅",
-        start_date: "2024-09-29T00:00:00Z",
-        end_date: "2024-09-29T03:00:00Z",
-        accessibility: false,
-        complete: false,
-      },
-      {
-        id: 3,
-        title: "개인 운동",
-        description: "헬스장 운동",
-        start_date: "2024-10-01T23:00:00Z",
-        end_date: "2024-10-02T02:00:00Z",
-        accessibility: true,
-        complete: false,
-      },
+    id: 1,
+    title: "책 5장 정리",
+    description: "집에서 공부",
+    start_date: "2024-10-21T06:00:00+09:00",
+    end_date: "2024-10-21T09:00:00+09:00",
+    accessibility: true,
+    complete: true,
+  },
+  {
+    id: 2,
+    title: "팀 미팅",
+    description: "팀 프로젝트 미팅",
+    start_date: "2024-10-22T08:00:00+09:00",
+    end_date: "2024-10-22T11:00:00+09:00",
+    accessibility: false,
+    complete: false,
+  },
+  {
+    id: 3,
+    title: "개인 운동",
+    description: "헬스장 운동",
+    start_date: "2024-10-25T09:00:00+09:00",
+    end_date: "2024-10-25T12:00:00+09:00",
+    accessibility: true,
+    complete: false,
+  },
     ];
 
     const updatedEvents = fetchedEvents.map((event) => {
