@@ -14,7 +14,7 @@ const HowToUseContainer = styled.div`
   position: relative;
   margin: 0 auto;
   margin-top: -300px;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     width: 1440px;
     margin-top: 100px;
   }
@@ -34,7 +34,7 @@ const HowToUseTitle = styled.p`
   font-weight: bold;
   color: #39a7f7;
   margin-bottom: -30px;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     font-size: 36px;
   }
 `;
@@ -44,7 +44,7 @@ const HowToUseDescription = styled.p`
   font-weight: bold;
   color: #333;
   margin-bottom: 0px;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     font-size: 45px;
   }
 `;
@@ -56,7 +56,7 @@ const AddtionalDescription = styled.p`
 font-size: 25px;
 font-weight: bold;
 
-${breakpoints.tablet} {
+${breakpoints.desktop} {
   font-size: 32px;
 `;
 const StepContainer = styled.div`

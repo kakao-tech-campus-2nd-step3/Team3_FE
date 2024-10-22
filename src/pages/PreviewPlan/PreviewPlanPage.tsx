@@ -36,7 +36,7 @@ const Title = styled.p`
   color: #938e8e;
   text-align: center;
   margin: 50px 0 0 0;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     font-size: 36px;
   }
 `;
@@ -46,7 +46,7 @@ const SubTitle = styled.p<{ animate: boolean }>`
   color: #000;
   text-align: center;
   margin: 0;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     font-size: 36px;
   }
 

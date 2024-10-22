@@ -24,7 +24,7 @@ const PreviewPlanUpdateContainer = styled.div`
   max-width: 320px;
   margin: 0 auto;
   margin-top: 20px;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     max-width: 1440px;
   }
 `;
@@ -45,7 +45,7 @@ const StyledText = styled.p`
   margin-top: -20px;
   margin: 0px;
   text-align: center;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     font-size: 36px;
   }
 
@@ -60,7 +60,7 @@ const ButtonContainer = styled.div`
   flex-direction: flex-direction;
   gap: 20px;
   margin-top: -100px;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     margin-top: 0px;
     gap: 130px;
   }

@@ -16,7 +16,7 @@ const LandingContainer = styled.div`
   position: relative;
   margin: 0 auto;
   margin-top: 100px;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     width: 1440px;
     margin-top: 150px;
     margin-left: 40px;
@@ -87,7 +87,7 @@ const AdditionalText = styled.p`
   color: #3f3f3f;
   margin-top: -10px;
   margin-left: -95px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     font-size: 40px;
     margin-top: 20px;
     margin-left: -80px;
