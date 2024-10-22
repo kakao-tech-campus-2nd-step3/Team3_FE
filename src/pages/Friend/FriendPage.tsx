@@ -9,6 +9,11 @@ import {
 } from "@/api/hooks/useGetFriends";
 import breakpoints from "@/variants/variants";
 import { Friend, SentRequest, ReceivedRequest } from "@/types/types";
+import Button from "@/components/common/Button/Button";
+import { useNavigate } from "react-router-dom";
+import {
+  Search,
+} from "@mui/icons-material";
 
 // Styles
 const pageStyles = css`
@@ -94,24 +99,43 @@ const friendItemStyles = css`
   border-radius: 16px;
   box-sizing: border-box;
   width: 100%;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 394px;
+`;
+
+const buttonContainerStyles = css`
+  display: flex;
+  gap: 10px; // 버튼 사이의 간격
+  margin-left: auto; // 오른쪽 끝으로 배치
+  margin-right: 20px;
 `;
 
 // List 아이템을 렌더링하는 컴포넌트
-const FriendItem = ({ friend }: { friend: Friend }) => (
-  <div key={friend.friend_id} css={friendItemStyles}>
-    <List
-      profileSrc={friend.friend_profile_image}
-      name={friend.friend_name}
-      date={new Date(friend.created_at).toLocaleString()}
-      buttons={[
-        { label: "방문", onClick: () => console.log("방문 clicked"), theme: "primary" },
-        { label: "삭제", onClick: () => console.log("삭제 clicked"), theme: "secondary" },
-      ]}
-    />
-    
-  </div>
-);
+const FriendItem = ({ friend }: { friend: Friend }) => {
+  const navigate = useNavigate();
+
+  const handleVisitClick = () => {
+    navigate(`/friend/${friend.friend_id}`, { state: { friendName: friend.friend_name } });
+  };
+
+  return (
+    <div key={friend.friend_id} css={friendItemStyles}>
+      <List
+        profileSrc={friend.friend_profile_image}
+        name={friend.friend_name}
+        date={new Date(friend.created_at).toLocaleString()}
+      />
+      <div css={buttonContainerStyles}>
+        <Button size="small" theme="primary" onClick={handleVisitClick}>
+          방문
+        </Button>
+        <Button size="small" theme="secondary" onClick={() => console.log("삭제 clicked")}>
+          삭제
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 function isSentRequest(
   request: SentRequest | ReceivedRequest,
@@ -126,26 +150,31 @@ const RequestItem = ({
   request: SentRequest | ReceivedRequest;
   type: "sent" | "received";
 }) => {
-  const buttons =
-    type === "sent"
-      ? [
-          { label: "취소", onClick: () => console.log("취소 clicked"), theme: "primary" as const} //리터럴 타입
-        ]
-      : [
-          { label: "수락", onClick: () => console.log("수락 clicked"), theme: "primary" as const},
-          { label: "거절", onClick: () => console.log("거절 clicked"), theme: "secondary" as const}
-        ];
-
   return (
     <div key={request.id} css={friendItemStyles}>
-    <List
-      profileSrc={request.friend_profile_image}
-      name={
-        isSentRequest(request) ? request.receiver_name : request.requester_name
-      }
-      date={request.status}
-      buttons={buttons}
-    />
+      <List
+        profileSrc={request.friend_profile_image}
+        name={
+          isSentRequest(request) ? request.receiver_name : request.requester_name
+        }
+        date={request.status}
+      />
+      <div css={buttonContainerStyles}>
+      {type === "sent" ? (
+        <Button style={{ marginRight: '10px' }} size="small" theme="primary" onClick={() => console.log("취소 clicked")}>
+          취소
+        </Button>
+      ) : (
+        <>
+          <Button style={{ paddingRight: '10px' }} size="small" theme="primary" onClick={() => console.log("수락 clicked")}>
+            수락
+          </Button>
+          <Button style={{ margin: '10px' }} size="small" theme="secondary" onClick={() => console.log("거절 clicked")}>
+            거절
+          </Button>
+        </>
+      )}
+      </div>
     </div>
   );
 };
@@ -228,7 +257,7 @@ export default function FriendListPage() {
       <div css={friendListStyles}>
         {activeTab === "friendSearch" && (
           <div css={searchBarStyles}>
-            <span css={searchIconStyles}>&#128269;</span>
+            <Search css={searchIconStyles}></Search>
             <input
               css={searchInputStyles}
               placeholder="검색"
