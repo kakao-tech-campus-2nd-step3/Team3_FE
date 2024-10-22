@@ -13,6 +13,7 @@ import MainPage from "@/pages/Main/MainPage";
 import FriendDetailPage from "@/pages/Friend/FriendDetailPage";
 import useAuth from "@/provider/useAuth";
 import { Navigate } from 'react-router-dom';
+import TeamPlanDetailPage from "@/pages/TeamPlan/TeamPlanDetail";
 function Router() {
   const { authState } = useAuth();
   const router = createBrowserRouter([
@@ -34,6 +35,11 @@ function Router() {
       children: [
         { path: RouterPath.main, element: <MainPage /> },
         { path: RouterPath.teamPlan, element: <TeamPlan /> },
+        {
+          path: `${RouterPath.teamPlan}/:teamId`,
+          element: <TeamPlanDetailPage />,
+        },
+        { path: RouterPath.myPage, element: <MyPage /> },
         { path: RouterPath.plan, element: <PlanPage /> },
         {
           path: RouterPath.friend,
