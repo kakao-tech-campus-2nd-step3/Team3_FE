@@ -6,6 +6,7 @@ import Input from "@/components/common/Input/Input";
 import MicrophoneButton from "@/components/common/MicrophoneButton/MicrophoneButton";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
+import breakpoints from "@/variants/breakpoints";
 
 const slideDown = keyframes`
   0% {
@@ -30,18 +31,24 @@ const InputWrapper = styled.div`
   gap: 40px;
 `;
 const Title = styled.p`
-  font-size: 36px;
+  font-size: 20px;
   font-weight: bold;
   color: #938e8e;
   text-align: center;
   margin: 50px 0 0 0;
+  ${breakpoints.desktop} {
+    font-size: 36px;
+  }
 `;
 const SubTitle = styled.p<{ animate: boolean }>`
-  font-size: 36px;
+  font-size: 18px;
   font-weight: bold;
   color: #000;
   text-align: center;
   margin: 0;
+  ${breakpoints.desktop} {
+    font-size: 36px;
+  }
 
   &.animate {
     animation: ${({ animate }) => (animate ? slideDown : "none")} 1s ease-in-out;

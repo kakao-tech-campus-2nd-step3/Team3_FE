@@ -18,23 +18,7 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
       outline: "none",
     },
   }),
-  {
-    width: "100px",
-    height: "40px",
-    fontSize: "14px",
-    [breakpoints.tablet]: {
-      // 테블릿
-      height: "48px",
-      fontSize: "16px",
-      width: "187px",
-    },
-    [breakpoints.desktop]: {
-      // 데스크탑
-      width: "200px",
-      height: "50px",
-      fontSize: "15px",
-    },
-  },
+
   ({ theme }) => {
     switch (theme) {
       case "primary":
@@ -47,6 +31,19 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
             color: "black",
             border: "none",
           },
+          width: "100px",
+          height: "40px",
+          fontSize: "14px",
+          [breakpoints.tablet]: {
+            width: "187px",
+            height: "48px",
+            fontSize: "16px",
+          },
+          [breakpoints.desktop]: {
+            width: "200px",
+            height: "50px",
+            fontSize: "15px",
+          },
         };
       case "secondary":
         return {
@@ -58,9 +55,31 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
             color: "black",
             border: "1px solid #39A7F7",
           },
+          width: "100px",
+          height: "40px",
+          fontSize: "14px",
+          [breakpoints.tablet]: {
+            height: "48px",
+            fontSize: "16px",
+            width: "187px", // 테블릿에서 너비 187px
+          },
+          [breakpoints.desktop]: {
+            height: "50px",
+            fontSize: "15px",
+            width: "200px", // 데스크탑에서 너비 200px
+          },
         };
       default:
-        return {};
+        return {
+          height: "50px",
+          fontSize: "16px",
+          backgroundColor: "#fee500",
+          color: "black",
+          border: "none",
+          "&:hover": {
+            backgroundColor: "#fada0a",
+          },
+        };
     }
   },
 );

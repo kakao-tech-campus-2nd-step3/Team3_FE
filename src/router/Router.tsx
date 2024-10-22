@@ -34,6 +34,7 @@ function Router() {
       path: RouterPath.PREVIEW_PLAN_UPDATE,
       element: <PreviewPlanUpdate />,
     },
+    { path: RouterPath.LOGIN, element: <LoginModal /> },
     {
       path: RouterPath.HOME,
       element: <Layout />,
@@ -46,7 +47,6 @@ function Router() {
             </PrivateRoute>
           ),
         },
-        { path: RouterPath.LOGIN, element: <LoginModal /> },
         {
           path: RouterPath.TEAM_PLAN,
           element: (

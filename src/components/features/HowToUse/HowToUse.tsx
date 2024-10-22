@@ -2,9 +2,10 @@ import styled from "@emotion/styled";
 import step1SVG from "../../../assets/step1.svg";
 import step2SVG from "../../../assets/step2.svg";
 import step3SVG from "../../../assets/step3.svg";
+import breakpoints from "@/variants/breakpoints";
 
 const HowToUseContainer = styled.div`
-  width: 1440px;
+  width: 320px;
   align-items: center;
   justify-content: space-between;
   text-align: center;
@@ -12,7 +13,11 @@ const HowToUseContainer = styled.div`
 
   position: relative;
   margin: 0 auto;
-  margin-top: 100px;
+  margin-top: -300px;
+  ${breakpoints.desktop} {
+    width: 1440px;
+    margin-top: 100px;
+  }
 `;
 
 const TextWrapper = styled.div`
@@ -25,25 +30,34 @@ const TextWrapper = styled.div`
 `;
 
 const HowToUseTitle = styled.p`
-  font-size: 36px;
+  font-size: 30px;
   font-weight: bold;
   color: #39a7f7;
   margin-bottom: -30px;
+  ${breakpoints.desktop} {
+    font-size: 36px;
+  }
 `;
 
 const HowToUseDescription = styled.p`
-  font-size: 45px;
+  font-size: 27px;
   font-weight: bold;
   color: #333;
-  margin-bottom: -30px;
+  margin-bottom: 0px;
+  ${breakpoints.desktop} {
+    font-size: 45px;
+  }
 `;
 const HighlightText = styled.span`
   color: #39a7f7;
   display: inline;
 `;
 const AddtionalDescription = styled.p`
+font-size: 25px;
+font-weight: bold;
+
+${breakpoints.desktop} {
   font-size: 32px;
-  font-weight: bold;
 `;
 const StepContainer = styled.div`
   display: flex;
