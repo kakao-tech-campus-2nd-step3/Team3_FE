@@ -22,6 +22,7 @@ import {
 } from "./Sidebar.styles";
 
 import logo from "@/assets/logo.svg";
+import { useNavigate } from "react-router-dom";
 
 // 고정된 메뉴 항목
 const menuItems = [
@@ -43,6 +44,7 @@ const getFormattedTime = (date: Date) => {
 };
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const [time, setTime] = useState(() => new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState("메인");
@@ -71,9 +73,10 @@ export default function Sidebar() {
     };
   }, [handleResize]);
 
-  const handleMenuClick = useCallback((menuName: string) => {
+  const handleMenuClick = useCallback((menuName: string, path: string) => {
     setSelectedMenu(menuName);
-  }, []);
+    navigate(path); // 페이지 이동 처리
+  }, [navigate]);
 
   return (
     <SidebarContainer isOpen={isOpen}>
@@ -107,7 +110,7 @@ export default function Sidebar() {
           <MenuItem
             key={item.name}
             selected={selectedMenu === item.name}
-            onClick={() => handleMenuClick(item.name)}
+            onClick={() => handleMenuClick(item.name, item.path)}
           >
              <MenuItemIcon>{item.icon}</MenuItemIcon>
             <MenuItemText>
