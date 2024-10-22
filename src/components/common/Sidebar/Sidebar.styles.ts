@@ -74,7 +74,7 @@ export const MenuItem = styled.div<{ selected: boolean }>(({ selected }) => ({
   color: selected ? "#FFFFFF" : "#000000",
   fontSize: "14px",
   fontWeight: 600,
-
+  lineHeight: "22.52px",
   cursor: "pointer",
   boxSizing: "border-box",
   transition: "background-color 0.3s ease, box-shadow 0.3s ease",
