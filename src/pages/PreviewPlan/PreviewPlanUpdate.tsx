@@ -20,16 +20,11 @@ const slideDown = keyframes`
 
 const PreviewPlanUpdateContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
+  align-items: center;
   max-width: 320px;
-  gap: 20px;
   margin: 0 auto;
   margin-top: 20px;
-  ${breakpoints.desktop} {
-    justify-content: center;
-    align-items: center;
-    grid-template-columns: 1fr 310px;
+  ${breakpoints.tablet} {
     max-width: 1440px;
   }
 `;
@@ -40,32 +35,34 @@ const ContentWrapper = styled.div`
   gap: 40px;
 `;
 
+const CalendarContainer = styled.div`
+  margin-top: 20px;
+`;
+
 const StyledText = styled.p`
   font-size: 16px;
   font-weight: bold;
   margin-top: -20px;
   margin: 0px;
   text-align: center;
-  margin-bottom: 20px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     font-size: 36px;
   }
+
   &.animate {
     animation: ${slideDown} 1s ease-in-out;
   }
 `;
 const ButtonContainer = styled.div`
-  grid-row: 3 / 4; /* 모바일에서는 세 번째로 버튼을 배치 */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: flex-direction;
   gap: 20px;
   margin-top: -100px;
-  ${breakpoints.desktop} {
-    grid-column: 2 / 3; // 버튼이 사이드바와 같은 위치에 있도록 설정
-    grid-row: 2 / 3;
-    margin-top: -300px;
+  ${breakpoints.tablet} {
+    margin-top: 0px;
+    gap: 130px;
   }
 `;
 
@@ -104,7 +101,9 @@ const PreviewPlanUpdate = () => {
         <StyledText className={animate ? "animate" : " "}>
           {TitleMessages[currentMessageIndex]}
         </StyledText>
-        <CustomCalendar />
+        <CalendarContainer>
+          <CustomCalendar />
+        </CalendarContainer>
         <ButtonContainer>
           <Button onClick={() => navigate(RouterPath.LOGIN)}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>

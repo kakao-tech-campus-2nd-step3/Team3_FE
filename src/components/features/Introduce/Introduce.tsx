@@ -16,9 +16,10 @@ const LandingContainer = styled.div`
   position: relative;
   margin: 0 auto;
   margin-top: 100px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     width: 1440px;
     margin-top: 150px;
+    margin-left: 40px;
   }
 `;
 

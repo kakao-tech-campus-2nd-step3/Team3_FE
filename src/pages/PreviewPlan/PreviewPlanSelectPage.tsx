@@ -15,7 +15,7 @@ const PreviewPlanSelectPageContainer = styled.div`
   gap: 20px;
   margin: 0 auto;
   margin-top: 20px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     justify-content: center;
     align-items: center;
     grid-template-columns: 1fr 310px;
@@ -25,7 +25,7 @@ const PreviewPlanSelectPageContainer = styled.div`
 const CalendarSection = styled.div`
   grid-row: 2/3;
   padding: -10px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
     padding: 40px;
@@ -41,7 +41,7 @@ const SidebarSection = styled.div`
   align-items: center;
   gap: 20px;
   margin: 0 auto;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     grid-column: 2 / 3;
     grid-row: 1 / 2;
     width: 310px;
@@ -52,7 +52,7 @@ const StyledText = styled.p`
   font-weight: bold;
   margin-top: -20px;
   margin: 0px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     font-size: 36px;
   }
 `;
@@ -60,7 +60,7 @@ const StyledText = styled.p`
 const NumberButtonContainer = styled.div`
   display: flex;
   gap: 10px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     margin-bottom: 400px; /* 데스크탑에서는 더 넓은 하단 여백 */
   }
 `;
@@ -72,7 +72,7 @@ const ButtonContainer = styled.div`
   flex-direction: flex-direction;
   gap: 20px;
   margin-top: -200px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     grid-column: 2 / 3; // 버튼이 사이드바와 같은 위치에 있도록 설정
     grid-row: 2 / 3;
     margin-top: -300px;

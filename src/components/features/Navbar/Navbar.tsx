@@ -15,7 +15,7 @@ const NavBar = styled.div`
   z-index: 2;
   padding: 0 20px;
 
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     height: 120px;
     padding: 0 40px;
   }
@@ -23,7 +23,7 @@ const NavBar = styled.div`
 
 const Logo = styled.img`
   height: 40px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     height: 70px;
   }
 `;

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
+import breakpoints from "@/variants/breakpoints";
 
 const slideDown = keyframes`
   0% {
@@ -17,9 +18,15 @@ const slideDown = keyframes`
   }
   `;
 
-const PreviewPlanUpdateContainer = styled.div`
+const PlanUpdateContainer = styled.div`
   display: grid;
   align-items: center;
+  max-width: 320px;
+  margin: 0 auto;
+  margin-top: 20px;
+  ${breakpoints.tablet} {
+    max-width: 1440px;
+  }
 `;
 const ContentWrapper = styled.div`
   flex-direction: column;
@@ -28,10 +35,19 @@ const ContentWrapper = styled.div`
   gap: 40px;
 `;
 
+const CalendarContainer = styled.div`
+  margin-top: 20px;
+`;
+
 const StyledText = styled.p`
-  text-align: center;
-  font-size: 36px;
+  font-size: 16px;
   font-weight: bold;
+  margin-top: -20px;
+  margin: 0px;
+  text-align: center;
+  ${breakpoints.tablet} {
+    font-size: 36px;
+  }
 
   &.animate {
     animation: ${slideDown} 1s ease-in-out;
@@ -39,9 +55,15 @@ const StyledText = styled.p`
 `;
 const ButtonContainer = styled.div`
   display: flex;
-  gap: 130px;
   justify-content: center;
-  margin-bottom: 40px;
+  align-items: center;
+  flex-direction: flex-direction;
+  gap: 20px;
+  margin-top: -100px;
+  ${breakpoints.tablet} {
+    margin-top: 0px;
+    gap: 130px;
+  }
 `;
 
 // 배열 선언
@@ -74,12 +96,14 @@ const PlanUpdate = () => {
   const navigate = useNavigate();
 
   return (
-    <PreviewPlanUpdateContainer>
+    <PlanUpdateContainer>
       <ContentWrapper>
         <StyledText className={animate ? "animate" : " "}>
           {TitleMessages[currentMessageIndex]}
         </StyledText>
-        <CustomCalendar />
+        <CalendarContainer>
+          <CustomCalendar />
+        </CalendarContainer>
         <ButtonContainer>
           <Button onClick={() => navigate(RouterPath.MAIN)}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>
@@ -87,7 +111,7 @@ const PlanUpdate = () => {
           </Button>
         </ButtonContainer>
       </ContentWrapper>
-    </PreviewPlanUpdateContainer>
+    </PlanUpdateContainer>
   );
 };
 
