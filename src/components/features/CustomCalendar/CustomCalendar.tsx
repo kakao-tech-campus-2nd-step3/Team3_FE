@@ -25,6 +25,11 @@ interface CalendarEvent {
   complete: boolean;
   status: "completed" | "upcoming" | "incomplete";
 }
+
+interface CustomCalendarProps {
+  calendarOwner?: string; // calendarOwner prop 정의, 선택적 속성
+}
+
 // 주간 뷰 및
 const VIEW_MODES = {
   THREEDAY: "timeGridThreeDay",
@@ -97,14 +102,14 @@ const handleResizeEvent = (
   return handleResize;
 };
 
-const CustomCalendar: React.FC = () => {
+const CustomCalendar: React.FC<CustomCalendarProps> = ({ calendarOwner }) => {
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [events, setEvents] = useState<EventInput[]>([]);
   const [isMobile, setIsMobile] = useState(
     () => window.innerWidth <= breakpoints.sm,
   );
   const calendarRef = useRef<FullCalendar>(null);
-
+  const calendarTitle = calendarOwner ? `${calendarOwner}` : "나만의 계획표";
   // 이벤트 데이터 fetch 및 초기화
   useEffect(() => {
     const fetchedEvents = [
@@ -192,7 +197,7 @@ const CustomCalendar: React.FC = () => {
 
   return (
     <div css={appContainerStyles}>
-      <h1 css={appTitleStyles}>계획표 예시</h1>
+      <h1 css={appTitleStyles}>{calendarTitle}</h1>
       <div css={calendarStyles}>
         <FullCalendar
           ref={calendarRef}
