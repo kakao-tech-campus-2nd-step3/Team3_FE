@@ -10,69 +10,40 @@ import FriendPage from "@/pages/Friend/FriendPage";
 import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
-import PrivateRoute from "./PrivateRoute";
-
-import CheckAuth from "./CheckAuth";
-
+import FriendDetailPage from "@/pages/Friend/FriendDetailPage";
+import useAuth from "@/provider/useAuth";
+import { Navigate } from 'react-router-dom';
 function Router() {
+  const { authState } = useAuth();
   const router = createBrowserRouter([
     {
-      path: RouterPath.home,
-      element: <Layout />,
+      path: RouterPath.home, // 랜딩 페이지는 사이드바 없는 레이아웃
+      element: <LandingPage />,
+    },
+    {
+      path: RouterPath.login, 
+      element: <LoginModal />,
+    },
+    {
+      path: RouterPath.previewPlan, 
+      element: <PreviewPlanPage />,
+    },
+    {
+      path: '/',
+      element: authState.isAuthenticated ? <Layout /> : <Navigate to={RouterPath.login} />,
       children: [
-        {
-          path: RouterPath.home,
-          element: <LandingPage />,
-        },
-        {
-          path: RouterPath.main,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <MainPage />
-            </PrivateRoute>
-          ),
-        },
-        { path: RouterPath.login, element: <LoginModal /> },
-        {
-          path: RouterPath.previewPlan,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <PreviewPlanPage />
-            </PrivateRoute>
-          ),
-        },
-        {
-          path: RouterPath.teamPlan,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <TeamPlan />
-            </PrivateRoute>
-          ),
-        },
-        {
-          path: RouterPath.plan,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <PlanPage />
-            </PrivateRoute>
-          ),
-        },
+        { path: RouterPath.main, element: <MainPage /> },
+        { path: RouterPath.teamPlan, element: <TeamPlan /> },
+        { path: RouterPath.plan, element: <PlanPage /> },
         {
           path: RouterPath.friend,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <FriendPage />
-            </PrivateRoute>
-          ),
+          element: <FriendPage />,
         },
         {
-          path: RouterPath.myPage,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <MyPage />
-            </PrivateRoute>
-          ),
+          path: `${RouterPath.friend}/:friendId`,
+          element: <FriendDetailPage />,
         },
+        { path: RouterPath.myPage, element: <MyPage /> },
       ],
     },
   ]);
