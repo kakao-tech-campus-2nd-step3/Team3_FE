@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
@@ -80,6 +80,19 @@ const ButtonContainer = styled.div`
 `;
 
 const PlanSelectPage = () => {
+  const [isDesktop, setIsDesktop] = useState<boolean>(
+    window.innerWidth >= 1280,
+  );
+
+  const updateMedia = () => {
+    setIsDesktop(window.innerWidth >= 1280);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", updateMedia);
+    return () => window.removeEventListener("resize", updateMedia);
+  }, []);
+
   // 선택된 버튼 번호를 저장할 상태
   const [clickedNumber, setClickedNumber] = useState<number | null>(null);
   const navigate = useNavigate();
@@ -94,10 +107,7 @@ const PlanSelectPage = () => {
         <CustomCalendar />
       </CalendarSection>
       <SidebarSection>
-        <StyledText>
-          원하는 플랜을 <br />
-          선택하세요.
-        </StyledText>
+        <StyledText>원하는 플랜을 {isDesktop && <br />} 선택하세요.</StyledText>
         <NumberButtonContainer>
           <NumberButton
             number={1}
