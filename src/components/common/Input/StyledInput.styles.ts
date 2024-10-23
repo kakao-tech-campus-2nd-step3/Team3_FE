@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 const StyledInput = styled.input(
   {
@@ -9,17 +9,19 @@ const StyledInput = styled.input(
     fontFamily: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif",
     fontWeight: 600,
     resize: "none",
-    width: "calc(100% - 60px)",
     margin: "0 30px",
   },
   {
+    width: "348px",
     height: "187px",
     fontSize: "16px",
     [breakpoints.tablet]: {
+      width: "574px",
       height: "450px",
       fontSize: "26px",
     },
     [breakpoints.desktop]: {
+      width: "955px",
       height: "392px",
       fontSize: "32px",
     },

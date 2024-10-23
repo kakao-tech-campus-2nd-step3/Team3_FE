@@ -6,69 +6,91 @@ import LoginModal from "@/pages/LoginModal/LoginModal";
 import PreviewPlanPage from "@/pages/PreviewPlan/PreviewPlanPage";
 import TeamPlan from "@/pages/TeamPlan/TeamPlan";
 import PlanPage from "@/pages/Plan/PlanPage";
+import PlanSelectPage from "@/pages/Plan/PlanSelectPage";
+import PlanUpdate from "@/pages/Plan/PlanUpdate";
 import FriendPage from "@/pages/Friend/FriendPage";
 import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
 import PrivateRoute from "./PrivateRoute";
-
-import CheckAuth from "./CheckAuth";
+import PreviewPlanSelectPage from "@/pages/PreviewPlan/PreviewPlanSelectPage";
+import PreviewPlanUpdate from "@/pages/PreviewPlan/PreviewPlanUpdate";
 
 function Router() {
   const router = createBrowserRouter([
     {
-      path: RouterPath.home,
+      path: RouterPath.HOME,
+      element: <LandingPage />,
+    },
+    {
+      path: RouterPath.PREVIEW_PLAN,
+      element: <PreviewPlanPage />,
+    },
+    {
+      path: RouterPath.PREVIEW_PLAN_SELECT,
+      element: <PreviewPlanSelectPage />,
+    },
+    {
+      path: RouterPath.PREVIEW_PLAN_UPDATE,
+      element: <PreviewPlanUpdate />,
+    },
+    { path: RouterPath.LOGIN, element: <LoginModal /> },
+    {
+      path: RouterPath.HOME,
       element: <Layout />,
       children: [
         {
-          path: RouterPath.home,
-          element: <LandingPage />,
-        },
-        {
-          path: RouterPath.main,
+          path: RouterPath.MAIN,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <MainPage />
             </PrivateRoute>
           ),
         },
-        { path: RouterPath.login, element: <LoginModal /> },
         {
-          path: RouterPath.previewPlan,
+          path: RouterPath.TEAM_PLAN,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
-              <PreviewPlanPage />
-            </PrivateRoute>
-          ),
-        },
-        {
-          path: RouterPath.teamPlan,
-          element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <TeamPlan />
             </PrivateRoute>
           ),
         },
         {
-          path: RouterPath.plan,
+          path: RouterPath.PLAN,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <PlanPage />
             </PrivateRoute>
           ),
         },
         {
-          path: RouterPath.friend,
+          path: RouterPath.PLAN_SELECT,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
+              <PlanSelectPage />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: RouterPath.PLAN_UPDATE,
+          element: (
+            <PrivateRoute>
+              <PlanUpdate />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: RouterPath.FRIEND,
+          element: (
+            <PrivateRoute>
               <FriendPage />
             </PrivateRoute>
           ),
         },
         {
-          path: RouterPath.myPage,
+          path: RouterPath.MY_PAGE,
           element: (
-            <PrivateRoute CheckAuth={CheckAuth}>
+            <PrivateRoute>
               <MyPage />
             </PrivateRoute>
           ),

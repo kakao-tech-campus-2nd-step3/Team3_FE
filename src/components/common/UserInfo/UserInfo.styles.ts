@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const UserInfoWrapper = styled.div`
   display: flex;

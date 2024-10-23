@@ -7,7 +7,7 @@ import {
   useGetReceivedRequests,
   useGetSentRequests,
 } from "@/api/hooks/useGetFriends";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import { Friend, SentRequest, ReceivedRequest } from "@/types/types";
 
 // Styles

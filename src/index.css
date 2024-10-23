@@ -9,16 +9,22 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-   /* FullCalendar 스타일 재정의 */
-   --fc-event-border-color: transparent; /* 경계선을 제거 */
-   --fc-event-text-color: black;   /* 폰트 색상을 검은색으로 변경 */
- }
- 
-/* body의 기본적인 margin 제거 */
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  height: 100%;
+  /* FullCalendar 스타일 재정의 */
+  --fc-event-border-color: transparent; /* 경계선을 제거 */
+  --fc-event-text-color: black;   /* 폰트 색상을 검은색으로 변경 */
+}
+
+/* html과 body의 기본적인 margin 및 크기 설정 */
+html, body {
+  margin: 0; 
+  padding: 0; 
+  width: 100vw;
+  height: 100vh; 
+  justify-content: center;
+  align-items: center; 
+  position: relative; 
+  top: 0;
+  left: 0;
+  box-sizing: border-box; 
 }
 

@@ -7,7 +7,8 @@ import {
   People,
   Menu,
 } from "@mui/icons-material";
-import breakpoints from "@/variants/variants";
+import { useLocation } from "react-router-dom";
+import breakpoints from "@/variants/breakpoints";
 import {
   SidebarContainer,
   MobileHeader,
@@ -40,10 +41,10 @@ const getFormattedTime = (date: Date) => {
   });
 };
 
-export default function Sidebar() {
+const Sidebar = () => {
   const [time, setTime] = useState(() => new Date());
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState("메인");
+  const location = useLocation();
 
   // 시간 업데이트
   useEffect(() => {
@@ -69,9 +70,10 @@ export default function Sidebar() {
     };
   }, [handleResize]);
 
-  const handleMenuClick = useCallback((menuName: string) => {
-    setSelectedMenu(menuName);
-  }, []);
+  // URL 이 특정 경로를 포함하는지 확인하는 함수
+  const isPathActive = (path: string) => {
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <SidebarContainer isOpen={isOpen}>
@@ -104,11 +106,11 @@ export default function Sidebar() {
         {menuItems.map((item) => (
           <MenuItem
             key={item.name}
-            selected={selectedMenu === item.name}
-            onClick={() => handleMenuClick(item.name)}
+            selected={isPathActive(item.path)}
+            onClick={() => setIsOpen(false)}
           >
             <div className="icon">{item.icon}</div>
-            <StyledLink to={item.path} selected={selectedMenu === item.name}>
+            <StyledLink to={item.path} selected={isPathActive(item.path)}>
               {item.name}
             </StyledLink>
           </MenuItem>
@@ -130,4 +132,6 @@ export default function Sidebar() {
       )}
     </SidebarContainer>
   );
-}
+};
+
+export default Sidebar;
