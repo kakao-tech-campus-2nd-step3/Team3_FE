@@ -87,7 +87,7 @@ const AdditionalText = styled.p`
   color: #3f3f3f;
   margin-top: -10px;
   margin-left: -95px;
-  ${breakpoints.tablet} {
+  ${breakpoints.desktop} {
     font-size: 40px;
     margin-top: 20px;
     margin-left: -80px;

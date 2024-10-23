@@ -7,11 +7,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
 import breakpoints from "@/variants/breakpoints";
-import {
-  appContainerStyles,
-  calendarStyles,
-  eventItemStyles,
-} from "./CustomCalendar.styles";
+import { calendarStyles, eventItemStyles } from "./CustomCalendar.styles";
 
 // Event 인터페이스
 interface CalendarEvent {
@@ -82,12 +78,12 @@ const handleResizeEvent = (
   calendarRef: React.RefObject<FullCalendar>,
 ) => {
   const handleResize = () => {
-    setIsMobile(window.innerWidth <= breakpoints.sm);
+    setIsMobile(window.innerWidth <= breakpoints.lg);
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.updateSize();
       calendarApi.changeView(
-        window.innerWidth <= breakpoints.sm
+        window.innerWidth <= breakpoints.lg
           ? VIEW_MODES.THREEDAY
           : VIEW_MODES.WEEK,
       );
@@ -190,59 +186,57 @@ const CustomCalendar: React.FC = () => {
   }, []);
 
   return (
-    <div css={appContainerStyles}>
-      <div css={calendarStyles}>
-        <FullCalendar
-          ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          views={{
-            timeGridThreeDay: {
-              type: "timeGrid",
-              duration: { days: 3 },
-            },
-          }}
-          initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
-          initialDate={currentDate}
-          headerToolbar={{
-            left: "title",
-            center: "",
-            right: "prev,next,today",
-          }}
-          locale={koLocale}
-          slotDuration="00:30:00"
-          slotLabelInterval="01:00:00"
-          slotLabelFormat={{
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }}
-          eventTimeFormat={{
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }}
-          allDaySlot={false}
-          editable
-          selectable={false}
-          selectMirror={false}
-          dayMaxEvents
-          weekends
-          firstDay={1}
-          events={events}
-          eventResizableFromStart
-          eventDrop={handleEventDrop}
-          eventResize={handleEventResize}
-          eventContent={renderEventContent(events)}
-          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
-          dayHeaderFormat={{
-            weekday: "short",
-            month: "numeric",
-            day: "numeric",
-            omitCommas: true,
-          }}
-          height={isMobile ? "85%" : "100%"}
-        />
-      </div>
+    <div css={calendarStyles}>
+      <FullCalendar
+        ref={calendarRef}
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        views={{
+          timeGridThreeDay: {
+            type: "timeGrid",
+            duration: { days: 3 },
+          },
+        }}
+        initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
+        initialDate={currentDate}
+        headerToolbar={{
+          left: "title",
+          center: "",
+          right: "prev,next,today",
+        }}
+        locale={koLocale}
+        slotDuration="00:30:00"
+        slotLabelInterval="01:00:00"
+        slotLabelFormat={{
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }}
+        eventTimeFormat={{
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }}
+        allDaySlot={false}
+        editable
+        selectable={false}
+        selectMirror={false}
+        dayMaxEvents
+        weekends
+        firstDay={1}
+        events={events}
+        eventResizableFromStart
+        eventDrop={handleEventDrop}
+        eventResize={handleEventResize}
+        eventContent={renderEventContent(events)}
+        datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
+        dayHeaderFormat={{
+          weekday: "short",
+          month: "numeric",
+          day: "numeric",
+          omitCommas: true,
+        }}
+        height={isMobile ? "85%" : "100%"}
+      />
     </div>
   );
 };

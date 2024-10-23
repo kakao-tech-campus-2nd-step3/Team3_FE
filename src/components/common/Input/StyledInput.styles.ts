@@ -15,11 +15,6 @@ const StyledInput = styled.input(
     width: "348px",
     height: "187px",
     fontSize: "16px",
-    [breakpoints.tablet]: {
-      width: "574px",
-      height: "450px",
-      fontSize: "26px",
-    },
     [breakpoints.desktop]: {
       width: "955px",
       height: "392px",

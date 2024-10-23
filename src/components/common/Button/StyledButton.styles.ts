@@ -34,11 +34,6 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
           width: "100px",
           height: "40px",
           fontSize: "14px",
-          [breakpoints.tablet]: {
-            width: "187px",
-            height: "48px",
-            fontSize: "16px",
-          },
           [breakpoints.desktop]: {
             width: "200px",
             height: "50px",
@@ -58,11 +53,6 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
           width: "100px",
           height: "40px",
           fontSize: "14px",
-          [breakpoints.tablet]: {
-            height: "48px",
-            fontSize: "16px",
-            width: "187px", // 테블릿에서 너비 187px
-          },
           [breakpoints.desktop]: {
             height: "50px",
             fontSize: "15px",

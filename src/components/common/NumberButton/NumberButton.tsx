@@ -23,15 +23,6 @@ const StyledNumberButton = styled.button<{ clicked: boolean }>`
     color: white;
   }
 
-  //반응형 미디어 쿼리 추가
-  ${breakpoints.tablet} {
-    width: 60px;
-    height: 60px;
-    font-size: 20px;
-    font-size: 20px;
-    border-radius: 16px;
-  }
-
   ${breakpoints.desktop} {
     width: 70px;
     height: 70px;
