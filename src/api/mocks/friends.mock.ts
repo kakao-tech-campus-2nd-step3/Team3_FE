@@ -10,14 +10,14 @@ const friendsMockHandlers = [
         friend_name: "친구1",
         friend_profile_image:
           "https://i.natgeofe.com/n/4f5aaece-3300-41a4-b2a8-ed2708a0a27c/domestic-dog_thumb_square.jpg",
-        created_at: "2024-10-09T12:00:00Z",
+        createdAt: "2024-10-09T12:00:00Z",
       },
       {
         friend_id: 456,
         friend_name: "친구2",
         friend_profile_image:
           "https://i.natgeofe.com/n/4f5aaece-3300-41a4-b2a8-ed2708a0a27c/domestic-dog_thumb_square.jpg",
-        created_at: "2024-10-09T12:00:00Z",
+        createdAt: "2024-10-09T12:00:00Z",
       },
     ];
 
