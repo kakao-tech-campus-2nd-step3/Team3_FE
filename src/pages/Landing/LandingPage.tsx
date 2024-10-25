@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import circleSVG from "@/assets/circle (1).svg";
 import mockSVG from "@/assets/mock2.svg";
 import effectSVG from "@/assets/effect.svg";
@@ -49,7 +49,7 @@ const NaviBarLink = styled.div`
 const NavLink = styled.a`
   text-decoration: none;
   color: #333;
-  font-size: clamp(12px, 2vw, 15px); 
+  font-size: clamp(12px, 2vw, 15px);
   cursor: pointer;
   font-weight: 600;
 
@@ -73,7 +73,7 @@ const LandingContainer = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
- 
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -173,7 +173,7 @@ const MockupImageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   ${breakpoints.tablet} {
     width: 50%;
     justify-content: flex-end;
@@ -224,7 +224,9 @@ const LandingPage: React.FC = () => {
               <br /> 쉽게 관리해보세요!
             </AdditionalText>
             <ButtonContainer>
-              <Button onClick={handleLoginClick}>로그인</Button>
+              <Button onClick={handleLoginClick} theme="kakao">
+                로그인
+              </Button>
               <Button onClick={handleStartClick}>시작하기</Button>
             </ButtonContainer>
           </TextWrapper>
