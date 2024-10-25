@@ -9,20 +9,23 @@ import {
 } from "./MicrophoneButton.styles";
 
 export interface MicrophoneButtonProps {
-  onStart?: () => void;  // 녹음 시작 콜백
-  onStop?: () => void;   // 녹음 중지 콜백
+  onStart?: () => void; // 녹음 시작 콜백
+  onStop?: () => void; // 녹음 중지 콜백
   isRecording: boolean; // 추가된 부분
 }
 
-const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({ onStart, onStop }) => {
+const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
+  onStart,
+  onStop,
+}) => {
   const [isRecording, setIsRecording] = useState(false);
 
   const handleClick = () => {
     setIsRecording(!isRecording);
     if (!isRecording && onStart) {
-      onStart();  // 녹음 시작 콜백 호출
+      onStart(); // 녹음 시작 콜백 호출
     } else if (isRecording && onStop) {
-      onStop();   // 녹음 중지 콜백 호출
+      onStop(); // 녹음 중지 콜백 호출
     }
   };
 

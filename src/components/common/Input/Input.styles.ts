@@ -1,6 +1,6 @@
 // Input.styles.ts
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 const StyledInput = styled.textarea`
   border-radius: 16px;
@@ -19,7 +19,7 @@ const StyledInput = styled.textarea`
   resize: none;
 
   // 모바일
-  @media (max-width: 768px) {
+  ${breakpoints.mobile} {
     height: 250px;
     font-size: 16px;
   }

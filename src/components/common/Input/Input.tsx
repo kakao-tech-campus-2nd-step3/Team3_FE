@@ -11,7 +11,7 @@ export type Props = {
 const Input: React.FC<Props> = ({ value, placeholder, disabled, onChange }) => {
   return (
     <StyledInput
-    onChange={onChange}
+      onChange={onChange}
       value={value}
       placeholder={placeholder}
       disabled={disabled}

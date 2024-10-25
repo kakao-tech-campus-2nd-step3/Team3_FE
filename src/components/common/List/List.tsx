@@ -24,7 +24,7 @@ const UserInfoWrapper = styled.div`
   padding: 10px;
 `;
 
-export const List: React.FC<ListProps> = ({ profileSrc, name, date}) => {
+export const List: React.FC<ListProps> = ({ profileSrc, name, date }) => {
   return (
     <ListItemWrapper>
       <ProfileImageWrapper>

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const ButtonContainer = styled(motion.button)({
   border: "none",
@@ -22,7 +22,7 @@ export const ButtonContainer = styled(motion.button)({
   width: "50px",
   height: "50px",
 
-  [breakpoints.tablet]: {
+  [breakpoints.tablet2]: {
     width: "58px",
     height: "58px",
   },
@@ -61,7 +61,7 @@ export const Wave = styled(motion.div)({
   width: "4px",
   height: "4px",
 
-  [breakpoints.tablet]: {
+  [breakpoints.tablet2]: {
     width: "6px",
     height: "6px",
   },

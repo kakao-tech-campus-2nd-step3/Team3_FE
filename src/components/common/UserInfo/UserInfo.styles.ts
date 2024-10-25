@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const UserInfoWrapper = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ export const UserInfoWrapper = styled.div`
   width: 76px;
   height: 39px;
 
-  ${breakpoints.tablet} {
+  ${breakpoints.tablet2} {
     width: 113px;
     height: 48px;
   }
@@ -22,7 +22,7 @@ export const NameText = styled.div`
   font-weight: bold;
   font-size: 12px;
 
-  ${breakpoints.tablet} {
+  ${breakpoints.tablet2} {
     font-size: 14px;
   }
 `;
@@ -31,7 +31,7 @@ export const DateText = styled.div`
   color: #aab2c8;
   font-size: 12px;
 
-  ${breakpoints.tablet} {
+  ${breakpoints.tablet2} {
     font-size: 14px;
   }
 `;

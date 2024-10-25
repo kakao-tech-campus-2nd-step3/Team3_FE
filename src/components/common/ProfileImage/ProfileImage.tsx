@@ -1,6 +1,6 @@
 import React from "react";
 import StyledImage from "./ProfileImage.styles";
-import defaultImage from "@/assets/defaultProfileImage.svg"; 
+import defaultImage from "@/assets/defaultProfileImage.svg";
 
 export type ProfileImageProps = {
   src?: string; // src를 optional로 변경

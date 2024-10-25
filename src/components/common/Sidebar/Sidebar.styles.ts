@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const StyledLink = styled(Link)<{ selected: boolean }>`
   color: ${({ selected }) => (selected ? "#fff" : "#000")};
@@ -28,7 +28,7 @@ export const SidebarContainer = styled.div<{ isOpen: boolean }>(
     transition: "height 0.3s ease, width 0.3s ease",
     zIndex: 1000,
 
-    [breakpoints.tablet]: {
+    [breakpoints.tablet2]: {
       width: "200px",
       height: "100%",
       justifyContent: "space-between",
@@ -53,7 +53,7 @@ export const MenuItemsContainer = styled.div<{ isOpen: boolean }>(
     visibility: isOpen ? "visible" : "hidden",
     transition: "max-height 0.3s ease, opacity 0.3s ease",
     alignItems: "center",
-    [breakpoints.tablet]: {
+    [breakpoints.tablet2]: {
       padding: 0,
       paddingTop: 0,
       maxHeight: "none",
@@ -122,7 +122,7 @@ export const MobileHeader = styled.div({
   width: "100%",
   boxSizing: "border-box",
 
-  [breakpoints.tablet]: {
+  [breakpoints.tablet2]: {
     display: "none",
   },
 });

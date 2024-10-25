@@ -7,9 +7,7 @@ function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        
-          <Router />
-        
+        <Router />
       </AuthProvider>
     </QueryClientProvider>
   );
