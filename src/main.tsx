@@ -6,9 +6,9 @@ import "./index.css";
 // createRoot전에 mockging api 먼저 실행
 async function enableMocking(): Promise<void> {
   // process.env.NODE_ENV
-  if (import.meta.env.MODE !== "development") {
-    return;
-  }
+  // if (import.meta.env.MODE !== "development") {
+  //   return;
+  // }
 
   const worker = (await import("@/api/mocks/browser")).default; // 서비스 워커 임포트
 
