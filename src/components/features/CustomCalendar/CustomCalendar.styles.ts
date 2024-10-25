@@ -54,7 +54,7 @@ export const calendarStyles = css`
     }
   }
 
-  ${breakpoints.tablet2} {
+  ${breakpoints.tablet} {
     font-size: 0.7rem;
     height: calc(100vh - 5.6rem - 40px);
     min-height: 360px;

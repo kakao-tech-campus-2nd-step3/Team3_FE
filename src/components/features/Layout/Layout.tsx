@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "@/components/common/Sidebar/Sidebar";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 const Wrapper = styled.div`
   display: flex;

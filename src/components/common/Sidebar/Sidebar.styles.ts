@@ -28,7 +28,7 @@ export const SidebarContainer = styled.div<{ isOpen: boolean }>(
     transition: "height 0.3s ease, width 0.3s ease",
     zIndex: 1000,
 
-    [breakpoints.tablet2]: {
+    [breakpoints.tablet]: {
       width: "200px",
       height: "100%",
       justifyContent: "space-between",
@@ -53,7 +53,7 @@ export const MenuItemsContainer = styled.div<{ isOpen: boolean }>(
     visibility: isOpen ? "visible" : "hidden",
     transition: "max-height 0.3s ease, opacity 0.3s ease",
     alignItems: "center",
-    [breakpoints.tablet2]: {
+    [breakpoints.tablet]: {
       padding: 0,
       paddingTop: 0,
       maxHeight: "none",
@@ -122,7 +122,7 @@ export const MobileHeader = styled.div({
   width: "100%",
   boxSizing: "border-box",
 
-  [breakpoints.tablet2]: {
+  [breakpoints.tablet]: {
     display: "none",
   },
 });

@@ -12,7 +12,7 @@ export const UserInfoWrapper = styled.div`
   width: 76px;
   height: 39px;
 
-  ${breakpoints.tablet2} {
+  ${breakpoints.tablet} {
     width: 113px;
     height: 48px;
   }
@@ -22,7 +22,7 @@ export const NameText = styled.div`
   font-weight: bold;
   font-size: 12px;
 
-  ${breakpoints.tablet2} {
+  ${breakpoints.tablet} {
     font-size: 14px;
   }
 `;
@@ -31,7 +31,7 @@ export const DateText = styled.div`
   color: #aab2c8;
   font-size: 12px;
 
-  ${breakpoints.tablet2} {
+  ${breakpoints.tablet} {
     font-size: 14px;
   }
 `;
