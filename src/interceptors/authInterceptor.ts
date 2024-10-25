@@ -1,6 +1,14 @@
 // src/interceptors/authInterceptor.ts
-import axios from 'axios';
-import { apiClient, apiBaseUrl } from '../api/instance';
+import axios from "axios";
+import { apiClient, apiBaseUrl } from "../api/instance";
+
+// 쿠키에서 특정 토큰 값을 가져오는 함수
+const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
+  return null;
+};
 
 // Axios 인터셉터 설정
 apiClient.interceptors.response.use(
@@ -9,7 +17,10 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refresh_token');
+
+      // 쿠키에서 리프레시 토큰 가져오기
+      const refreshToken = getCookie("refresh_token");
+
       if (refreshToken) {
         try {
           const { data } = await axios.post(`${apiBaseUrl}/token/refresh`, {
@@ -17,17 +28,19 @@ apiClient.interceptors.response.use(
           });
           const newAccessToken = data;
 
-          // 새로운 액세스 토큰 설정 및 로컬 스토리지 업데이트
-          localStorage.setItem('access_token', newAccessToken);
-          apiClient.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          // 새로운 액세스 토큰을 쿠키에 저장
+          document.cookie = `access_token=${newAccessToken}; path=/; Secure; SameSite=Strict`;
 
-          return apiClient(originalRequest);
+          // Axios 인스턴스와 요청 헤더에 새로운 액세스 토큰 설정
+          apiClient.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+          return await apiClient(originalRequest);
         } catch (refreshError) {
-          console.error('리프레시 토큰 갱신 실패:', refreshError);
+          console.error("리프레시 토큰 갱신 실패:", refreshError);
         }
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
