@@ -32,6 +32,17 @@ module.exports = {
     "react/prop-types": "off",
     "react/no-unknown-property": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "no-underscore-dangle": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        devDependencies: [
+          "**/src/api/mocks/**", // msw 관련 파일 예외 처리
+        ],
+      },
+    ],
   },
   settings: {
     react: {
