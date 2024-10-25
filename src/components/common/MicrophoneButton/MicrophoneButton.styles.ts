@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const ButtonContainer = styled(motion.button)({
   border: "none",
