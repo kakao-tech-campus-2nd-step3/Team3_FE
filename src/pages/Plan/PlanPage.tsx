@@ -110,7 +110,7 @@ export default function PlanPage() {
 
     // WebSocket 연결
     console.log("WebSocket 연결 시도 중...");
-    socketRef.current = new WebSocket("ws://localhost:8080/ws/stt");
+    socketRef.current = new WebSocket("wss://splanet.co.kr/wss/stt'");
     socketRef.current.binaryType = "arraybuffer";
 
     socketRef.current.onopen = () => {

@@ -36,12 +36,6 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
       fontSize: "15px",
     };
 
-    const miniStyle = {
-      width: "55px",
-      height: "55px",
-      fontSize: "15px",
-    };
-
     if (size === "small") {
       return smallStyle;
     }
@@ -54,10 +48,6 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
       return longStyle;
     }
 
-    if (size === "mini") {
-      return miniStyle;
-    }
-
     // 반응형
     return {
       [breakpoints.mobile]: {
@@ -65,7 +55,7 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
         height: "48px",
         fontSize: "16px",
       },
-      [breakpoints.tablet2]: {
+      [breakpoints.tablet]: {
         width: "150px",
         height: "50px",
         fontSize: "20px",
