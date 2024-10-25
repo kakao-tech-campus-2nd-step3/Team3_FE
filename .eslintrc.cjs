@@ -30,10 +30,36 @@ module.exports = {
     "import/extensions": "off",
     "react/require-default-props": "off",
     "react/prop-types": "off",
+    "no-console": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
     "react/no-unknown-property": "off",
+    "react/jsx-props-no-spreading": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/naming-convention": "off",
+    '@typescript-eslint/no-unused-vars': 'off',
+    "jsx-a11y/click-events-have-key-events": "off",
+    "no-underscore-dangle": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        devDependencies: [
+          "**/src/api/mocks/**", // msw 관련 파일 예외 처리
+        ],
+      },
+    ],
   },
+  overrides: [
+    {
+      files: ["vite.config.ts", "public/mockServiceWorker.js"],
+      rules: {
+        "@typescript-eslint/no-var-requires": "off",
+      },
+    },
+  ],
   settings: {
+    node: {
+      allowModules: ["react-cookie"],
+    },
     react: {
       version: "detect", // React 버전 자동 감지
     },

@@ -1,19 +1,27 @@
 import styled from "@emotion/styled";
-
 import step1SVG from "../../../assets/step1.svg";
 import step2SVG from "../../../assets/step2.svg";
 import step3SVG from "../../../assets/step3.svg";
+import breakpoints from "@/variants/breakpoints";
 
 const HowToUseContainer = styled.div`
-  width: 100%;
-  height: auto;
+  width: 320px;
+  align-items: center;
+  justify-content: space-between;
   text-align: center;
-  left: 0;
-  right: 0
-  margin: 0 auto;
-  margin-top: 120px;
-  position: absolute;
+  z-index: 1;
 
+  position: relative;
+  margin: 0 auto;
+  margin-top: -300px;
+  ${breakpoints.tablet} {
+    width: 765px;
+    margin-top: -0px;
+  }
+  ${breakpoints.desktop} {
+    width: 1440px;
+    margin-top: 100px;
+  }
 `;
 
 const TextWrapper = styled.div`
@@ -23,34 +31,50 @@ const TextWrapper = styled.div`
   transform: translate(-50%, -50%); // 중앙으로 보정
   margin-bottom: -60px;
   margin-top: 120px;
+  ${breakpoints.tablet} {
+    margin-top: 130px;
+  }
 `;
 
 const HowToUseTitle = styled.p`
-  font-size: 36px;
+  font-size: 30px;
   font-weight: bold;
   color: #39a7f7;
   margin-bottom: -30px;
+  ${breakpoints.desktop} {
+    font-size: 36px;
+  }
 `;
 
 const HowToUseDescription = styled.p`
-  font-size: 45px;
+  font-size: 27px;
   font-weight: bold;
   color: #333;
-  margin-bottom: -30px;
+  margin-bottom: 0px;
+  ${breakpoints.desktop} {
+    font-size: 45px;
+  }
 `;
-const HighlightText = styled.p`
+const HighlightText = styled.span`
   color: #39a7f7;
   display: inline;
 `;
 const AddtionalDescription = styled.p`
+font-size: 25px;
+font-weight: bold;
+
+${breakpoints.desktop} {
   font-size: 32px;
-  font-weight: bold;
 `;
 const StepContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  flex-direction: column;
   gap: 30px;
+  ${breakpoints.tablet} {
+    flex-direction: row; // 태블릿 이상에서는 가로로 정렬
+  }
 `;
 const Step = styled.div`
   flex: 1;
