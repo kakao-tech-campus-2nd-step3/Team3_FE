@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 
 import LandingPage from "@/pages/Landing/LandingPage";
 import RouterPath from "./RouterPath";
@@ -12,8 +16,11 @@ import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
 import FriendDetailPage from "@/pages/Friend/FriendDetailPage";
 import useAuth from "@/provider/useAuth";
-import { Navigate } from 'react-router-dom';
+
 import TeamPlanDetailPage from "@/pages/TeamPlan/TeamPlanDetail";
+import PlanSelectPage from "@/pages/Plan/PlanSelectPage";
+import PlanUpdate from "@/pages/Plan/PlanUpdate";
+
 function Router() {
   const { authState } = useAuth();
   const router = createBrowserRouter([
@@ -22,16 +29,20 @@ function Router() {
       element: <LandingPage />,
     },
     {
-      path: RouterPath.login, 
+      path: RouterPath.login,
       element: <LoginModal />,
     },
     {
-      path: RouterPath.previewPlan, 
+      path: RouterPath.previewPlan,
       element: <PreviewPlanPage />,
     },
     {
-      path: '/',
-      element: authState.isAuthenticated ? <Layout /> : <Navigate to={RouterPath.login} />,
+      path: "/",
+      element: authState.isAuthenticated ? (
+        <Layout />
+      ) : (
+        <Navigate to={RouterPath.login} />
+      ),
       children: [
         { path: RouterPath.main, element: <MainPage /> },
         { path: RouterPath.teamPlan, element: <TeamPlan /> },
@@ -50,6 +61,8 @@ function Router() {
           element: <FriendDetailPage />,
         },
         { path: RouterPath.myPage, element: <MyPage /> },
+        { path: RouterPath.plan_select, element: <PlanSelectPage /> },
+        { path: RouterPath.plan_update, element: <PlanUpdate /> },
       ],
     },
   ]);
