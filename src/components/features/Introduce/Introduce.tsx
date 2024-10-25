@@ -16,10 +16,16 @@ const LandingContainer = styled.div`
   position: relative;
   margin: 0 auto;
   margin-top: 100px;
+  ${breakpoints.tablet} {
+    width: 868px;
+    overflow-x: visible;
+  }
   ${breakpoints.desktop} {
     width: 1440px;
     margin-top: 150px;
     margin-left: 40px;
+    margin: 0 auto;
+    overflow-x: visible;
   }
 `;
 
@@ -31,24 +37,31 @@ const BackgroundCircle = styled.img`
   opacity: 0.5;
   bottom: 250px;
   margin-bottom: 115px;
-  margin-left: -40px;
+  margin-left: -60px;
+  ${breakpoints.tablet} {
+    width: 300px;
+    bottom: -150px;
+  }
   ${breakpoints.desktop} {
     width: 400px;
     bottom: -110px;
   }
 `;
-
 const TextWrapper = styled.div`
   max-width: 300px;
   margin-left: 90px;
   margin-top: 140px;
+  ${breakpoints.tablet} {
+    max-width: 400px;
+    margin-left: 150px;
+    margin-top: 150px;
+  }
   ${breakpoints.desktop} {
     max-width: 600px;
     margin-left: 150px;
-    margin-top: 100px;
+    margin-top: 150px;
   }
 `;
-
 const TitleWithImage = styled.div`
   display: flex;
   align-items: center;
@@ -56,15 +69,13 @@ const TitleWithImage = styled.div`
   margin-top: -60px;
   justify-content: flex-start;
 `;
-
-const Title = styled.h1`
-  font-size: 30px;
+const Title = styled.h1`  
+font-size: 30px;
   font-weight: bold;
   color: #39a7f7;
   margin-bottom: 0px;
   ${breakpoints.desktop} {
-    font-size: 50px;
-`;
+    font-size: 50px;`;
 
 const SubTitle = styled.p`
   font-size: 30px;
@@ -80,7 +91,6 @@ const SubTitle = styled.p`
     margin-left: -70px;
   }
 `;
-
 const AdditionalText = styled.p`
   font-size: 20px;
   font-weight: bold;
@@ -93,11 +103,14 @@ const AdditionalText = styled.p`
     margin-left: -80px;
   }
 `;
-
 const HighlightText = styled.span`
-  color: #39a7f7;
-  display: inline;
-`;
+width: 25px;
+height: 53px;
+margin-left: 10px;
+${breakpoints.desktop} {
+width: 50px,
+height: 63px;
+}`;
 
 const EffectImage = styled.img`
 width: 25px;
@@ -106,8 +119,7 @@ margin-left: 10px;
 ${breakpoints.desktop} {
 width: 50px,
 height: 63px;
-}
-`;
+}`;
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -115,6 +127,11 @@ const ButtonContainer = styled.div`
   position: absolute;
   bottom: 400px;
   z-index: 1;
+  ${breakpoints.tablet} {
+    display: flex;
+    margin-left: 60px;
+    bottom: 150px;
+  }
   ${breakpoints.desktop} {
     display: flex;
     margin-left: 80px;
@@ -133,6 +150,12 @@ const KakaoLoginButton = styled.img`
 
 const MockupImage = styled.img`
   visibility: hidden;
+  ${breakpoints.tablet} {
+    visibility: visible;
+    width: 400px;
+    margin-top: -60px;
+    margin-left: 300px;
+  }
   ${breakpoints.desktop} {
     visibility: visible;
     width: 700px;

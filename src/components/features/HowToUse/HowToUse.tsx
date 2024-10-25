@@ -14,6 +14,10 @@ const HowToUseContainer = styled.div`
   position: relative;
   margin: 0 auto;
   margin-top: -300px;
+  ${breakpoints.tablet} {
+    width: 765px;
+    margin-top: -0px;
+  }
   ${breakpoints.desktop} {
     width: 1440px;
     margin-top: 100px;
@@ -27,6 +31,9 @@ const TextWrapper = styled.div`
   transform: translate(-50%, -50%); // 중앙으로 보정
   margin-bottom: -60px;
   margin-top: 120px;
+  ${breakpoints.tablet} {
+    margin-top: 130px;
+  }
 `;
 
 const HowToUseTitle = styled.p`
@@ -65,7 +72,7 @@ const StepContainer = styled.div`
   align-items: flex-start;
   flex-direction: column;
   gap: 30px;
-  ${breakpoints.desktop} {
+  ${breakpoints.tablet} {
     flex-direction: row; // 태블릿 이상에서는 가로로 정렬
   }
 `;

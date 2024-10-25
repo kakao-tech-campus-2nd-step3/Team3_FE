@@ -81,11 +81,11 @@ const ButtonContainer = styled.div`
 
 const PlanSelectPage = () => {
   const [isDesktop, setIsDesktop] = useState<boolean>(
-    window.innerWidth >= 1280,
+    window.innerWidth >= breakpoints.lg,
   );
 
   const updateMedia = () => {
-    setIsDesktop(window.innerWidth >= 1280);
+    setIsDesktop(window.innerWidth >= breakpoints.lg);
   };
 
   useEffect(() => {

@@ -2,9 +2,8 @@ import styled from "@emotion/styled";
 import breakpoints from "@/variants/breakpoints";
 import { Props } from "./Button.types";
 
-const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
-  ({ width }) => ({
-    width: width || "100%", // 전달받은 width 값을 사용하고, 기본값은 100%로 설정
+const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
+  {
     borderRadius: "8px",
     display: "flex",
     justifyContent: "center",
@@ -17,7 +16,55 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
     "&:focus": {
       outline: "none",
     },
-  }),
+  },
+
+  ({ size = "responsive" }) => {
+    const smallStyle = {
+      width: "90px",
+      height: "40px",
+      fontSize: "14px",
+      borderRadius: "16px",
+    };
+
+    const largeStyle = {
+      width: "150px",
+      height: "50px",
+      fontSize: "20px",
+    };
+
+    const longStyle = {
+      width: "200px",
+      height: "50px",
+      fontSize: "15px",
+    };
+
+    if (size === "small") {
+      return smallStyle;
+    }
+
+    if (size === "large") {
+      return largeStyle;
+    }
+
+    if (size === "long") {
+      return longStyle;
+    }
+
+    // 반응형
+    return {
+      ...smallStyle,
+      [breakpoints.tablet]: {
+        width: "120px",
+        height: "43px",
+        fontSize: "16px",
+      },
+      [breakpoints.desktop]: {
+        width: "150px",
+        height: "50px",
+        fontSize: "20px",
+      },
+    };
+  },
 
   ({ theme }) => {
     switch (theme) {
@@ -31,14 +78,6 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
             color: "black",
             border: "none",
           },
-          width: "100px",
-          height: "40px",
-          fontSize: "14px",
-          [breakpoints.desktop]: {
-            width: "200px",
-            height: "50px",
-            fontSize: "15px",
-          },
         };
       case "secondary":
         return {
@@ -49,14 +88,6 @@ const StyledButton = styled.button<Pick<Props, "theme" | "width">>(
             backgroundColor: "#DCDCDC",
             color: "black",
             border: "1px solid #39A7F7",
-          },
-          width: "100px",
-          height: "40px",
-          fontSize: "14px",
-          [breakpoints.desktop]: {
-            height: "50px",
-            fontSize: "15px",
-            width: "200px", // 데스크탑에서 너비 200px
           },
         };
       default:
