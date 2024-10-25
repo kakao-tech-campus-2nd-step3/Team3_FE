@@ -1,10 +1,10 @@
-
 import styled from "@emotion/styled";
-import List from '@/components/common/List/List';
-import PersonIcon from '@mui/icons-material/Person';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import SettingsIcon from '@mui/icons-material/Settings';
+import PersonIcon from "@mui/icons-material/Person";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SettingsIcon from "@mui/icons-material/Settings";
+import List from "@/components/common/List/List";
+
 const PageWrapper = styled.div`
   min-height: 100vh;
   padding: 2rem;
@@ -61,7 +61,6 @@ const GridLayout = styled.div`
 `;
 
 export default function MyPage() {
-  
   return (
     <PageWrapper>
       <ContentWrapper>
@@ -85,7 +84,6 @@ export default function MyPage() {
             <CardContent>
               <ul>
                 <li>이메일: hong@example.com</li>
-                
               </ul>
             </CardContent>
           </Card>
@@ -98,7 +96,6 @@ export default function MyPage() {
             </CardHeader>
             <CardContent>
               <ul>
-                
                 <li>만료일: 12/25</li>
               </ul>
             </CardContent>
@@ -128,7 +125,6 @@ export default function MyPage() {
             <CardContent>
               <ul>
                 <li>aaa</li>
-                
               </ul>
             </CardContent>
           </Card>
