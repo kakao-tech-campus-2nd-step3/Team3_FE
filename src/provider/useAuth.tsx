@@ -1,5 +1,5 @@
 // src/provider/useAuth.tsx
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -19,8 +19,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     accessToken: null,
   });
 
+  // 객체 메모이제이션 처리
+  const value = useMemo(() => ({ authState, setAuthState }), [authState]);
+
   return (
-    <AuthContext.Provider value={{ authState, setAuthState }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
@@ -29,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
