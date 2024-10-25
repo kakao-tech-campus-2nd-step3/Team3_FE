@@ -6,6 +6,7 @@ import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar"
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
+
 const slideDown = keyframes`
   0% {
     opacity: 0;

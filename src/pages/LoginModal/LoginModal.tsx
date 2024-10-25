@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import useLogin from "@/api/hooks/useLogin";
 import Button from "@/components/common/Button/Button";
 import NavBar from "@/components/features/Navbar/Navbar";
-import breakpoints from "@/variants/breakpoints";
 
 const LoginContainer = styled.div`
   display: flex;
@@ -14,13 +13,7 @@ const LoginContainer = styled.div`
   padding: 0 20px;
   background-color: #f9f9f9;
 `;
-const Logo = styled.img`
-  height: 50px;
 
-  ${breakpoints.tablet} {
-    height: 70px;
-  }
-`;
 const Title = styled.h1`
   font-size: 2.5rem;
   font-weight: bold;

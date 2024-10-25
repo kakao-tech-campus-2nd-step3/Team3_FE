@@ -30,10 +30,13 @@ module.exports = {
     "import/extensions": "off",
     "react/require-default-props": "off",
     "react/prop-types": "off",
+    "no-console": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
     "react/no-unknown-property": "off",
     "react/jsx-props-no-spreading": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/naming-convention": "off",
+    '@typescript-eslint/no-unused-vars': 'off',
     "jsx-a11y/click-events-have-key-events": "off",
     "no-underscore-dangle": "off",
     "import/no-extraneous-dependencies": [
@@ -45,6 +48,14 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ["vite.config.ts", "public/mockServiceWorker.js"],
+      rules: {
+        "@typescript-eslint/no-var-requires": "off",
+      },
+    },
+  ],
   settings: {
     node: {
       allowModules: ["react-cookie"],

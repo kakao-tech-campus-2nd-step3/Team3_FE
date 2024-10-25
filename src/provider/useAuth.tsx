@@ -22,11 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 객체 메모이제이션 처리
   const value = useMemo(() => ({ authState, setAuthState }), [authState]);
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 const useAuth = () => {

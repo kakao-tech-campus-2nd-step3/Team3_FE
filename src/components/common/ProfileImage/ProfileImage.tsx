@@ -1,5 +1,5 @@
 import React from "react";
-import StyledImage from "./ProfileImage.styles";
+import StyledImage from "./StyledImage.styles";
 import defaultImage from "@/assets/defaultProfileImage.svg";
 
 export type ProfileImageProps = {

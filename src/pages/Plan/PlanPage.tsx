@@ -109,7 +109,7 @@ const PlanPage: React.FC = () => {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [subTitleMessages.length]);
 
   // useNavigate 선언
   const navigate = useNavigate();
@@ -289,6 +289,6 @@ const PlanPage: React.FC = () => {
       </InputWrapper>
     </PlanPageContainer>
   );
-}
+};
 
 export default PlanPage;

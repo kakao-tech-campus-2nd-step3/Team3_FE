@@ -1,4 +1,5 @@
 import StyledInput from "./StyledInput.styles";
+
 export type Props = {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
   value?: string;
@@ -8,14 +9,8 @@ export type Props = {
 
 const Input: React.FC<Props> = ({ value, placeholder, onChange }) => {
   return (
-    <StyledInput
-      onChange={onChange}
-      value={value}
-      placeholder={placeholder}
-      
-    />
+    <StyledInput onChange={onChange} value={value} placeholder={placeholder} />
   );
-
 };
 
 export default Input;

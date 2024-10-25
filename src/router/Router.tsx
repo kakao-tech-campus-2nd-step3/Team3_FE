@@ -59,7 +59,6 @@ function Router() {
         {
           path: `${RouterPath.TEAM_PLAN}/:teamId`,
           element: <TeamPlanDetailPage />,
-
         },
         { path: RouterPath.MY_PAGE, element: <MyPage /> },
         { path: RouterPath.PLAN, element: <PlanPage /> },
@@ -70,7 +69,6 @@ function Router() {
         {
           path: `${RouterPath.FRIEND}/:friendId`,
           element: <FriendDetailPage />,
-
         },
         { path: RouterPath.MY_PAGE, element: <MyPage /> },
         { path: RouterPath.PLAN_SELECT, element: <PlanSelectPage /> },
