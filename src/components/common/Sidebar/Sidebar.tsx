@@ -7,7 +7,8 @@ import {
   People,
   Menu,
 } from "@mui/icons-material";
-import breakpoints from "@/variants/variants";
+import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
+import breakpoints from "@/variants/breakpoints";
 import {
   SidebarContainer,
   MobileHeader,
@@ -18,11 +19,10 @@ import {
   DateDisplay,
   StyledLink,
   MenuItemIcon,
-  MenuItemText
+  MenuItemText,
 } from "./Sidebar.styles";
 
 import logo from "@/assets/logo.svg";
-import { useNavigate , useLocation } from "react-router-dom";
 
 // 고정된 메뉴 항목
 const menuItems = [
@@ -45,15 +45,20 @@ const getFormattedTime = (date: Date) => {
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation(); // useLocation 사용
   const [time, setTime] = useState(() => new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState("메인");
+
   useEffect(() => {
-    const currentItem = menuItems.find((item) => item.path === location.pathname);
+    const currentItem = menuItems.find(
+      (item) => item.path === location.pathname, // location.pathname 사용
+    );
     if (currentItem) {
       setSelectedMenu(currentItem.name);
     }
-  }, [location.pathname]);
+  }, [location.pathname]); // location.pathname 의존성 추가
+
   // 시간 업데이트
   useEffect(() => {
     const timer = setInterval(() => {
@@ -78,13 +83,16 @@ export default function Sidebar() {
     };
   }, [handleResize]);
 
-  const handleMenuClick = useCallback((menuName: string, path: string) => {
-    setSelectedMenu(menuName);
-    navigate(path); // 페이지 이동 처리
-  }, [navigate]);
+  const handleMenuClick = useCallback(
+    (menuName: string, path: string) => {
+      setSelectedMenu(menuName);
+      navigate(path); // 페이지 이동 처리
+    },
+    [navigate],
+  );
 
   const handleLogoClick = () => {
-    navigate("/main"); 
+    navigate("/main");
   };
 
   return (
@@ -123,11 +131,11 @@ export default function Sidebar() {
             selected={selectedMenu === item.name}
             onClick={() => handleMenuClick(item.name, item.path)}
           >
-             <MenuItemIcon>{item.icon}</MenuItemIcon>
+            <MenuItemIcon>{item.icon}</MenuItemIcon>
             <MenuItemText>
-            <StyledLink to={item.path} selected={selectedMenu === item.name}>
-              {item.name}
-            </StyledLink>
+              <StyledLink to={item.path} selected={selectedMenu === item.name}>
+                {item.name}
+              </StyledLink>
             </MenuItemText>
           </MenuItem>
         ))}
