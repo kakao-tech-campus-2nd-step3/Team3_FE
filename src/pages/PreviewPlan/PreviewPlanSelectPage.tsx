@@ -107,7 +107,10 @@ const PlanSelectPage = () => {
         <CustomCalendar />
       </CalendarSection>
       <SidebarSection>
-        <StyledText>원하는 플랜을 {isDesktop && <br />} 선택하세요.</StyledText>
+        <StyledText>
+          원하는 플랜을 {isDesktop && <br />}
+          선택하세요.
+        </StyledText>
         <NumberButtonContainer>
           <NumberButton
             number={1}
@@ -127,7 +130,9 @@ const PlanSelectPage = () => {
         </NumberButtonContainer>
       </SidebarSection>
       <ButtonContainer>
-        <Button onClick={() => navigate(RouterPath.PLAN_UPDATE)}>확인</Button>
+        <Button onClick={() => navigate(RouterPath.PREVIEW_PLAN_UPDATE)}>
+          확인
+        </Button>
         <Button theme="secondary" onClick={() => navigate(-1)}>
           취소
         </Button>

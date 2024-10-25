@@ -1,4 +1,3 @@
-import React from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import { useGetPlans } from "@/api/hooks/useGetPlans";
 

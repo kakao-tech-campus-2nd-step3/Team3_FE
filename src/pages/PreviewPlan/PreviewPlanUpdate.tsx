@@ -6,6 +6,7 @@ import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar"
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
+
 const slideDown = keyframes`
   0% {
     opacity: 0;
@@ -17,7 +18,7 @@ const slideDown = keyframes`
   }
   `;
 
-const PlanUpdateContainer = styled.div`
+const PreviewPlanUpdateContainer = styled.div`
   display: grid;
   align-items: center;
   max-width: 320px;
@@ -66,7 +67,7 @@ const ButtonContainer = styled.div`
 `;
 
 // 배열 선언
-const PlanUpdate = () => {
+const PreviewPlanUpdate = () => {
   const TitleMessages = [
     "플랜을 수정하거나, 바로 저장하세요.",
     "일정을 옮기고 크기를 조정하여 원하는대로 플랜을 수정해보세요",
@@ -95,7 +96,7 @@ const PlanUpdate = () => {
   const navigate = useNavigate();
 
   return (
-    <PlanUpdateContainer>
+    <PreviewPlanUpdateContainer>
       <ContentWrapper>
         <StyledText className={animate ? "animate" : " "}>
           {TitleMessages[currentMessageIndex]}
@@ -104,14 +105,14 @@ const PlanUpdate = () => {
           <CustomCalendar />
         </CalendarContainer>
         <ButtonContainer>
-          <Button onClick={() => navigate(RouterPath.MAIN)}>저장</Button>
+          <Button onClick={() => navigate(RouterPath.LOGIN)}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>
             취소
           </Button>
         </ButtonContainer>
       </ContentWrapper>
-    </PlanUpdateContainer>
+    </PreviewPlanUpdateContainer>
   );
 };
 
-export default PlanUpdate;
+export default PreviewPlanUpdate;

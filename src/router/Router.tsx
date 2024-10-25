@@ -7,33 +7,42 @@ import {
 import LandingPage from "@/pages/Landing/LandingPage";
 import RouterPath from "./RouterPath";
 import LoginModal from "@/pages/LoginModal/LoginModal";
-import PreviewPlanPage from "@/pages/PreviewPlan/PreviewPlanPage";
 import TeamPlan from "@/pages/TeamPlan/TeamPlan";
 import PlanPage from "@/pages/Plan/PlanPage";
+import PlanSelectPage from "@/pages/Plan/PlanSelectPage";
+import PlanUpdate from "@/pages/Plan/PlanUpdate";
 import FriendPage from "@/pages/Friend/FriendPage";
 import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
 import FriendDetailPage from "@/pages/Friend/FriendDetailPage";
 import useAuth from "@/provider/useAuth";
-
 import TeamPlanDetailPage from "@/pages/TeamPlan/TeamPlanDetail";
-import PlanSelectPage from "@/pages/Plan/PlanSelectPage";
-import PlanUpdate from "@/pages/Plan/PlanUpdate";
+import PreviewPlanSelectPage from "@/pages/PreviewPlan/PreviewPlanSelectPage";
+import PreviewPlanUpdate from "@/pages/PreviewPlan/PreviewPlanUpdate";
+import PreviewPlanPage from "@/pages/PreviewPlan/PreviewPlanPage";
 
 function Router() {
   const { authState } = useAuth();
   const router = createBrowserRouter([
     {
-      path: RouterPath.home, // 랜딩 페이지는 사이드바 없는 레이아웃
+      path: RouterPath.HOME, // 랜딩 페이지는 사이드바 없는 레이아웃
       element: <LandingPage />,
     },
     {
-      path: RouterPath.login,
+      path: RouterPath.LOGIN,
       element: <LoginModal />,
     },
     {
-      path: RouterPath.previewPlan,
+      path: RouterPath.PREVIEW_PLAN_SELECT,
+      element: <PreviewPlanSelectPage />,
+    },
+    {
+      path: RouterPath.PREVIEW_PLAN_UPDATE,
+      element: <PreviewPlanUpdate />,
+    },
+    {
+      path: RouterPath.PREVIEW_PLAN,
       element: <PreviewPlanPage />,
     },
     {
@@ -41,28 +50,31 @@ function Router() {
       element: authState.isAuthenticated ? (
         <Layout />
       ) : (
-        <Navigate to={RouterPath.login} />
+        <Navigate to={RouterPath.LOGIN} />
       ),
+
       children: [
-        { path: RouterPath.main, element: <MainPage /> },
-        { path: RouterPath.teamPlan, element: <TeamPlan /> },
+        { path: RouterPath.MAIN, element: <MainPage /> },
+        { path: RouterPath.TEAM_PLAN, element: <TeamPlan /> },
         {
-          path: `${RouterPath.teamPlan}/:teamId`,
+          path: `${RouterPath.TEAM_PLAN}/:teamId`,
           element: <TeamPlanDetailPage />,
+
         },
-        { path: RouterPath.myPage, element: <MyPage /> },
-        { path: RouterPath.plan, element: <PlanPage /> },
+        { path: RouterPath.MY_PAGE, element: <MyPage /> },
+        { path: RouterPath.PLAN, element: <PlanPage /> },
         {
-          path: RouterPath.friend,
+          path: RouterPath.FRIEND,
           element: <FriendPage />,
         },
         {
-          path: `${RouterPath.friend}/:friendId`,
+          path: `${RouterPath.FRIEND}/:friendId`,
           element: <FriendDetailPage />,
+
         },
-        { path: RouterPath.myPage, element: <MyPage /> },
-        { path: RouterPath.plan_select, element: <PlanSelectPage /> },
-        { path: RouterPath.plan_update, element: <PlanUpdate /> },
+        { path: RouterPath.MY_PAGE, element: <MyPage /> },
+        { path: RouterPath.PLAN_SELECT, element: <PlanSelectPage /> },
+        { path: RouterPath.PLAN_UPDATE, element: <PlanUpdate /> },
       ],
     },
   ]);

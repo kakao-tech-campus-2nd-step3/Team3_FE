@@ -87,6 +87,7 @@ export default function TeamPlanPage() {
 
   const handleVisitClick = () => {
     navigate(`/team-plan/1`);
+
   };
 
   return (
@@ -95,6 +96,7 @@ export default function TeamPlanPage() {
       <ButtonWrapper>
         <Button theme="primary" size="long">
           팀 플랜 추가하기
+
         </Button>
       </ButtonWrapper>
       <PlanCard>

@@ -1,10 +1,8 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import useLogin from "@/api/hooks/useLogin";
 import Button from "@/components/common/Button/Button";
-import { NavBar } from "../Landing/LandingPage";
-import logoSVG from "@/assets/logo.svg";
+import NavBar from "@/components/features/Navbar/Navbar";
 import breakpoints from "@/variants/breakpoints";
 
 const LoginContainer = styled.div`
@@ -58,9 +56,7 @@ const LoginModal: React.FC = () => {
   return (
     <>
       {/* Navbar */}
-      <NavBar>
-        <Logo src={logoSVG} alt="로고" />
-      </NavBar>
+      <NavBar />
 
       {/* 로그인 페이지 컨테이너 */}
       <LoginContainer>

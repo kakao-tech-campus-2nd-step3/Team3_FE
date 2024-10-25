@@ -1,6 +1,4 @@
-import React from "react";
-import StyledInput from "./Input.styles";
-
+import StyledInput from "./StyledInput.styles";
 export type Props = {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
   value?: string;
@@ -8,15 +6,16 @@ export type Props = {
   disabled?: boolean;
 };
 
-const Input: React.FC<Props> = ({ value, placeholder, disabled, onChange }) => {
+const Input: React.FC<Props> = ({ value, placeholder, onChange }) => {
   return (
     <StyledInput
       onChange={onChange}
       value={value}
       placeholder={placeholder}
-      disabled={disabled}
+      
     />
   );
+
 };
 
 export default Input;

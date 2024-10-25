@@ -1,93 +1,118 @@
-import { useState, useEffect, useRef, HTMLAttributes } from "react";
 import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
+import { useState, useEffect, useRef, memo } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "@/components/common/Button/Button";
 import Input from "@/components/common/Input/Input";
 import MicrophoneButton from "@/components/common/MicrophoneButton/MicrophoneButton";
+import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
+import breakpoints from "@/variants/breakpoints";
 
-interface MessageSliderProps extends HTMLAttributes<HTMLDivElement> {
-  index: number; // index 속성에 대한 타입 정의
-}
-const MessagesContainer = styled.div`
-  position: relative;
-  overflow: hidden;
-  height: 37px;
-  margin-bottom: 24px;
-  width: 100%;
-  max-width: 100vw;
+const slideDown = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  `;
+const PlanPageContainer = styled.div`
+  width: 60%
+  display: grid;
+  justify-content: center;
+  align-items: center;
 `;
-
-const MessageSlider = styled.div<MessageSliderProps>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  transition: transform 0.8s ease-in-out;
-  transform: ${({ index }) => `translateY(-${index * 37}px)`};
-`;
-
-const MessageItem = styled.div`
-  height: 37px;
+const InputWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 23px;
+  gap: 40px;
+  width: 100%;
+`;
+const Title = styled.p`
+  font-size: 20px;
+  font-weight: bold;
+  color: #938e8e;
+  text-align: center;
+  margin: 50px 0 0 0;
+  ${breakpoints.desktop} {
+    font-size: 30px;
+  }
+`;
+const SubTitle = styled.p<{ animate: boolean }>`
+  font-size: 18px;
   font-weight: bold;
   color: #000;
-  font-family: "Montserrat", sans-serif;
-  color: #a9a9a9;
-  @media (max-width: 768px) {
-    font-size: 15px;
-  }
-`;
-
-const StyledInputWrapper = styled.div`
-  display: flex;
-  justify-content: center; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
-  width: 100%; /* 너비를 100%로 설정 */
-  margin-bottom: 24px; /* 아래쪽 여백 설정 */
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 140px;
-  margin-top: 24px 0px 24px;
-  width: 100%;
-  @media (max-width: 768px) {
-    gap: 80px;
-  }
-`;
-
-const Description = styled.h1`
-  font-size: 23px;
   text-align: center;
-  font-weight: bold;
-  margin-bottom: 24px;
-  @media (max-width: 768px) {
-    font-size: 18px;
-    margin-top: 50px;
+  margin: 0;
+  ${breakpoints.desktop} {
+    font-size: 30px;
+  }
+
+  &.animate {
+    animation: ${({ animate }) => (animate ? slideDown : "none")} 1s ease-in-out;
   }
 `;
-
-const MicrophoneButtonWrapper = styled.div`
-  padding-top: 20px;
-  width: 100%;
+const ButtonContainer = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 24px;
+  gap: 130px;
+  margin-bottom: 40px;
 `;
 
-export default function PlanPage() {
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const messages = [
-    "일정의 예상 소요 시간을 말해주시면 더 정확해요",
+// 고정된 부분들에 대해 memoization 적용
+const MemoizedTitle = memo(() => {
+  return <Title>마이크 버튼을 누르고 자세히 얘기해주세요.</Title>;
+});
+
+const MemoizedInput = memo(Input);
+const MemoizedMicrophoneButton = memo(MicrophoneButton);
+const MemoizedButton = memo(Button);
+const MemoizedButtonContainer = memo(({ navigate }: { navigate: any }) => {
+  return (
+    <ButtonContainer>
+      <MemoizedButton onClick={() => navigate(RouterPath.PLAN_SELECT)}>
+        다음
+      </MemoizedButton>
+      <MemoizedButton onClick={() => navigate(-1)} theme="secondary">
+        취소
+      </MemoizedButton>
+    </ButtonContainer>
+  );
+});
+
+const PlanPage: React.FC = () => {
+  const subTitleMessages = [
+    "일정의 예상 소요 시간을 말해주시면 더 정확해요.",
     "고정된 일정이 있나요?",
-    "쉬고 싶은 시간은 꼭 말해주세요",
+    "쉬고 싶은 날은 꼭 말해주세요.",
   ];
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [animate, setAnimate] = useState(false);
+
+  // 타이머 실행
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMessageIndex((prevIndex) =>
+        prevIndex === subTitleMessages.length - 1 ? 0 : prevIndex + 1,
+      );
+
+      // 에니메이션 시작
+      setAnimate(true);
+
+      // 애니메이션이 끝난 후 에니메이션 초기화
+      setTimeout(() => {
+        setAnimate(false);
+      }, 1000);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // useNavigate 선언
+  const navigate = useNavigate();
 
   const [transcript, setTranscript] = useState("");
   const socketRef = useRef<WebSocket | null>(null);
@@ -96,21 +121,57 @@ export default function PlanPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const [isRecording, setIsRecording] = useState(false);
 
-  const navigate = useNavigate();
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
-    }, 2500);
+  // Float32Array를 Int16Array로 변환하는 함수
+  function convertFloat32ToInt16(buffer: Float32Array) {
+    const l = buffer.length;
+    const result = new Int16Array(l);
+    for (let i = 0; i < l; i += 1) {
+      const s = Math.max(-1, Math.min(1, buffer[i]));
+      result[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return result.buffer;
+  }
 
-    return () => clearInterval(interval);
-  }, []);
+  // 오디오 데이터를 16kHz로 다운샘플링하는 함수
+  function downsampleBuffer(
+    buffer: Float32Array,
+    inputSampleRate: number,
+    outputSampleRate: number,
+  ) {
+    if (outputSampleRate === inputSampleRate) {
+      return convertFloat32ToInt16(buffer);
+    }
+    const sampleRateRatio = inputSampleRate / outputSampleRate;
+    const newLength = Math.round(buffer.length / sampleRateRatio);
+    const result = new Float32Array(newLength);
+    let offsetResult = 0;
+    let offsetBuffer = 0;
+    while (offsetResult < result.length) {
+      const nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+      let accum = 0;
+      let count = 0;
+      for (
+        let i = offsetBuffer;
+        i < nextOffsetBuffer && i < buffer.length;
+        i += 1
+      ) {
+        accum += buffer[i];
+        count += 1;
+      }
+      result[offsetResult] = accum / count;
+      offsetResult += 1;
+      offsetBuffer = nextOffsetBuffer;
+    }
+    return convertFloat32ToInt16(result);
+  }
 
   const handleStartRecording = async () => {
+    console.log("녹음 시작");
     setIsRecording(true);
 
     // WebSocket 연결
     console.log("WebSocket 연결 시도 중...");
-    socketRef.current = new WebSocket("wss://splanet.co.kr/wss/stt'");
+    socketRef.current = new WebSocket("wss://splanet.co.kr/ws/stt");
     socketRef.current.binaryType = "arraybuffer";
 
     socketRef.current.onopen = () => {
@@ -179,6 +240,7 @@ export default function PlanPage() {
   };
 
   const handleStopRecording = () => {
+    console.log("녹음 중지");
     setIsRecording(false);
 
     // 오디오 스트림 및 프로세서 종료
@@ -207,96 +269,26 @@ export default function PlanPage() {
     }
   };
 
-  // 오디오 데이터를 16kHz로 다운샘플링하는 함수
-  function downsampleBuffer(
-    buffer: Float32Array,
-    inputSampleRate: number,
-    outputSampleRate: number,
-  ) {
-    if (outputSampleRate === inputSampleRate) {
-      return convertFloat32ToInt16(buffer);
-    }
-    const sampleRateRatio = inputSampleRate / outputSampleRate;
-    const newLength = Math.round(buffer.length / sampleRateRatio);
-    const result = new Float32Array(newLength);
-    let offsetResult = 0;
-    let offsetBuffer = 0;
-    while (offsetResult < result.length) {
-      const nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
-      let accum = 0;
-      let count = 0;
-      for (
-        let i = offsetBuffer;
-        i < nextOffsetBuffer && i < buffer.length;
-        i+= 1
-      ) {
-        accum += buffer[i];
-        count+= 1;
-      }
-      result[offsetResult] = accum / count;
-      offsetResult+= 1;
-      offsetBuffer = nextOffsetBuffer;
-    }
-    return convertFloat32ToInt16(result);
-  }
-
-  // Float32Array를 Int16Array로 변환하는 함수
-  function convertFloat32ToInt16(buffer: Float32Array) {
-    const l = buffer.length;
-    const result = new Int16Array(l);
-    for (let i = 0; i < l; i+= 1) {
-      const s = Math.max(-1, Math.min(1, buffer[i]));
-      result[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
-    }
-    return result.buffer;
-  }
-  
   return (
-    <div className="w-full h-full px-6 py-3 flex flex-col items-center justify-start gap-6">
-      <Description>
-        마이크 버튼을 누르고 일정을 자세히 이야기해주세요.
-      </Description>
-
-      <MessagesContainer>
-        <MessageSlider index={currentMessageIndex}>
-          {messages.map((message, index) => (
-            <MessageItem key={`message-${index}`}>{message}</MessageItem>
-          ))}
-        </MessageSlider>
-      </MessagesContainer>
-
-      <StyledInputWrapper>
-        {/* Input 컴포넌트에 transcript 값 전달 */}
-        <Input
-          placeholder="일정을 입력하세요..."
+    <PlanPageContainer>
+      <InputWrapper>
+        <MemoizedTitle />
+        <SubTitle animate={animate}>
+          {subTitleMessages[currentMessageIndex]}
+        </SubTitle>
+        <MemoizedInput
           value={transcript}
-          onChange={(e) => setTranscript(e.target.value)} // 사용자가 수정할 때 transcript 업데이트
+          onChange={(e) => setTranscript(e.target.value)}
         />
-      </StyledInputWrapper>
-
-      <MicrophoneButtonWrapper>
-        <MicrophoneButton
+        <MemoizedMicrophoneButton
           onStart={handleStartRecording}
           onStop={handleStopRecording}
           isRecording={isRecording}
         />
-      </MicrophoneButtonWrapper>
-
-      <ButtonWrapper>
-        <Button
-          theme="primary"
-          className="w-[200px] h-[52px] bg-[#39A7F7] text-white text-lg font-bold shadow-md"
-          onClick={() => navigate(RouterPath.plan_select)}
-        >
-          다음
-        </Button>
-        <Button
-          theme="secondary"
-          className="w-[200px] h-[52px] border-[#39A7F7] border-[1.5px] text-[#39A7F7] text-lg font-semibold shadow-md"
-        >
-          취소
-        </Button>
-      </ButtonWrapper>
-    </div>
+        <MemoizedButtonContainer navigate={navigate} />
+      </InputWrapper>
+    </PlanPageContainer>
   );
 }
+
+export default PlanPage;

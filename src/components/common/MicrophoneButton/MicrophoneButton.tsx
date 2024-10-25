@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import {
   ButtonContainer,
@@ -17,20 +16,10 @@ export interface MicrophoneButtonProps {
 const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
   onStart,
   onStop,
+  isRecording,
 }) => {
-  const [isRecording, setIsRecording] = useState(false);
-
-  const handleClick = () => {
-    setIsRecording(!isRecording);
-    if (!isRecording && onStart) {
-      onStart(); // 녹음 시작 콜백 호출
-    } else if (isRecording && onStop) {
-      onStop(); // 녹음 중지 콜백 호출
-    }
-  };
-
   return (
-    <ButtonContainer onClick={handleClick}>
+    <ButtonContainer onClick={isRecording ? onStop : onStart}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 92.045 90"

@@ -23,12 +23,10 @@ const ContentWrapper = styled.div`
     padding-left: 225px;
   }
 `;
+const hideSidebarPaths = ["/", "/login", "/plan/preview"];
 
 const Layout: React.FC = () => {
   const location = useLocation();
-
-  // 사이드바를 숨길 경로 목록
-  const hideSidebarPaths = ["/", "/login", "/plan/preview"];
 
   return (
     <Wrapper>

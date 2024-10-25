@@ -1,5 +1,4 @@
 import { css } from "@emotion/react";
-import breakpoints from "@/variants/breakpoints";
 
 export const appContainerStyles = css`
   max-width: 960px;
@@ -13,6 +12,7 @@ export const appTitleStyles = css`
   margin-bottom: 0.8rem;
 `;
 
+/* calendarStyles */
 export const calendarStyles = css`
   display: flex;
   flex-direction: column;
@@ -22,57 +22,55 @@ export const calendarStyles = css`
   max-height: 720px;
   font-size: 0.7rem;
 
-  @media (max-width: 768px) {
-    //모바일
-    font-size: 0.6rem;
-    height: calc(100vh - 4.8rem - 40px);
-    min-height: 320px;
-
-    .fc-toolbar {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .fc-toolbar-chunk {
-      margin-bottom: 0.5rem;
-    }
-
-    .fc-toolbar-title {
-      font-size: 0.8rem !important;
-    }
-
-    .fc-event-main {
-      padding: 0.16rem;
-    }
-
-    .fc-timegrid-slot {
-      height: 1.6rem;
-    }
-
-    .fc-view-harness {
-      height: calc(100vh - 120px) !important;
-    }
+  .fc-toolbar {
+    flex-direction: column;
+    align-items: center;
   }
 
-  ${breakpoints.tablet} {
-    font-size: 0.7rem;
-    height: calc(100vh - 5.6rem - 40px);
-    min-height: 360px;
-    .fc-toolbar-title {
-      font-size: 1rem !important;
-    }
-    .fc-timegrid-slot {
-      height: 2rem;
-    }
+  .fc-toolbar-chunk {
+    margin-bottom: 0.5rem;
   }
 
-  ${breakpoints.desktop} {
+  .fc-toolbar-title {
+    font-size: 0.8rem !important;
+  }
+
+  .fc-event-main {
+    padding: 0.16rem;
+  }
+
+  .fc-timegrid-slot {
+    height: 1.6rem;
+  }
+
+  .fc-view-harness {
+    height: calc(100vh - 120px) !important;
+  }
+
+  /* 모바일: 3개의 열 */
+  .fc-timegrid-col {
+    flex-basis: calc(100% / 3) !important; /* 3개의 열 */
+  }
+
+  .fc-timegrid-slot {
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  }
+
+  /* 데스크탑 스타일 적용 (1280px 이상) */
+  @media (min-width: 1280px) {
     font-size: 0.8rem;
+
     .fc-toolbar-title {
       font-size: 1.2rem !important;
     }
+
     .fc-timegrid-slot {
       height: 2.4rem;
+    }
+
+    /* 데스크탑: 7개의 열 */
+    .fc-timegrid-col {
+      flex-basis: calc(100% / 7); /* 7개의 열 */
     }
   }
 
@@ -105,11 +103,7 @@ export const calendarStyles = css`
     text-decoration: line-through;
   }
 
-  .fc-timegrid-slot {
-    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-  }
-
-  // 1시간 간격
+  /* 1시간 간격 */
   .fc-timegrid-slot-minor {
     border-bottom: 1px dashed rgba(229, 231, 235, 0.8);
   }

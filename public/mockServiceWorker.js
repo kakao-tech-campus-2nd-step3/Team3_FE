@@ -10,6 +10,7 @@
 
 const PACKAGE_VERSION = '2.5.1'
 const INTEGRITY_CHECKSUM = '07a8241b182f8a246a7cd39894799a9e'
+
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
 const activeClientIds = new Set()
 

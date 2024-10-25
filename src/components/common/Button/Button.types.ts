@@ -3,5 +3,5 @@ import { ComponentProps } from "react";
 
 export type Props = {
   theme?: "primary" | "secondary" | "kakao";
-  size?: "large" | "small" | "long" | "responsive";
+  size?: "small" | "large" | "long" | "responsive";
 } & ComponentProps<"button">;
