@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const appContainerStyles = css`
   max-width: 960px;
@@ -21,7 +21,6 @@ export const calendarStyles = css`
   min-height: 400px;
   max-height: 720px;
   font-size: 0.7rem;
-  margin-bottom: 40px;
 
   @media (max-width: 768px) {
     //모바일
@@ -55,7 +54,7 @@ export const calendarStyles = css`
     }
   }
 
-  ${breakpoints.tablet} {
+  ${breakpoints.tablet2} {
     font-size: 0.7rem;
     height: calc(100vh - 5.6rem - 40px);
     min-height: 360px;
