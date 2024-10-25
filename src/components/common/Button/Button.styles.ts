@@ -1,6 +1,6 @@
 // Button.styles.ts
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import { Props } from "./Button.types";
 
 const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
@@ -19,7 +19,7 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
   },
   ({ size = "responsive" }) => {
     const smallStyle = {
-      width: "80px",
+      width: "100px",
       height: "40px",
       fontSize: "14px",
     };
@@ -36,6 +36,12 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
       fontSize: "15px",
     };
 
+    const miniStyle = {
+      width: "55px",
+      height: "55px",
+      fontSize: "15px",
+    };
+
     if (size === "small") {
       return smallStyle;
     }
@@ -48,15 +54,18 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
       return longStyle;
     }
 
+    if (size === "mini") {
+      return miniStyle;
+    }
+
     // 반응형
     return {
-      ...smallStyle,
-      [breakpoints.tablet]: {
+      [breakpoints.mobile]: {
         width: "120px",
         height: "48px",
         fontSize: "16px",
       },
-      [breakpoints.desktop]: {
+      [breakpoints.tablet2]: {
         width: "150px",
         height: "50px",
         fontSize: "20px",
@@ -85,6 +94,17 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
             backgroundColor: "#DCDCDC",
             color: "black",
             border: "1px solid #39A7F7",
+          },
+        };
+      case "kakao":
+        return {
+          backgroundColor: "#ffe401",
+          color: "#1e1e1f",
+          border: "none",
+          "&:hover": {
+            backgroundColor: "#ffcd00",
+            color: "#1a1a1a",
+            transition: "all 0.3s ease",
           },
         };
       default:

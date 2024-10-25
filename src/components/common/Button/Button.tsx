@@ -5,7 +5,7 @@ import { Props } from "./Button.types";
 
 const Button: React.FC<Props> = ({
   theme = "primary",
-  size = "responsive",  // 기본값 responsive
+  size = "responsive", // 기본값 responsive
   onClick,
   disabled,
   type,

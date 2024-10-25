@@ -2,6 +2,6 @@
 import { ComponentProps } from "react";
 
 export type Props = {
-  theme?: "primary" | "secondary";
-  size?: "large" | "small" | "long"|"responsive"  ;
+  theme?: "primary" | "secondary" | "kakao";
+  size?: "large" | "small" | "long" | "responsive" | "mini";
 } & ComponentProps<"button">;
