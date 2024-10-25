@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
-import { EventInput } from "@fullcalendar/core/index.js";
+import { EventInput, EventContentArg } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
   appTitleStyles,
@@ -14,8 +14,8 @@ import {
   eventItemStyles,
 } from "./CustomCalendar.styles";
 
-// Event 인터페이스
-interface CalendarEvent {
+// event interface
+export interface CalendarEvent {
   id: string;
   title: string;
   description: string;
@@ -23,181 +23,105 @@ interface CalendarEvent {
   end: Date;
   accessibility: boolean | null;
   complete: boolean;
-  status: "completed" | "upcoming" | "incomplete";
 }
 
 interface CustomCalendarProps {
-  calendarOwner?: string; // calendarOwner prop 정의, 선택적 속성
+  calendarOwner?: string;
+  plans?: CalendarEvent[];
 }
 
-// 주간 뷰 및
 const VIEW_MODES = {
   THREEDAY: "timeGridThreeDay",
   WEEK: "timeGridWeek",
 };
 
-// 이벤트 상태 계산 함수
+// event 상태 계산기
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
-
-  if (event.complete) {
-    return "completed";
-  }
-  if (event.start > now) {
-    return "upcoming";
-  }
-  if (!event.complete && event.end < now) {
-    return "incomplete";
-  }
-
+  if (event.complete) return "completed";
+  if (event.start > now) return "upcoming";
+  if (!event.complete && event.end < now) return "incomplete";
   return "incomplete";
 };
 
-// 날짜 변환 함수
-const parseEventDates = (event: any): CalendarEvent => ({
-  ...event,
-  id: event.id.toString(),
-  start: new Date(event.start_date),
-  end: new Date(event.end_date),
-});
+// render event
+const renderEventContent = (eventInfo: EventContentArg) => {
+  const { event, timeText } = eventInfo;
+  const description = event.extendedProps?.description || "";
 
-// 이벤트 렌더링 함수
-const renderEventContent =
-  (events: EventInput[]) => (eventInfo: { event: any; timeText: string }) => {
-    const { event, timeText } = eventInfo;
-    const foundEvent = events.find((e) => e.id === event.id);
-    let className = "";
-
-    if (foundEvent) {
-      className = Array.isArray(foundEvent.className)
-        ? foundEvent.className.join(" ")
-        : foundEvent.className || "";
-    }
-
-    return (
-      <div css={eventItemStyles(className, false)}>
-        <div>{timeText}</div>
-        <div>{event.title}</div>
-        {foundEvent && <div>{event.extendedProps.description}</div>}
-      </div>
-    );
-  };
-
-const handleResizeEvent = (
-  setIsMobile: React.Dispatch<React.SetStateAction<boolean>>,
-  calendarRef: React.RefObject<FullCalendar>,
-) => {
-  const handleResize = () => {
-    setIsMobile(window.innerWidth <= breakpoints.sm);
-    if (calendarRef.current) {
-      const calendarApi = calendarRef.current.getApi();
-      calendarApi.updateSize();
-      calendarApi.changeView(
-        window.innerWidth <= breakpoints.sm
-          ? VIEW_MODES.THREEDAY
-          : VIEW_MODES.WEEK,
-      );
-    }
-  };
-  return handleResize;
+  return (
+    <div css={eventItemStyles("", false)}>
+      <div>{timeText}</div>
+      <div>{event.title}</div>
+      <div>{description}</div>
+    </div>
+  );
 };
 
-const CustomCalendar: React.FC<CustomCalendarProps> = ({ calendarOwner }) => {
-  const [currentDate, setCurrentDate] = useState(() => new Date());
+// Main CustomCalendar component
+const CustomCalendar: React.FC<CustomCalendarProps> = ({
+  calendarOwner,
+  plans = [],
+}) => {
   const [events, setEvents] = useState<EventInput[]>([]);
-  const [isMobile, setIsMobile] = useState(
-    () => window.innerWidth <= breakpoints.sm,
-  );
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const calendarRef = useRef<FullCalendar>(null);
-  const calendarTitle = calendarOwner ? `${calendarOwner}` : "나만의 계획표";
-  // 이벤트 데이터 fetch 및 초기화
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+  // Handle window resize
   useEffect(() => {
-    const fetchedEvents = [
-      {
-    id: 1,
-    title: "책 5장 정리",
-    description: "집에서 공부",
-    start_date: "2024-10-21T06:00:00+09:00",
-    end_date: "2024-10-21T09:00:00+09:00",
-    accessibility: true,
-    complete: true,
-  },
-  {
-    id: 2,
-    title: "팀 미팅",
-    description: "팀 프로젝트 미팅",
-    start_date: "2024-10-22T08:00:00+09:00",
-    end_date: "2024-10-22T11:00:00+09:00",
-    accessibility: false,
-    complete: false,
-  },
-  {
-    id: 3,
-    title: "개인 운동",
-    description: "헬스장 운동",
-    start_date: "2024-10-25T09:00:00+09:00",
-    end_date: "2024-10-25T12:00:00+09:00",
-    accessibility: true,
-    complete: false,
-  },
-    ];
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= breakpoints.sm);
+      const calendarApi = calendarRef.current?.getApi();
+      calendarApi?.changeView(isMobile ? "timeGridThreeDay" : "timeGridWeek");
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMobile]);
 
-    const updatedEvents = fetchedEvents.map((event) => {
-      const parsedEvent = parseEventDates(event);
-      return {
-        ...parsedEvent,
-        status: calculateEventStatus(parsedEvent),
-      };
-    });
-
-    const eventInputs = updatedEvents.map((event) => ({
-      id: event.id,
-      title: event.title,
-      start: event.start,
-      end: event.end,
-      className: `fc-event-${event.status}`,
+  // Initialize events from props
+  useEffect(() => {
+    const parsedEvents = plans.map((plan) => ({
+      id: plan.id,
+      title: plan.title,
+      start: new Date(plan.start),
+      end: new Date(plan.end),
+      className: `fc-event-${calculateEventStatus(plan)}`,
       extendedProps: {
-        description: event.description,
+        description: plan.description,
       },
     }));
+    setEvents(parsedEvents);
+  }, [plans]);
 
-    setEvents(eventInputs);
-  }, []);
+  // event drop 및 resize handle
+  const handleEventChange = useCallback((info: { event: any }) => {
+    const description = info.event.extendedProps?.description || "";
 
-  // 이벤트 drop 처리
-  const handleEventDrop = useCallback((info: { event: any }) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
         event.id === info.event.id
-          ? { ...event, start: info.event.start, end: info.event.end }
+          ? {
+              ...event,
+              start: info.event.start,
+              end: info.event.end,
+              className: `fc-event-${calculateEventStatus({
+                id: info.event.id || "",
+                title: info.event.title || "",
+                description,
+                start: new Date(info.event.start),
+                end: new Date(info.event.end),
+                accessibility: null,
+                complete: false,
+              })}`,
+            }
           : event,
       ),
     );
-  }, []);
-
-  // 이벤트 resize 처리
-  const handleEventResize = useCallback((info: { event: any }) => {
-    setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === info.event.id
-          ? { ...event, start: info.event.start, end: info.event.end }
-          : event,
-      ),
-    );
-  }, []);
-
-  // 화면 크기 변경 처리
-  useEffect(() => {
-    const resizeHandler = handleResizeEvent(setIsMobile, calendarRef);
-    window.addEventListener("resize", resizeHandler);
-    resizeHandler(); // 초기화 시에도 실행
-
-    return () => window.removeEventListener("resize", resizeHandler);
   }, []);
 
   return (
     <div css={appContainerStyles}>
-      <h1 css={appTitleStyles}>{calendarTitle}</h1>
+      <h1 css={appTitleStyles}>{calendarOwner || "My Calendar"}</h1>
       <div css={calendarStyles}>
         <FullCalendar
           ref={calendarRef}
@@ -216,38 +140,38 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ calendarOwner }) => {
             right: "prev,next,today",
           }}
           locale={koLocale}
-          slotDuration="00:30:00"
-          slotLabelInterval="01:00:00"
+          slotDuration="00:30:00" // 30분 간격 설정
+          slotLabelInterval="01:00:00" // 1시간 간격으로 시간 레이블 표시
           slotLabelFormat={{
             hour: "2-digit",
             minute: "2-digit",
-            hour12: false,
+            hour12: false, // 24시간 형식
           }}
           eventTimeFormat={{
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,
           }}
-          allDaySlot={false}
-          editable
+          allDaySlot={false} // 하루 종일 슬롯 비활성화
+          editable // 이벤트 드래그 및 드롭 가능
+          eventResizableFromStart
+          eventDrop={handleEventChange}
+          eventResize={handleEventChange}
+          eventContent={renderEventContent}
           selectable={false}
           selectMirror={false}
-          dayMaxEvents
-          weekends
-          firstDay={1}
-          events={events}
-          eventResizableFromStart
-          eventDrop={handleEventDrop}
-          eventResize={handleEventResize}
-          eventContent={renderEventContent(events)}
-          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
+          dayMaxEvents // 하루에 최대 이벤트 수 제한
+          weekends // 주말 표시
+          firstDay={1} // 주 시작 요일을 월요일로 설정
+          events={events} // 이벤트 데이터
+          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)} // 날짜 범위가 변경될 때 호출
           dayHeaderFormat={{
             weekday: "short",
             month: "numeric",
             day: "numeric",
             omitCommas: true,
           }}
-          height={isMobile ? "85%" : "100%"}
+          height={isMobile ? "85%" : "100%"} // 모바일에서의 높이 설정
         />
       </div>
     </div>
