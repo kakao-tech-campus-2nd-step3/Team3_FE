@@ -1,19 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useMemo } from "react";
 import { css } from "@emotion/react";
+import { useNavigate } from "react-router-dom";
+import { Search } from "@mui/icons-material";
 import List from "@/components/common/List/List";
 import {
   useGetFriends,
   useGetReceivedRequests,
   useGetSentRequests,
 } from "@/api/hooks/useGetFriends";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import { Friend, SentRequest, ReceivedRequest } from "@/types/types";
 import Button from "@/components/common/Button/Button";
-import { useNavigate } from "react-router-dom";
-import {
-  Search,
-} from "@mui/icons-material";
 
 // Styles
 const pageStyles = css`
@@ -115,7 +113,9 @@ const FriendItem = ({ friend }: { friend: Friend }) => {
   const navigate = useNavigate();
 
   const handleVisitClick = () => {
-    navigate(`/friend/${friend.friend_id}`, { state: { friendName: friend.friend_name } });
+    navigate(`/friend/${friend.friend_id}`, {
+      state: { friendName: friend.friend_name },
+    });
   };
 
   return (
@@ -123,13 +123,17 @@ const FriendItem = ({ friend }: { friend: Friend }) => {
       <List
         profileSrc={friend.friend_profile_image}
         name={friend.friend_name}
-        date={new Date(friend.created_at).toLocaleString()}
+        date={new Date(friend.createdAt).toLocaleString()}
       />
       <div css={buttonContainerStyles}>
         <Button size="small" theme="primary" onClick={handleVisitClick}>
           방문
         </Button>
-        <Button size="small" theme="secondary" onClick={() => console.log("삭제 clicked")}>
+        <Button
+          size="small"
+          theme="secondary"
+          onClick={() => console.log("삭제 clicked")}
+        >
           삭제
         </Button>
       </div>
@@ -155,30 +159,46 @@ const RequestItem = ({
       <List
         profileSrc={request.friend_profile_image}
         name={
-          isSentRequest(request) ? request.receiver_name : request.requester_name
+          isSentRequest(request)
+            ? request.receiver_name
+            : request.requester_name
         }
         date={request.status}
       />
       <div css={buttonContainerStyles}>
-      {type === "sent" ? (
-        <Button style={{ marginRight: '10px' }} size="small" theme="primary" onClick={() => console.log("취소 clicked")}>
-          취소
-        </Button>
-      ) : (
-        <>
-          <Button style={{ paddingRight: '10px' }} size="small" theme="primary" onClick={() => console.log("수락 clicked")}>
-            수락
+        {type === "sent" ? (
+          <Button
+            style={{ marginRight: "10px" }}
+            size="small"
+            theme="primary"
+            onClick={() => console.log("취소 clicked")}
+          >
+            취소
           </Button>
-          <Button style={{ margin: '10px' }} size="small" theme="secondary" onClick={() => console.log("거절 clicked")}>
-            거절
-          </Button>
-        </>
-      )}
+        ) : (
+          <>
+            <Button
+              style={{ paddingRight: "10px" }}
+              size="small"
+              theme="primary"
+              onClick={() => console.log("수락 clicked")}
+            >
+              수락
+            </Button>
+            <Button
+              style={{ margin: "10px" }}
+              size="small"
+              theme="secondary"
+              onClick={() => console.log("거절 clicked")}
+            >
+              거절
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
 };
-
 
 export default function FriendListPage() {
   const [activeTab, setActiveTab] = useState("friendList");
@@ -257,7 +277,7 @@ export default function FriendListPage() {
       <div css={friendListStyles}>
         {activeTab === "friendSearch" && (
           <div css={searchBarStyles}>
-            <Search css={searchIconStyles}></Search>
+            <Search css={searchIconStyles} />
             <input
               css={searchInputStyles}
               placeholder="검색"

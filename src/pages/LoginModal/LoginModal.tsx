@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useLogin from "@/api/hooks/useLogin"; 
-import Button from "@/components/common/Button/Button"; 
-import { NavBar } from "../Landing/LandingPage";
-import logoSVG from "@/assets/logo.svg"; 
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import useLogin from "@/api/hooks/useLogin";
+import Button from "@/components/common/Button/Button";
+import { NavBar } from "../Landing/LandingPage";
+import logoSVG from "@/assets/logo.svg";
+import breakpoints from "@/variants/breakpoints";
+
 const LoginContainer = styled.div`
   display: flex;
   flex-direction: column;
