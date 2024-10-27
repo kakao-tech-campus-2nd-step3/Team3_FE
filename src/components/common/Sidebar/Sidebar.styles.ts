@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 
 export const StyledLink = styled(Link)<{ selected: boolean }>`
   color: ${({ selected }) => (selected ? "#fff" : "#000")};
@@ -52,7 +52,7 @@ export const MenuItemsContainer = styled.div<{ isOpen: boolean }>(
     opacity: isOpen ? 1 : 0,
     visibility: isOpen ? "visible" : "hidden",
     transition: "max-height 0.3s ease, opacity 0.3s ease",
-
+    alignItems: "center",
     [breakpoints.tablet]: {
       padding: 0,
       paddingTop: 0,
@@ -136,3 +136,14 @@ export const HamburgerMenu = styled.div({
   width: "40px",
   height: "40px",
 });
+
+export const MenuItemIcon = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+`;
+
+export const MenuItemText = styled.span`
+  display: flex;
+  align-items: center;
+`;

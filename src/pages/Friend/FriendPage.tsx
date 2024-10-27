@@ -1,14 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useMemo } from "react";
 import { css } from "@emotion/react";
+import { useNavigate } from "react-router-dom";
+import { Search } from "@mui/icons-material";
 import List from "@/components/common/List/List";
 import {
   useGetFriends,
   useGetReceivedRequests,
   useGetSentRequests,
 } from "@/api/hooks/useGetFriends";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import { Friend, SentRequest, ReceivedRequest } from "@/types/types";
+import Button from "@/components/common/Button/Button";
 
 // Styles
 const pageStyles = css`
@@ -94,66 +97,49 @@ const friendItemStyles = css`
   border-radius: 16px;
   box-sizing: border-box;
   width: 100%;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 394px;
 `;
 
 const buttonContainerStyles = css`
   display: flex;
-  gap: 10px;
-  margin-left: auto;
+  gap: 10px; // 버튼 사이의 간격
+  margin-left: auto; // 오른쪽 끝으로 배치
+  margin-right: 20px;
 `;
-
-const buttonStyles = css`
-  width: 100px;
-  height: 50px;
-  padding: 8px 24px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 700;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-sizing: border-box;
-`;
-
-const primaryButtonStyles = css`
-  ${buttonStyles}
-  background: #39A7F7;
-  color: white;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border: none;
-  outline: none;
-`;
-
-const secondaryButtonStyles = css`
-  ${buttonStyles}
-  background: white;
-  color: #39a7f7;
-  border: 1.5px solid #39a7f7;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  outline: none;
-  margin-right: 10px;
-`; // button을 list에 포함예정
 
 // List 아이템을 렌더링하는 컴포넌트
-const FriendItem = ({ friend }: { friend: Friend }) => (
-  <div key={friend.friend_id} css={friendItemStyles}>
-    <List
-      profileSrc={friend.friend_profile_image}
-      name={friend.friend_name}
-      date={new Date(friend.created_at).toLocaleString()}
-    />
-    <div css={buttonContainerStyles}>
-      <button type="button" css={primaryButtonStyles}>
-        방문
-      </button>
-      <button type="button" css={secondaryButtonStyles}>
-        삭제
-      </button>
+const FriendItem = ({ friend }: { friend: Friend }) => {
+  const navigate = useNavigate();
+
+  const handleVisitClick = () => {
+    navigate(`/friend/${friend.friend_id}`, {
+      state: { friendName: friend.friend_name },
+    });
+  };
+
+  return (
+    <div key={friend.friend_id} css={friendItemStyles}>
+      <List
+        profileSrc={friend.friend_profile_image}
+        name={friend.friend_name}
+        date={new Date(friend.createdAt).toLocaleString()}
+      />
+      <div css={buttonContainerStyles}>
+        <Button size="small" theme="primary" onClick={handleVisitClick}>
+          방문
+        </Button>
+        <Button
+          size="small"
+          theme="secondary"
+          onClick={() => console.log("삭제 clicked")}
+        >
+          삭제
+        </Button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 function isSentRequest(
   request: SentRequest | ReceivedRequest,
@@ -167,27 +153,52 @@ const RequestItem = ({
 }: {
   request: SentRequest | ReceivedRequest;
   type: "sent" | "received";
-}) => (
-  <div key={request.id} css={friendItemStyles}>
-    <List
-      profileSrc="https://example.com/default.jpg"
-      name={
-        isSentRequest(request) ? request.receiver_name : request.requester_name
-      }
-      date={request.status}
-    />
-    <div css={buttonContainerStyles}>
-      <button type="button" css={primaryButtonStyles}>
-        {type === "sent" ? "취소" : "수락"}
-      </button>
-      {type === "received" && (
-        <button type="button" css={secondaryButtonStyles}>
-          거절
-        </button>
-      )}
+}) => {
+  return (
+    <div key={request.id} css={friendItemStyles}>
+      <List
+        profileSrc={request.friend_profile_image}
+        name={
+          isSentRequest(request)
+            ? request.receiver_name
+            : request.requester_name
+        }
+        date={request.status}
+      />
+      <div css={buttonContainerStyles}>
+        {type === "sent" ? (
+          <Button
+            style={{ marginRight: "10px" }}
+            size="small"
+            theme="primary"
+            onClick={() => console.log("취소 clicked")}
+          >
+            취소
+          </Button>
+        ) : (
+          <>
+            <Button
+              style={{ paddingRight: "10px" }}
+              size="small"
+              theme="primary"
+              onClick={() => console.log("수락 clicked")}
+            >
+              수락
+            </Button>
+            <Button
+              style={{ margin: "10px" }}
+              size="small"
+              theme="secondary"
+              onClick={() => console.log("거절 clicked")}
+            >
+              거절
+            </Button>
+          </>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function FriendListPage() {
   const [activeTab, setActiveTab] = useState("friendList");
@@ -266,7 +277,7 @@ export default function FriendListPage() {
       <div css={friendListStyles}>
         {activeTab === "friendSearch" && (
           <div css={searchBarStyles}>
-            <span css={searchIconStyles}>&#128269;</span>
+            <Search css={searchIconStyles} />
             <input
               css={searchInputStyles}
               placeholder="검색"

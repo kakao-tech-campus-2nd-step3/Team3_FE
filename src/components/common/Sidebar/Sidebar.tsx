@@ -7,7 +7,8 @@ import {
   People,
   Menu,
 } from "@mui/icons-material";
-import breakpoints from "@/variants/variants";
+import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
+import breakpoints from "@/variants/breakpoints";
 import {
   SidebarContainer,
   MobileHeader,
@@ -17,6 +18,8 @@ import {
   TimeDisplay,
   DateDisplay,
   StyledLink,
+  MenuItemIcon,
+  MenuItemText,
 } from "./Sidebar.styles";
 
 import logo from "@/assets/logo.svg";
@@ -41,9 +44,20 @@ const getFormattedTime = (date: Date) => {
 };
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation(); // useLocation 사용
   const [time, setTime] = useState(() => new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState("메인");
+
+  useEffect(() => {
+    const currentItem = menuItems.find(
+      (item) => item.path === location.pathname, // location.pathname 사용
+    );
+    if (currentItem) {
+      setSelectedMenu(currentItem.name);
+    }
+  }, [location.pathname]); // location.pathname 의존성 추가
 
   // 시간 업데이트
   useEffect(() => {
@@ -69,9 +83,17 @@ export default function Sidebar() {
     };
   }, [handleResize]);
 
-  const handleMenuClick = useCallback((menuName: string) => {
-    setSelectedMenu(menuName);
-  }, []);
+  const handleMenuClick = useCallback(
+    (menuName: string, path: string) => {
+      setSelectedMenu(menuName);
+      navigate(path); // 페이지 이동 처리
+    },
+    [navigate],
+  );
+
+  const handleLogoClick = () => {
+    navigate("/main");
+  };
 
   return (
     <SidebarContainer isOpen={isOpen}>
@@ -82,7 +104,8 @@ export default function Sidebar() {
           alt="Logo"
           width="170"
           height="59"
-          style={{ paddingTop: "10px" }}
+          style={{ paddingTop: "10px", cursor: "pointer" }}
+          onClick={handleLogoClick}
         />
         <HamburgerMenu onClick={() => setIsOpen(!isOpen)}>
           <Menu />
@@ -96,7 +119,8 @@ export default function Sidebar() {
           alt="Logo"
           width="170"
           height="59"
-          style={{ marginBottom: "15px" }}
+          style={{ marginBottom: "15px", cursor: "pointer" }}
+          onClick={handleLogoClick}
         />
       )}
 
@@ -105,12 +129,14 @@ export default function Sidebar() {
           <MenuItem
             key={item.name}
             selected={selectedMenu === item.name}
-            onClick={() => handleMenuClick(item.name)}
+            onClick={() => handleMenuClick(item.name, item.path)}
           >
-            <div className="icon">{item.icon}</div>
-            <StyledLink to={item.path} selected={selectedMenu === item.name}>
-              {item.name}
-            </StyledLink>
+            <MenuItemIcon>{item.icon}</MenuItemIcon>
+            <MenuItemText>
+              <StyledLink to={item.path} selected={selectedMenu === item.name}>
+                {item.name}
+              </StyledLink>
+            </MenuItemText>
           </MenuItem>
         ))}
       </MenuItemsContainer>

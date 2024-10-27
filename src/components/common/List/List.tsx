@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
 import UserInfo from "@/components/common/UserInfo/UserInfo";
 
-export type Props = {
+export type ListProps = {
   profileSrc: string;
   name: string;
   date: string;
@@ -11,20 +11,20 @@ export type Props = {
 const ListItemWrapper = styled.div`
   display: flex;
   align-items: center;
+  position: relative;
 `;
 
 const ProfileImageWrapper = styled.div`
-  margin-right: 10px; // 프로필 이미지와 리스트 간의 간격
+  margin-right: 10px; // Profile image and list spacing
 `;
 
 const UserInfoWrapper = styled.div`
   flex-grow: 1;
-  background-color: #f5f5f5; // 회색 배경
   border-radius: 16px;
   padding: 10px;
 `;
 
-export const List: React.FC<Props> = ({ profileSrc, name, date }) => {
+export const List: React.FC<ListProps> = ({ profileSrc, name, date }) => {
   return (
     <ListItemWrapper>
       <ProfileImageWrapper>

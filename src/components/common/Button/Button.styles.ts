@@ -1,8 +1,9 @@
+// Button.styles.ts
 import styled from "@emotion/styled";
-import breakpoints from "@/variants/variants";
+import breakpoints from "@/variants/breakpoints";
 import { Props } from "./Button.types";
 
-const StyledButton = styled.button<Pick<Props, "theme">>(
+const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
   {
     borderRadius: "16px",
     display: "flex",
@@ -11,27 +12,55 @@ const StyledButton = styled.button<Pick<Props, "theme">>(
     cursor: "pointer",
     transition: "background-color 200ms",
     padding: "0 16px",
-    outline: "none", // 클릭 시 포커스 테두리 제거
+    outline: "none",
     "&:focus": {
-      outline: "none", // 추가로 focus 상태에서도 테두리 제거
+      outline: "none",
     },
   },
-  {
-    width: "80px",
-    height: "40px",
-    fontSize: "14px",
-    [breakpoints.tablet]: {
-      // 테블릿
-      width: "120px",
-      height: "48px",
-      fontSize: "16px",
-    },
-    [breakpoints.desktop]: {
-      // 데스크탑
+  ({ size = "responsive" }) => {
+    const smallStyle = {
+      width: "100px",
+      height: "40px",
+      fontSize: "14px",
+    };
+
+    const largeStyle = {
       width: "150px",
       height: "50px",
       fontSize: "20px",
-    },
+    };
+
+    const longStyle = {
+      width: "170px",
+      height: "40px",
+      fontSize: "15px",
+    };
+
+    if (size === "small") {
+      return smallStyle;
+    }
+
+    if (size === "large") {
+      return largeStyle;
+    }
+
+    if (size === "long") {
+      return longStyle;
+    }
+
+    // 반응형
+    return {
+      [breakpoints.mobile]: {
+        width: "120px",
+        height: "48px",
+        fontSize: "16px",
+      },
+      [breakpoints.tablet]: {
+        width: "150px",
+        height: "50px",
+        fontSize: "20px",
+      },
+    };
   },
   ({ theme }) => {
     switch (theme) {
@@ -55,6 +84,17 @@ const StyledButton = styled.button<Pick<Props, "theme">>(
             backgroundColor: "#DCDCDC",
             color: "black",
             border: "1px solid #39A7F7",
+          },
+        };
+      case "kakao":
+        return {
+          backgroundColor: "#ffe401",
+          color: "#1e1e1f",
+          border: "none",
+          "&:hover": {
+            backgroundColor: "#ffcd00",
+            color: "#1a1a1a",
+            transition: "all 0.3s ease",
           },
         };
       default:
