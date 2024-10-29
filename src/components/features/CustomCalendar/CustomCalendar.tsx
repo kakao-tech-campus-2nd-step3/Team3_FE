@@ -70,12 +70,19 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= breakpoints.sm);
-      const calendarApi = calendarRef.current?.getApi();
-      calendarApi?.changeView(isMobile ? "timeGridThreeDay" : "timeGridWeek");
+      const currentMobile = window.innerWidth <= breakpoints.sm;
+      if (currentMobile !== isMobile) {
+        setIsMobile(currentMobile);
+      }
     };
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, [isMobile]);
+
+  useEffect(() => {
+    const calendarApi = calendarRef.current?.getApi();
+    calendarApi?.changeView(isMobile ? "timeGridThreeDay" : "timeGridWeek");
   }, [isMobile]);
 
   // Initialize events from props
@@ -90,8 +97,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         description: plan.description,
       },
     }));
-    setEvents(parsedEvents);
-  }, [plans]);
+    const eventEqual = JSON.stringify(events) === JSON.stringify(parsedEvents);
+    if (!eventEqual) {
+      setEvents(parsedEvents);
+    }
+  }, [plans, events]);
 
   // event drop 및 resize handle
   const handleEventChange = useCallback((info: { event: any }) => {
