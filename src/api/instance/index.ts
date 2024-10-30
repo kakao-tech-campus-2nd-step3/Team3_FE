@@ -5,7 +5,7 @@ import { QueryClient } from "@tanstack/react-query";
 // Axios 인스턴스 생성
 // axios.create()를 통해 기본 설정
 export const apiClient = axios.create({
-  baseURL: "https://example.com/api",
+  baseURL: "https://api.splanet.co.kr/api/",
   headers: {
     "Content-Type": "application/json",
   },
