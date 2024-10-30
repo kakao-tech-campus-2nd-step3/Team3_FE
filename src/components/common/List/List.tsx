@@ -3,9 +3,9 @@ import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
 import UserInfo from "@/components/common/UserInfo/UserInfo";
 
 export type ListProps = {
-  profileSrc: string;
+  profileSrc?: string;
   name: string;
-  date: string;
+  date?: string;
 };
 
 const ListItemWrapper = styled.div`
