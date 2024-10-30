@@ -21,6 +21,9 @@ import TeamPlanDetailPage from "@/pages/TeamPlan/TeamPlanDetail";
 import PreviewPlanSelectPage from "@/pages/PreviewPlan/PreviewPlanSelectPage";
 import PreviewPlanUpdate from "@/pages/PreviewPlan/PreviewPlanUpdate";
 import PreviewPlanPage from "@/pages/PreviewPlan/PreviewPlanPage";
+import TeamPlanMakingPage from "@/pages/TeamPlan/TeamPlanMaking";
+import TeamPlanUpdate from "@/pages/TeamPlan/TeamPlanUpdatePage";
+import OAuthRedirectHandler from "@/pages/LoginModal/RedirectPage";
 
 function Router() {
   const { authState } = useAuth();
@@ -44,6 +47,10 @@ function Router() {
     {
       path: RouterPath.PREVIEW_PLAN,
       element: <PreviewPlanPage />,
+    },
+    {
+      path: "/oauth2/redirect", // 리다이렉트 경로 추가
+      element: <OAuthRedirectHandler />,
     },
     {
       path: "/",
@@ -73,6 +80,8 @@ function Router() {
         { path: RouterPath.MY_PAGE, element: <MyPage /> },
         { path: RouterPath.PLAN_SELECT, element: <PlanSelectPage /> },
         { path: RouterPath.PLAN_UPDATE, element: <PlanUpdate /> },
+        { path: RouterPath.TEAM_PLAN_MAKING, element: <TeamPlanMakingPage /> },
+        { path: RouterPath.TEAM_PLAN_UPDATE, element: <TeamPlanUpdate /> },
       ],
     },
   ]);
