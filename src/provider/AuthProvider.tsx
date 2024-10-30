@@ -1,5 +1,4 @@
-// src/provider/useAuth.tsx
-import { createContext, useContext, useState, ReactNode, useMemo } from "react";
+import { createContext, useState, ReactNode, useMemo } from "react";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -25,12 +24,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
-export default useAuth;
+export { AuthContext };

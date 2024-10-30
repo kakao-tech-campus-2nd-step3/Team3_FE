@@ -16,7 +16,7 @@ import MyPage from "@/pages/Mypage/Mypage";
 import Layout from "@/components/features/Layout/Layout";
 import MainPage from "@/pages/Main/MainPage";
 import FriendDetailPage from "@/pages/Friend/FriendDetailPage";
-import useAuth from "@/provider/useAuth";
+import useAuth from "@/hooks/useAuth";
 import TeamPlanDetailPage from "@/pages/TeamPlan/TeamPlanDetail";
 import PreviewPlanSelectPage from "@/pages/PreviewPlan/PreviewPlanSelectPage";
 import PreviewPlanUpdate from "@/pages/PreviewPlan/PreviewPlanUpdate";
