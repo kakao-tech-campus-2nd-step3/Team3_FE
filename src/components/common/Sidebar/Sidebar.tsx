@@ -1,3 +1,4 @@
+import React from "react"; // React 명시적으로 추가
 import { useState, useEffect, useCallback } from "react";
 import {
   Home,
@@ -8,6 +9,7 @@ import {
   Menu,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
+import { TimeDisplay, DateDisplay } from "./Sidebar.styles";
 import breakpoints from "@/variants/breakpoints";
 import {
   SidebarContainer,
@@ -15,17 +17,19 @@ import {
   HamburgerMenu,
   MenuItemsContainer,
   MenuItem,
-  TimeDisplay,
-  DateDisplay,
   StyledLink,
   MenuItemIcon,
   MenuItemText,
 } from "./Sidebar.styles";
-
 import logo from "@/assets/logo.svg";
+// 고정된 메뉴 항목 타입 정의
+interface MenuItemType {
+  name: string;
+  icon: JSX.Element;
+  path: string;
+}
 
-// 고정된 메뉴 항목
-const menuItems = [
+const menuItems: MenuItemType[] = [
   { name: "메인", icon: <Home />, path: "/main" },
   { name: "개인 플랜", icon: <CalendarMonth />, path: "/plan" },
   { name: "팀 플랜", icon: <Diversity3 />, path: "/team-plan" },
@@ -33,33 +37,9 @@ const menuItems = [
   { name: "마이페이지", icon: <Person />, path: "/mypage" },
 ];
 
-// 시간을 포맷팅
-const getFormattedTime = (date: Date) => {
-  return date.toLocaleTimeString("ko-KR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-};
-
-export default function Sidebar() {
-  const navigate = useNavigate();
-  const location = useLocation(); // useLocation 사용
+const TimeComponent = () => {
   const [time, setTime] = useState(() => new Date());
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState("메인");
 
-  useEffect(() => {
-    const currentItem = menuItems.find(
-      (item) => item.path === location.pathname, // location.pathname 사용
-    );
-    if (currentItem) {
-      setSelectedMenu(currentItem.name);
-    }
-  }, [location.pathname]); // location.pathname 의존성 추가
-
-  // 시간 업데이트
   useEffect(() => {
     const timer = setInterval(() => {
       setTime(new Date());
@@ -68,13 +48,51 @@ export default function Sidebar() {
     return () => clearInterval(timer);
   }, []);
 
+  const getFormattedTime = (date: Date) => {
+    return date.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  };
+
+  return (
+    <>
+      <TimeDisplay>{getFormattedTime(time)}</TimeDisplay>
+      <DateDisplay>
+        {time.toLocaleDateString("ko-KR", {
+          weekday: "short",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })}
+      </DateDisplay>
+    </>
+  );
+};
+
+const Sidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState("메인");
+
+  useEffect(() => {
+    const currentItem = menuItems.find(
+      (item) => item.path === location.pathname,
+    );
+    if (currentItem) {
+      setSelectedMenu(currentItem.name);
+    }
+  }, [location.pathname]);
+
   const handleResize = useCallback(() => {
     if (window.innerWidth >= breakpoints.sm && isOpen) {
       setIsOpen(false);
     }
   }, [isOpen]);
 
-  // 윈도우 크기 변화 감지
   useEffect(() => {
     window.addEventListener("resize", handleResize);
 
@@ -98,7 +116,6 @@ export default function Sidebar() {
   return (
     <SidebarContainer isOpen={isOpen}>
       <MobileHeader>
-        {/* 모바일에서 로고와 햄버거 메뉴 */}
         <img
           src={logo}
           alt="Logo"
@@ -113,7 +130,6 @@ export default function Sidebar() {
       </MobileHeader>
 
       {!isOpen && (
-        // 데스크탑에서 사이드바의 로고
         <img
           src={logo}
           alt="Logo"
@@ -126,34 +142,39 @@ export default function Sidebar() {
 
       <MenuItemsContainer isOpen={isOpen}>
         {menuItems.map((item) => (
-          <MenuItem
+          <MemoizedMenuItem
             key={item.name}
+            item={item}
             selected={selectedMenu === item.name}
             onClick={() => handleMenuClick(item.name, item.path)}
-          >
-            <MenuItemIcon>{item.icon}</MenuItemIcon>
-            <MenuItemText>
-              <StyledLink to={item.path} selected={selectedMenu === item.name}>
-                {item.name}
-              </StyledLink>
-            </MenuItemText>
-          </MenuItem>
+          />
         ))}
       </MenuItemsContainer>
 
-      {!isOpen && (
-        <>
-          <TimeDisplay>{getFormattedTime(time)}</TimeDisplay>
-          <DateDisplay>
-            {time.toLocaleDateString("ko-KR", {
-              weekday: "short",
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            })}
-          </DateDisplay>
-        </>
-      )}
+      {!isOpen && <MemoizedTimeComponent />}
     </SidebarContainer>
   );
+};
+
+interface MenuItemProps {
+  item: MenuItemType;
+  selected: boolean;
+  onClick: () => void;
 }
+
+const MemoizedMenuItem = React.memo(
+  ({ item, selected, onClick }: MenuItemProps) => (
+    <MenuItem selected={selected} onClick={onClick}>
+      <MenuItemIcon>{item.icon}</MenuItemIcon>
+      <MenuItemText>
+        <StyledLink to={item.path} selected={selected}>
+          {item.name}
+        </StyledLink>
+      </MenuItemText>
+    </MenuItem>
+  ),
+);
+
+const MemoizedTimeComponent = React.memo(() => <TimeComponent />);
+
+export default Sidebar;
