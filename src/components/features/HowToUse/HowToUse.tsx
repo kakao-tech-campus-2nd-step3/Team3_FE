@@ -40,7 +40,7 @@ const HowToUseDescription = styled.p`
   }
 `;
 
-const HighlightText = styled.p`
+const HighlightText = styled.span`
   color: #39a7f7;
   display: inline;
 `;

@@ -4,7 +4,7 @@ import useAuth from "@/provider/useAuth";
 import { apiClient } from "@/api/instance";
 import RouterPath from "@/router/RouterPath";
 
-const RedirectionPage = () => {
+const OAuthRedirectHandler = () => {
   const navigate = useNavigate();
   const { setAuthState, authState } = useAuth();
 
@@ -15,7 +15,7 @@ const RedirectionPage = () => {
       const refreshToken = queryParams.get("refresh");
 
       if (accessToken && refreshToken) {
-        const cookieOptions = "path=/; Secure; SameSite=Strict";
+        const cookieOptions = "path=/; Secure; SameSite=Strict;";
 
         // 토큰을 쿠키에 저장
         document.cookie = `access_token=${accessToken}; ${cookieOptions}`;
@@ -30,7 +30,7 @@ const RedirectionPage = () => {
         // axios 인스턴스 헤더에 토큰 추가
         apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
       } else {
-        // 토큰이 없다면 로그인 페이지로 리다이렉트
+        // 토큰이 없으면 로그인 페이지로 리다이렉트
         navigate(RouterPath.LOGIN);
       }
     } catch (error) {
@@ -41,12 +41,13 @@ const RedirectionPage = () => {
 
   // authState가 업데이트되었을 때 메인 페이지로 리다이렉트
   useEffect(() => {
+    // console.log("현재 authState:", authState);
     if (authState.isAuthenticated) {
       navigate(RouterPath.MAIN);
     }
   }, [authState, navigate]);
 
-  return <div>리다이렉트 처리중</div>;
+  return <div>리다이렉트 처리 중...</div>;
 };
 
-export default RedirectionPage;
+export default OAuthRedirectHandler;

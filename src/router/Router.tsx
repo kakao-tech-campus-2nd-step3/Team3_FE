@@ -21,6 +21,7 @@ import TeamPlanDetailPage from "@/pages/TeamPlan/TeamPlanDetail";
 import PreviewPlanSelectPage from "@/pages/PreviewPlan/PreviewPlanSelectPage";
 import PreviewPlanUpdate from "@/pages/PreviewPlan/PreviewPlanUpdate";
 import PreviewPlanPage from "@/pages/PreviewPlan/PreviewPlanPage";
+import RedirectionPage from "@/pages/LoginModal/RedirectionPage";
 
 function Router() {
   const { authState } = useAuth();
@@ -32,6 +33,10 @@ function Router() {
     {
       path: RouterPath.LOGIN,
       element: <LoginModal />,
+    },
+    {
+      path: RouterPath.KAKAO_LOGIN, // Kakao 리다이렉트 경로 추가
+      element: <RedirectionPage />,
     },
     {
       path: RouterPath.PREVIEW_PLAN_SELECT,
