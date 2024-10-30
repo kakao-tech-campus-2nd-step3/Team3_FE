@@ -73,7 +73,7 @@ const MemoizedButton = memo(Button);
 const MemoizedButtonContainer = memo(({ navigate }: { navigate: any }) => {
   return (
     <ButtonContainer>
-      <MemoizedButton onClick={() => navigate(RouterPath.PLAN_SELECT)}>
+      <MemoizedButton onClick={() => navigate(RouterPath.PREVIEW_PLAN_SELECT)}>
         다음
       </MemoizedButton>
       <MemoizedButton onClick={() => navigate(-1)} theme="secondary">
