@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import PersonIcon from "@mui/icons-material/Person";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import List from "@/components/common/List/List";
+import { apiClient } from "@/api/instance";
+import Button from "@/components/common/Button/Button"; // 버튼 컴포넌트 추가
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -60,34 +61,73 @@ const GridLayout = styled.div`
   }
 `;
 
+const DeleteButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+`;
+
 export default function MyPage() {
+  const [userData, setUserData] = useState({
+    nickname: "",
+    profileImage: "",
+    isPremium: false,
+    email: "",
+  });
+  const [paymentData, setPaymentData] = useState({
+    subscriptionId: 0,
+    price: 0,
+    paymentDate: "",
+  });
+
+  useEffect(() => {
+    // 현재 로그인한 유저 정보 가져오기
+    apiClient
+      .get("/users/me")
+      .then((response) => setUserData(response.data))
+      .catch((error) => console.error("Error fetching user data:", error));
+
+    // 결제 정보 가져오기 (예시로 paymentId 1을 사용)
+    apiClient
+      .get("/payment/1")
+      .then((response) => setPaymentData(response.data))
+      .catch((error) => console.error("Error fetching payment data:", error));
+  }, []);
+
+  const handlePaymentRequest = () => {
+    // 결제 요청 API 호출
+    apiClient
+      .post("/payment", {
+        subscriptionId: 1, // 예시로 구독 ID 1을 사용
+        price: 10000, // 예시로 10,000원 결제
+      })
+      .then((response) => alert("결제 요청이 완료되었습니다."))
+      .catch((error) => console.error("Error making payment request:", error));
+  };
+
+  const handleDeleteAccount = () => {
+    // 회원 탈퇴 API 호출
+    if (window.confirm("정말로 회원 탈퇴를 하시겠습니까?")) {
+      apiClient
+        .delete("/users/me")
+        .then(() => {
+          alert("회원 탈퇴가 완료되었습니다.");
+          // 추가적으로 로그아웃 처리 또는 리다이렉트 가능
+        })
+        .catch((error) => console.error("Error deleting account:", error));
+    }
+  };
+
   return (
     <PageWrapper>
       <ContentWrapper>
         {/* 프로필 카드 */}
         <Card>
-          <List
-            profileSrc="/placeholder.svg?height=96&width=96"
-            name="홍길동"
-            date="@hong_gildong"
-          />
+          <List name={userData.nickname} date={`이메일: ${userData.email}`} />
         </Card>
 
         {/* 정보 카드 그리드 */}
         <GridLayout>
-          {/* 개인정보 카드 */}
-          <Card>
-            <CardHeader>
-              <PersonIcon fontSize="small" />
-              <CardTitle>개인정보</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul>
-                <li>이메일: hong@example.com</li>
-              </ul>
-            </CardContent>
-          </Card>
-
           {/* 결제정보 카드 */}
           <Card>
             <CardHeader>
@@ -96,23 +136,14 @@ export default function MyPage() {
             </CardHeader>
             <CardContent>
               <ul>
-                <li>만료일: 12/25</li>
+                <li>결제 금액: {paymentData.price}원</li>
+                <li>
+                  결제일:{" "}
+                  {new Date(paymentData.paymentDate).toLocaleDateString()}
+                </li>
               </ul>
-            </CardContent>
-          </Card>
-
-          {/* 알림설정 카드 */}
-          <Card>
-            <CardHeader>
-              <NotificationsIcon fontSize="small" />
-              <CardTitle>알림설정</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul>
-                <li>이메일 알림: 켜짐</li>
-                <li>푸시 알림: 켜짐</li>
-                <li>SMS 알림: 꺼짐</li>
-              </ul>
+              <Button onClick={handlePaymentRequest}>결제 요청</Button>{" "}
+              {/* 결제 요청 버튼 */}
             </CardContent>
           </Card>
 
@@ -124,11 +155,20 @@ export default function MyPage() {
             </CardHeader>
             <CardContent>
               <ul>
-                <li>aaa</li>
+                <li>
+                  프리미엄 회원 여부: {userData.isPremium ? "예" : "아니오"}
+                </li>
               </ul>
             </CardContent>
           </Card>
         </GridLayout>
+
+        {/* 회원 탈퇴 버튼 */}
+        <DeleteButtonWrapper>
+          <Button onClick={handleDeleteAccount} theme="secondary">
+            회원 탈퇴
+          </Button>
+        </DeleteButtonWrapper>
       </ContentWrapper>
     </PageWrapper>
   );
