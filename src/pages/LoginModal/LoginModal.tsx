@@ -1,6 +1,4 @@
-import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
-import useLogin from "@/api/hooks/useLogin";
 import Button from "@/components/common/Button/Button";
 import NavBar from "@/components/features/Navbar/Navbar";
 
@@ -27,20 +25,14 @@ const Description = styled.p`
   margin-bottom: 2rem;
 `;
 
-const ErrorMessage = styled.p`
-  color: red;
-  font-size: 1rem;
-  margin-top: 1rem;
-`;
-
 const LoginModal: React.FC = () => {
-  const navigate = useNavigate();
-  const { login, error } = useLogin();
 
   const handleLogin = async () => {
     try {
-      await login(); // `useLogin`의 `login` 함수를 호출
-      navigate("/main"); // 로그인 성공 시 메인 페이지로 이동
+      window.location.href =
+        "https://api.splanet.co.kr/oauth2/authorization/kakao";
+
+      // 로그인 성공 시 메인 페이지로 이동
     } catch (e) {
       console.error("로그인 에러:", e);
     }
@@ -61,8 +53,6 @@ const LoginModal: React.FC = () => {
           Login with Kakao
         </Button>
 
-        {/* 에러 메시지 */}
-        {error && <ErrorMessage>{error}</ErrorMessage>}
       </LoginContainer>
     </>
   );
