@@ -11,10 +11,10 @@ export const fetchPlans = async (): Promise<CalendarEvent[]> => {
     id: plan.id.toString(), // id를 string으로 변환
     title: plan.title,
     description: plan.description,
-    start: new Date(plan.start_date), // 날짜를 Date 객체로 변환
-    end: new Date(plan.end_date),
+    start: new Date(plan.startDate), // 날짜를 Date 객체로 변환
+    end: new Date(plan.endDate),
     accessibility: plan.accessibility ?? null, // null 가능성 처리
-    complete: plan.is_completed,
+    complete: plan.isCompleted,
     status: plan.is_completed ? "completed" : "incomplete", // 상태를 미리 계산
   }));
 

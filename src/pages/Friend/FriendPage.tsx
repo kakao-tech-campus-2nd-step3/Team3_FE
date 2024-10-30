@@ -113,18 +113,14 @@ const FriendItem = ({ friend }: { friend: Friend }) => {
   const navigate = useNavigate();
 
   const handleVisitClick = () => {
-    navigate(`/friend/${friend.friend_id}`, {
-      state: { friendName: friend.friend_name },
+    navigate(`/friend/${friend.userId}`, {
+      state: { friendName: friend.nickname },
     });
   };
 
   return (
-    <div key={friend.friend_id} css={friendItemStyles}>
-      <List
-        profileSrc={friend.friend_profile_image}
-        name={friend.friend_name}
-        date={new Date(friend.createdAt).toLocaleString()}
-      />
+    <div key={friend.userId} css={friendItemStyles}>
+      <List profileSrc={friend.profileImage} name={friend.nickname} />
       <div css={buttonContainerStyles}>
         <Button size="small" theme="primary" onClick={handleVisitClick}>
           방문
@@ -144,7 +140,7 @@ const FriendItem = ({ friend }: { friend: Friend }) => {
 function isSentRequest(
   request: SentRequest | ReceivedRequest,
 ): request is SentRequest {
-  return (request as SentRequest).receiver_name !== undefined;
+  return (request as SentRequest).receiverName !== undefined;
 } // 타입가드
 
 const RequestItem = ({
@@ -157,13 +153,10 @@ const RequestItem = ({
   return (
     <div key={request.id} css={friendItemStyles}>
       <List
-        profileSrc={request.friend_profile_image}
+        profileSrc={request.profileImage}
         name={
-          isSentRequest(request)
-            ? request.receiver_name
-            : request.requester_name
+          isSentRequest(request) ? request.receiverName : request.requesterName
         }
-        date={request.status}
       />
       <div css={buttonContainerStyles}>
         {type === "sent" ? (
@@ -215,7 +208,7 @@ export default function FriendListPage() {
   const renderedFriendList = useMemo(
     () =>
       friendList.map((friend) => (
-        <FriendItem key={friend.friend_id} friend={friend} />
+        <FriendItem key={friend.userId} friend={friend} />
       )),
     [friendList],
   );

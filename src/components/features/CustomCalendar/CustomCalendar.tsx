@@ -68,6 +68,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const calendarRef = useRef<FullCalendar>(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
   // Handle window resize
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= breakpoints.sm);
