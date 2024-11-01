@@ -2,8 +2,8 @@ import styled from "@emotion/styled";
 import breakpoints from "@/variants/breakpoints";
 
 const StyledNumberButton = styled.button<{ clicked: boolean }>`
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   background-color: ${({ clicked }) => (clicked ? "#39a7f7" : "#fff")};
   border: 2px solid #39a7f7;
   border-radius: 16px;
@@ -23,9 +23,9 @@ const StyledNumberButton = styled.button<{ clicked: boolean }>`
     color: white;
   }
 
-  ${breakpoints.desktop} {
-    width: 70px;
-    height: 70px;
+  ${breakpoints.tablet} {
+    width: 50px;
+    height: 50px;
     font-size: 20px;
     border-radius: 16px;
   }

@@ -4,23 +4,24 @@ import Sidebar from "@/components/common/Sidebar/Sidebar";
 import breakpoints from "@/variants/breakpoints";
 
 const Wrapper = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100vh;
+  flex-direction: row; /* 모바일 이상에서는 가로 정렬 */
 
-  ${breakpoints.tablet} {
-    flex-direction: row; /* 태블릿 이상에서는 가로 정렬 */
+  ${breakpoints.mobile} {
+    /* 기본값은 세로 정렬 (모바일) */
+    flex-direction: column;
+    display: flex;
+    width: 100%;
+    height: 100vh;
   }
-
-  flex-direction: column; /* 기본값은 세로 정렬 (모바일) */
 `;
 
 const ContentWrapper = styled.div`
-  flex-grow: 1;
-  padding: 60px 20px;
+  padding-left: 225px;
+  padding-top: 60px;
 
-  ${breakpoints.tablet} {
-    padding-left: 225px;
+  ${breakpoints.mobile} {
+    flex-grow: 1;
+    padding: 60px 20px;
   }
 `;
 const hideSidebarPaths = ["/", "/login", "/plan/preview"];

@@ -3,9 +3,9 @@ import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
 import UserInfo from "@/components/common/UserInfo/UserInfo";
 
 export type ListProps = {
-  profileSrc: string;
+  profileSrc?: string;
   name: string;
-  date: string;
+  date?: string;
 };
 
 const ListItemWrapper = styled.div`
@@ -24,7 +24,11 @@ const UserInfoWrapper = styled.div`
   padding: 10px;
 `;
 
-export const List: React.FC<ListProps> = ({ profileSrc, name, date }) => {
+export const UserProfileItem: React.FC<ListProps> = ({
+  profileSrc,
+  name,
+  date,
+}) => {
   return (
     <ListItemWrapper>
       <ProfileImageWrapper>
@@ -37,4 +41,4 @@ export const List: React.FC<ListProps> = ({ profileSrc, name, date }) => {
   );
 };
 
-export default List;
+export default UserProfileItem;
