@@ -3,10 +3,9 @@ import { keyframes } from "@emotion/react";
 import { useState, useEffect, useRef, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "@/components/common/Input/Input";
-import MicrophoneButton from "@/components/common/MicrophoneButton/MicrophoneButton";
+import MicrophoneButton from "@/components/features/MicrophoneButton/MicrophoneButton";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
-import breakpoints from "@/variants/breakpoints";
 import {
   ParticipantsContainer,
   Participant,
@@ -43,7 +42,7 @@ const Title = styled.p`
   color: #938e8e;
   text-align: center;
   margin: 50px 0 0 0;
-  ${breakpoints.desktop} {
+  @media (min-width: 1280px) {
     font-size: 30px;
   }
 `;
@@ -53,7 +52,7 @@ const SubTitle = styled.p<{ animate: boolean }>`
   color: #000;
   text-align: center;
   margin: 0;
-  ${breakpoints.desktop} {
+  @media (min-width: 1280px) {
     font-size: 30px;
   }
 
@@ -303,11 +302,11 @@ const TeamPlanMakingPage: React.FC = () => {
             <ParticipantName>네오</ParticipantName>
           </Participant>
         </ParticipantsContainer>
-        <MemoizedMicrophoneButton
+        {/* <MemoizedMicrophoneButton
           onStart={handleStartRecording}
           onStop={handleStopRecording}
           isRecording={isRecording}
-        />
+        /> */}
         <MemoizedButtonContainer navigate={navigate} />
       </InputWrapper>
     </PlanPageContainer>
