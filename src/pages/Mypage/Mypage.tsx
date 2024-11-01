@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
-import SettingsIcon from "@mui/icons-material/Settings";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import List from "@/components/common/List/List";
-import { apiClient } from "@/api/instance";
-import Button from "@/components/common/Button/Button"; // 버튼 컴포넌트 추가
+import Button from "@/components/common/Button/Button"; 
+import Switch from "@mui/material/Switch"; 
+import useUserData from "@/api/hooks/useUserData"; 
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -68,53 +69,18 @@ const DeleteButtonWrapper = styled.div`
 `;
 
 export default function MyPage() {
-  const [userData, setUserData] = useState({
-    nickname: "",
-    profileImage: "",
-    isPremium: false,
-    email: "",
-  });
-  const [paymentData, setPaymentData] = useState({
-    subscriptionId: 0,
-    price: 0,
-    paymentDate: "",
-  });
+  const [isNotificationEnabled, setNotificationEnabled] = useState(false);
+  const { userData, handleDeleteAccount, handleSubscription } = useUserData();
 
-  useEffect(() => {
-    // 현재 로그인한 유저 정보 가져오기
-    apiClient
-      .get("/users/me")
-      .then((response) => setUserData(response.data))
-      .catch((error) => console.error("Error fetching user data:", error));
-
-    // 결제 정보 가져오기 (예시로 paymentId 1을 사용)
-    apiClient
-      .get("/payment/1")
-      .then((response) => setPaymentData(response.data))
-      .catch((error) => console.error("Error fetching payment data:", error));
-  }, []);
-
-  const handlePaymentRequest = () => {
-    // 결제 요청 API 호출
-    apiClient
-      .post("/payment", {
-        subscriptionId: 1, // 예시로 구독 ID 1을 사용
-        price: 10000, // 예시로 10,000원 결제
-      })
-      .then((response) => alert("결제 요청이 완료되었습니다."))
-      .catch((error) => console.error("Error making payment request:", error));
+  const handleNotificationToggle = () => {
+    setNotificationEnabled(!isNotificationEnabled);
   };
 
-  const handleDeleteAccount = () => {
-    // 회원 탈퇴 API 호출
-    if (window.confirm("정말로 회원 탈퇴를 하시겠습니까?")) {
-      apiClient
-        .delete("/users/me")
-        .then(() => {
-          alert("회원 탈퇴가 완료되었습니다.");
-          // 추가적으로 로그아웃 처리 또는 리다이렉트 가능
-        })
-        .catch((error) => console.error("Error deleting account:", error));
+  const handleSubscriptionClick = () => {
+    if (userData.isPremium) {
+      alert("이미 구독중입니다.");
+    } else {
+      handleSubscription();
     }
   };
 
@@ -123,7 +89,7 @@ export default function MyPage() {
       <ContentWrapper>
         {/* 프로필 카드 */}
         <Card>
-          <List name={userData.nickname} date={`이메일: ${userData.email}`} />
+          <List name={userData.nickname} date={userData.isPremium ? "프리미엄 회원" : "일반 회원"} />
         </Card>
 
         {/* 정보 카드 그리드 */}
@@ -135,37 +101,31 @@ export default function MyPage() {
               <CardTitle>구독정보</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul>
-                <li>결제 금액: {paymentData.price}원</li>
-                <li>
-                  결제일:{" "}
-                  {new Date(paymentData.paymentDate).toLocaleDateString()}
-                </li>
-              </ul>
-              <Button onClick={handlePaymentRequest}>결제 요청</Button>{" "}
-              {/* 결제 요청 버튼 */}
+              <Button size="small" onClick={handleSubscriptionClick}>결제 요청</Button>
             </CardContent>
           </Card>
 
-          {/* 계정설정 카드 */}
+          {/* 알림설정 카드 */}
           <Card>
             <CardHeader>
-              <SettingsIcon fontSize="small" />
-              <CardTitle>계정설정</CardTitle>
+              <NotificationsIcon fontSize="small" />
+              <CardTitle>알림설정</CardTitle>
             </CardHeader>
             <CardContent>
               <ul>
-                <li>
-                  프리미엄 회원 여부: {userData.isPremium ? "예" : "아니오"}
-                </li>
+                <li>알림 켜기</li>
               </ul>
+              <Switch
+                checked={isNotificationEnabled}
+                onChange={handleNotificationToggle}
+              />
             </CardContent>
           </Card>
         </GridLayout>
 
         {/* 회원 탈퇴 버튼 */}
         <DeleteButtonWrapper>
-          <Button onClick={handleDeleteAccount} theme="secondary">
+          <Button onClick={handleDeleteAccount} size="small" theme="secondary">
             회원 탈퇴
           </Button>
         </DeleteButtonWrapper>
