@@ -13,7 +13,7 @@ import {
   calendarStyles,
   eventItemStyles,
 } from "./CustomCalendar.styles";
-import useDeletePlan from "@/api/hooks/useDeletePlan";
+import useDeletePlan from "@/api/hooks/useDeletePlans";
 
 // event interface
 export interface CalendarEvent {
