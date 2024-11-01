@@ -2,7 +2,7 @@ import { UserInfoWrapper, NameText, DateText } from "./UserInfo.styles";
 
 export type Props = {
   name: string;
-  date: string;
+  date?: string;
 };
 
 const UserInfo: React.FC<Props> = ({ name, date }) => {
