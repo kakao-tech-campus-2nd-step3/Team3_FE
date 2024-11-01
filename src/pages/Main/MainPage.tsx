@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { useState } from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import { useGetPlans } from "@/api/hooks/useGetPlans";
-import useCreatePlan from "@/api/hooks/useCreatePlan";
+import useCreatePlan from "@/api/hooks/useCreatePlans";
 import CircleButton from "@/components/common/CircleButton/CircleButton";
 import breakpoints from "@/variants/breakpoints";
 
