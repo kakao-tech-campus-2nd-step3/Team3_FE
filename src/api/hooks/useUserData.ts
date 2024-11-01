@@ -15,14 +15,14 @@ const useUserData = () => {
   useEffect(() => {
     // 현재 로그인한 유저 정보 가져오기
     apiClient
-      .get("/users/me")
+      .get("/api/users/me")
       .then((response) => setUserData(response.data))
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);
 
   const handlePaymentRequest = (subscriptionId: number) => {
     apiClient
-      .post("/payment", {
+      .post("/api/payment", {
         subscriptionId,
         price: 1000,
       })
@@ -34,7 +34,7 @@ const useUserData = () => {
 
   const handleSubscription = () => {
     apiClient
-      .post("/subscription/me/payment", {
+      .post("/api/subscription/me/payment", {
         type: "MONTHLY",
       })
       .then(() => {
@@ -47,7 +47,7 @@ const useUserData = () => {
     // 회원 탈퇴 API 호출
     if (window.confirm("정말로 회원 탈퇴를 하시겠습니까?")) {
       apiClient
-        .delete("/users/me")
+        .delete("/api/users/me")
         .then(() => {
           alert("회원 탈퇴가 완료되었습니다.");
           navigate("/");

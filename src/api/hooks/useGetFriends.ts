@@ -9,19 +9,19 @@ import {
 
 // 친구 목록을 가져오는 API 요청 함수
 export const fetchFriends = async (): Promise<Friend[]> => {
-  const response = await apiClient.get("/friends");
+  const response = await apiClient.get("/api/friends");
   return response.data;
 };
 
 // 받은 친구 요청 목록을 가져오는 API 요청 함수
 export const fetchReceivedRequests = async (): Promise<ReceivedRequest[]> => {
-  const response = await apiClient.get("/friends/requests/received");
+  const response = await apiClient.get("/api/friends/requests/received");
   return response.data;
 };
 
 // 보낸 친구 요청 목록을 가져오는 API 요청 함수
 export const fetchSentRequests = async (): Promise<SentRequest[]> => {
-  const response = await apiClient.get("/friends/requests/sent");
+  const response = await apiClient.get("/api/friends/requests/sent");
   return response.data;
 };
 
@@ -54,7 +54,7 @@ export const useGetFriendByNickname = (nickname: string) => {
   return useQuery<SearchResult>({
     queryKey: ["friend", nickname],
     queryFn: async () => {
-      const response = await apiClient.get(`/users/nickname/${nickname}`);
+      const response = await apiClient.get(`/api/users/nickname/${nickname}`);
       return response.data;
     },
     enabled: false, // 항상 false로 설정하여 자동 실행 방지
