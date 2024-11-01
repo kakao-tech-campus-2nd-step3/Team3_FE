@@ -51,15 +51,13 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
     // 반응형
     return {
       [breakpoints.mobile]: {
-        width: "120px",
-        height: "48px",
-        fontSize: "16px",
+        width: "100px",
+        height: "40px",
+        fontSize: "14px",
       },
-      [breakpoints.tablet]: {
-        width: "150px",
-        height: "50px",
-        fontSize: "20px",
-      },
+      width: "150px",
+      height: "50px",
+      fontSize: "20px",
     };
   },
   ({ theme }) => {

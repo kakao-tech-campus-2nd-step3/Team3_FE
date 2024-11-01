@@ -2,6 +2,7 @@ const RouterPath = {
   HOME: "/",
   MAIN: "/main",
   LOGIN: "/login",
+  KAKAO_LOGIN: "/oauth2/redirect",
   PREVIEW_PLAN: "/plan/preview",
   PREVIEW_PLAN_SELECT: "/plan/preview/select",
   PREVIEW_PLAN_UPDATE: "/plan/preview/update",

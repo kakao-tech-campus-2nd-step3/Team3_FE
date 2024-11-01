@@ -13,6 +13,7 @@ import {
   calendarStyles,
   eventItemStyles,
 } from "./CustomCalendar.styles";
+import useDeletePlan from "@/api/hooks/useDeletePlans";
 
 // event interface
 export interface CalendarEvent {
@@ -45,7 +46,10 @@ const calculateEventStatus = (event: CalendarEvent) => {
 };
 
 // render event
-const renderEventContent = (eventInfo: EventContentArg) => {
+const renderEventContent = (
+  eventInfo: EventContentArg,
+  handleDelete: (id: string) => void,
+) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
 
@@ -54,6 +58,18 @@ const renderEventContent = (eventInfo: EventContentArg) => {
       <div>{timeText}</div>
       <div>{event.title}</div>
       <div>{description}</div>
+      <button
+        type="button"
+        onClick={() => handleDelete(event.id)}
+        style={{
+          marginTop: "4px",
+          color: "red",
+          backgroundColor: "transparent",
+          cursor: "pointer",
+        }}
+      >
+        삭제
+      </button>
     </div>
   );
 };
@@ -67,17 +83,42 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const calendarRef = useRef<FullCalendar>(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
+
+  const { mutate: deletePlan } = useDeletePlan();
+
+  // 이벤트 삭제 핸들러
+  const handleDelete = useCallback(
+    (id: string) => {
+      // eslint-disable-next-line no-alert
+      if (window.confirm("정말로 삭제하시겠습니까? ")) {
+        deletePlan(Number(id));
+      }
+    },
+    [deletePlan],
+  );
+
   // Handle window resize
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= breakpoints.sm);
+      const currentMobile = window.innerWidth <= breakpoints.sm;
+      setIsMobile(currentMobile);
+
       const calendarApi = calendarRef.current?.getApi();
-      calendarApi?.changeView(isMobile ? "timeGridThreeDay" : "timeGridWeek");
+      if (calendarApi) {
+        calendarApi.changeView(
+          currentMobile ? "timeGridThreeDay" : "timeGridWeek",
+        );
+      }
     };
+
     window.addEventListener("resize", handleResize);
+
+    // 초기 화면 크기 설정
+    handleResize();
+
     return () => window.removeEventListener("resize", handleResize);
-  }, [isMobile]);
+  }, []); // 빈 종속성 배열로 설정하여 처음 렌더링 시에만 실행
 
   // Initialize events from props
   useEffect(() => {
@@ -91,8 +132,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         description: plan.description,
       },
     }));
-    setEvents(parsedEvents);
-  }, [plans]);
+
+    // 기존 events와 비교하여 변경된 경우에만 상태 업데이트
+    const areEventsEqual =
+      JSON.stringify(events) === JSON.stringify(parsedEvents);
+    if (!areEventsEqual) {
+      setEvents(parsedEvents);
+    }
+  }, [plans, events]);
 
   // event drop 및 resize handle
   const handleEventChange = useCallback((info: { event: any }) => {
@@ -158,7 +205,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           eventResizableFromStart
           eventDrop={handleEventChange}
           eventResize={handleEventChange}
-          eventContent={renderEventContent}
+          eventContent={(eventInfo) =>
+            renderEventContent(eventInfo, handleDelete)
+          }
           selectable={false}
           selectMirror={false}
           dayMaxEvents // 하루에 최대 이벤트 수 제한

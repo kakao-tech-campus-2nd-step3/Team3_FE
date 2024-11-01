@@ -30,8 +30,6 @@ const LoginModal: React.FC = () => {
     try {
       window.location.href =
         "https://api.splanet.co.kr/oauth2/authorization/kakao";
-
-      // 로그인 성공 시 메인 페이지로 이동
     } catch (e) {
       console.error("로그인 에러:", e);
     }

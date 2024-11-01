@@ -1,5 +1,4 @@
-import React from "react"; // React 명시적으로 추가
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Home,
   CalendarMonth,
@@ -9,7 +8,6 @@ import {
   Menu,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
-import { TimeDisplay, DateDisplay } from "./Sidebar.styles";
 import breakpoints from "@/variants/breakpoints";
 import {
   SidebarContainer,
@@ -20,6 +18,8 @@ import {
   StyledLink,
   MenuItemIcon,
   MenuItemText,
+  TimeDisplay,
+  DateDisplay,
 } from "./Sidebar.styles";
 import logo from "@/assets/logo.svg";
 // 고정된 메뉴 항목 타입 정의
@@ -71,6 +71,27 @@ const TimeComponent = () => {
     </>
   );
 };
+
+interface MenuItemProps {
+  item: MenuItemType;
+  selected: boolean;
+  onClick: () => void;
+}
+
+const MemoizedMenuItem = React.memo(
+  ({ item, selected, onClick }: MenuItemProps) => (
+    <MenuItem selected={selected} onClick={onClick}>
+      <MenuItemIcon>{item.icon}</MenuItemIcon>
+      <MenuItemText>
+        <StyledLink to={item.path} selected={selected}>
+          {item.name}
+        </StyledLink>
+      </MenuItemText>
+    </MenuItem>
+  ),
+);
+
+const MemoizedTimeComponent = React.memo(() => <TimeComponent />);
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -155,26 +176,5 @@ const Sidebar = () => {
     </SidebarContainer>
   );
 };
-
-interface MenuItemProps {
-  item: MenuItemType;
-  selected: boolean;
-  onClick: () => void;
-}
-
-const MemoizedMenuItem = React.memo(
-  ({ item, selected, onClick }: MenuItemProps) => (
-    <MenuItem selected={selected} onClick={onClick}>
-      <MenuItemIcon>{item.icon}</MenuItemIcon>
-      <MenuItemText>
-        <StyledLink to={item.path} selected={selected}>
-          {item.name}
-        </StyledLink>
-      </MenuItemText>
-    </MenuItem>
-  ),
-);
-
-const MemoizedTimeComponent = React.memo(() => <TimeComponent />);
 
 export default Sidebar;

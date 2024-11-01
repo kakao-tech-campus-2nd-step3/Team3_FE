@@ -8,18 +8,18 @@ import {
 } from "./MicrophoneButton.styles";
 
 export interface MicrophoneButtonProps {
-  onStart?: () => void; // 녹음 시작 콜백
-  onStop?: () => void; // 녹음 중지 콜백
+  onStartClick?: () => void; // 녹음 시작 콜백
+  onStopClick?: () => void; // 녹음 중지 콜백
   isRecording: boolean; // 추가된 부분
 }
 
 const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
-  onStart,
-  onStop,
+  onStartClick,
+  onStopClick,
   isRecording,
 }) => {
   return (
-    <ButtonContainer onClick={isRecording ? onStop : onStart}>
+    <ButtonContainer onClick={isRecording ? onStopClick : onStartClick}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 92.045 90"

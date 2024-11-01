@@ -49,7 +49,7 @@ function Router() {
       element: <PreviewPlanPage />,
     },
     {
-      path: "/oauth2/redirect", // 리다이렉트 경로 추가
+      path: RouterPath.KAKAO_LOGIN, // 리다이렉트 경로 추가
       element: <OAuthRedirectHandler />,
     },
     {

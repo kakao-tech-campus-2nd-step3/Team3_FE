@@ -22,7 +22,6 @@ const slideDown = keyframes`
 const PlanUpdateContainer = styled.div`
   display: grid;
   align-items: center;
-  max-width: 1440px;
   margin: 0 auto;
   margin-top: 20px;
 `;
@@ -32,18 +31,19 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  gap: 40px;
 `;
 
 // 캘린더 컨테이너
 const CalendarContainer = styled.div`
-  width: 100%;
+  margin-bottom: 40px;
+  ${breakpoints.mobile} {
+    margin-bottom: -50px;
+  }
 `;
 
 // 텍스트 스타일
 const StyledText = styled.p`
-  font-size: 23px;
+  font-size: 30px; /* 기본 폰트 크기 */
   font-weight: bold;
   text-align: center;
 
@@ -51,27 +51,31 @@ const StyledText = styled.p`
     animation: ${slideDown} 1s ease-in-out;
   }
   ${breakpoints.mobile} {
-    font-size: 16px;
-    margin-top: 20px;
+    font-size: 18px;
+    white-space: pre-line;
   }
 `;
 
 const StyledTextContainer = styled.div`
   height: 70px;
+  margin-bottom: 20px;
 `;
 // 버튼 섹션
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 130px;
+  gap: 130px; /* 버튼 간 간격 */
   margin-bottom: 30px;
+  ${breakpoints.mobile} {
+    gap: 30px;
+  }
 `;
 
 const PlanUpdate = () => {
   const TitleMessages = [
     "플랜을 수정하거나, 바로 저장하세요.",
-    "일정을 옮기고 크기를 조정하여 원하는대로 플랜을 수정해보세요",
+    "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
   ];
 
   // 메시지 애니메이션과 인덱스 상태

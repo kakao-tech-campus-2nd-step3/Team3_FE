@@ -7,6 +7,7 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 
+// 슬라이드 애니메이션
 const slideDown = keyframes`
   0% {
     opacity: 0;
@@ -16,102 +17,108 @@ const slideDown = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
-  `;
+`;
 
-const PreviewPlanUpdateContainer = styled.div`
+// 전체 컨테이너
+const PlanUpdateContainer = styled.div`
   display: grid;
   align-items: center;
-  max-width: 320px;
   margin: 0 auto;
   margin-top: 20px;
-  ${breakpoints.desktop} {
-    max-width: 1440px;
-  }
 `;
+
+// 내용 래퍼
 const ContentWrapper = styled.div`
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  gap: 40px;
 `;
 
+// 캘린더 컨테이너
 const CalendarContainer = styled.div`
-  margin-top: 20px;
+  margin-bottom: 40px;
+  ${breakpoints.mobile} {
+    margin-bottom: -50px;
+  }
 `;
 
+// 텍스트 스타일
 const StyledText = styled.p`
-  font-size: 16px;
+  font-size: 30px; /* 기본 폰트 크기 */
   font-weight: bold;
-  margin-top: -20px;
-  margin: 0px;
   text-align: center;
-  ${breakpoints.desktop} {
-    font-size: 36px;
-  }
 
   &.animate {
     animation: ${slideDown} 1s ease-in-out;
   }
+  ${breakpoints.mobile} {
+    font-size: 18px;
+    white-space: pre-line;
+  }
 `;
+
+const StyledTextContainer = styled.div`
+  height: 70px;
+  margin-bottom: 20px;
+`;
+// 버튼 섹션
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: flex-direction;
-  gap: 20px;
-  margin-top: -100px;
-  ${breakpoints.desktop} {
-    margin-top: 0px;
-    gap: 130px;
+  gap: 130px; /* 버튼 간 간격 */
+  margin-bottom: 30px;
+  ${breakpoints.mobile} {
+    gap: 30px;
   }
 `;
 
-// 배열 선언
 const PreviewPlanUpdate = () => {
   const TitleMessages = [
     "플랜을 수정하거나, 바로 저장하세요.",
-    "일정을 옮기고 크기를 조정하여 원하는대로 플랜을 수정해보세요",
+    "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
   ];
 
-  // 인덱스, 애니메이션 선언
+  // 메시지 애니메이션과 인덱스 상태
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
 
-  // 주기 선언
+  // 메시지와 애니메이션 설정
   useEffect(() => {
-    const Interval = setInterval(() => {
-      // 변수 인덱스 변경
+    const interval = setInterval(() => {
       setCurrentMessageIndex((prevIndex) =>
         prevIndex === TitleMessages.length - 1 ? 0 : prevIndex + 1,
       );
-      // 애니메이션 변경
       setAnimate(true);
       setTimeout(() => {
         setAnimate(false);
       }, 1000);
     }, 5000);
-    return () => clearInterval(Interval);
+    return () => clearInterval(interval);
   }, []);
 
   const navigate = useNavigate();
 
   return (
-    <PreviewPlanUpdateContainer>
+    <PlanUpdateContainer>
       <ContentWrapper>
-        <StyledText className={animate ? "animate" : " "}>
-          {TitleMessages[currentMessageIndex]}
-        </StyledText>
+        <StyledTextContainer>
+          <StyledText className={animate ? "animate" : ""}>
+            {TitleMessages[currentMessageIndex]}
+          </StyledText>
+        </StyledTextContainer>
+
         <CalendarContainer>
           <CustomCalendar />
         </CalendarContainer>
         <ButtonContainer>
-          <Button onClick={() => navigate(RouterPath.LOGIN)}>저장</Button>
+          <Button onClick={() => navigate(RouterPath.MAIN)}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>
             취소
           </Button>
         </ButtonContainer>
       </ContentWrapper>
-    </PreviewPlanUpdateContainer>
+    </PlanUpdateContainer>
   );
 };
 
