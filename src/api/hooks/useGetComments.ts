@@ -15,18 +15,19 @@ export interface Comment {
 
 const commentApi = {
   getComments: (userId: number) =>
-    apiClient.get<Comment[]>(`/comments/${userId}`).then((res) => res.data),
+    apiClient.get<Comment[]>(`/api/comments/${userId}`).then((res) => res.data),
 
   createComment: (data: { userId: number; content: string }) =>
-    apiClient.post("/comments", data).then((res) => res.data),
+    apiClient.post("/api/comments", data).then((res) => res.data),
 
   updateComment: (
     commentId: number,
     data: { userId: number; content: string },
-  ) => apiClient.put(`/comments/${commentId}`, data).then((res) => res.data),
+  ) =>
+    apiClient.put(`/api/comments/${commentId}`, data).then((res) => res.data),
 
   deleteComment: (commentId: number) =>
-    apiClient.delete(`/comments/${commentId}`).then((res) => res.data),
+    apiClient.delete(`/api/comments/${commentId}`).then((res) => res.data),
 };
 
 export const useCommentsQuery = (friendId: number) => {
