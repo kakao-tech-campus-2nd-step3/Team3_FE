@@ -1,0 +1,55 @@
+// src/api/hooks/useFriendRequest.ts
+import { useState } from "react";
+import { AxiosError } from "axios"; 
+import { apiClient } from "@/api/instance";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+export const useFriendRequest = () => {
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendFriendRequest = async (receiverId: number) => {
+    setIsLoading(true);
+    try {
+      await apiClient.post("/friends/requests", { receiverId });
+      alert("친구 요청이 전송되었습니다.");
+      setError(null); // 이전 에러 상태 초기화
+    } catch (err) {
+      const error = err as AxiosError; 
+      if (error.response?.status === 400) {
+        alert("이미 친구 요청을 보냈습니다.");
+      } else {
+        setError("친구 요청 전송 중 오류가 발생했습니다.");
+        console.error("친구 요청 오류:", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { sendFriendRequest, error, isLoading };
+};
+
+export const useAcceptFriendRequest = (requestId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => apiClient.post(`/friends/requests/${requestId}/accept`),
+    onSuccess: () => {
+      alert("친구 요청을 수락했습니다.");
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] }); // 친구 요청 목록 갱신
+    },
+  });
+};
+
+export const useRejectFriendRequest = (requestId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => apiClient.post(`/friends/requests/${requestId}/reject`),
+    onSuccess: () => {
+      alert("친구 요청을 거절했습니다.");
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] }); // 친구 요청 목록 갱신
+    },
+  });
+};
