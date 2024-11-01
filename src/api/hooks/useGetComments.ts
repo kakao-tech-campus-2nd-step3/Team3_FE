@@ -22,7 +22,7 @@ const commentApi = {
 
   updateComment: (
     commentId: number,
-    data: { userId: number; content: string }
+    data: { userId: number; content: string },
   ) => apiClient.put(`/comments/${commentId}`, data).then((res) => res.data),
 
   deleteComment: (commentId: number) =>
@@ -38,8 +38,8 @@ export const useCommentsQuery = (friendId: number) => {
 };
 
 export const useCreateCommentMutation = (
-  friendId: number, 
-  options?: { onSuccess?: () => void }
+  friendId: number,
+  options?: { onSuccess?: () => void },
 ) => {
   const queryClient = useQueryClient();
   return useMutation({

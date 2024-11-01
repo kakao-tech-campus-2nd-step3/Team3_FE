@@ -26,7 +26,6 @@ const Description = styled.p`
 `;
 
 const LoginModal: React.FC = () => {
-
   const handleLogin = async () => {
     try {
       window.location.href =
@@ -52,7 +51,6 @@ const LoginModal: React.FC = () => {
         <Button theme="primary" onClick={handleLogin}>
           Login with Kakao
         </Button>
-
       </LoginContainer>
     </>
   );

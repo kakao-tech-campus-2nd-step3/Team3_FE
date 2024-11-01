@@ -22,7 +22,7 @@ const slideDown = keyframes`
 const PlanUpdateContainer = styled.div`
   display: grid;
   align-items: center;
-  max-width: 1440px; 
+  max-width: 1440px;
   margin: 0 auto;
   margin-top: 20px;
 `;
@@ -38,7 +38,7 @@ const ContentWrapper = styled.div`
 
 // 캘린더 컨테이너
 const CalendarContainer = styled.div`
-  width: 100%; 
+  width: 100%;
 `;
 
 // 텍스트 스타일
@@ -64,7 +64,7 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 130px; 
+  gap: 130px;
   margin-bottom: 30px;
 `;
 

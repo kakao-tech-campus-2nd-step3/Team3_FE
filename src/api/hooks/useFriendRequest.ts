@@ -1,8 +1,8 @@
 // src/api/hooks/useFriendRequest.ts
 import { useState } from "react";
-import { AxiosError } from "axios"; 
-import { apiClient } from "@/api/instance";
+import { AxiosError } from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "@/api/instance";
 
 export const useFriendRequest = () => {
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +15,7 @@ export const useFriendRequest = () => {
       alert("친구 요청이 전송되었습니다.");
       setError(null); // 이전 에러 상태 초기화
     } catch (err) {
-      const error = err as AxiosError; 
+      const error = err as AxiosError;
       if (error.response?.status === 400) {
         alert("이미 친구 요청을 보냈습니다.");
       } else {

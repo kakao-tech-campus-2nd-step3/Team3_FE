@@ -10,12 +10,20 @@ import {
   useGetSentRequests,
   useGetFriendByNickname,
 } from "@/api/hooks/useGetFriends";
-import {useFriendRequest, useAcceptFriendRequest, useRejectFriendRequest} from "@/api/hooks/useFriendRequest";
+import {
+  useFriendRequest,
+  useAcceptFriendRequest,
+  useRejectFriendRequest,
+} from "@/api/hooks/useFriendRequest";
 import { useDeleteFriend } from "@/api/hooks/useDeleteFriend";
 import breakpoints from "@/variants/breakpoints";
-import { Friend, SentRequest, ReceivedRequest } from "@/types/types";
+import {
+  Friend,
+  SentRequest,
+  ReceivedRequest,
+  SearchResult,
+} from "@/types/types";
 import Button from "@/components/common/Button/Button";
-import { SearchResult } from "@/types/types";
 
 // Styles
 const pageStyles = css`
@@ -131,7 +139,12 @@ const SearchResultItem = ({ friend }: { friend: SearchResult }) => {
     <div css={friendItemStyles}>
       <List profileSrc={friend.profileImage} name={friend.nickname} />
       <div css={buttonContainerStyles}>
-        <Button size="small" theme="primary" onClick={handleFriendRequest} disabled={isLoading}>
+        <Button
+          size="small"
+          theme="primary"
+          onClick={handleFriendRequest}
+          disabled={isLoading}
+        >
           친구 요청
         </Button>
       </div>
@@ -163,11 +176,7 @@ const FriendItem = ({ friend }: { friend: Friend }) => {
         <Button size="small" theme="primary" onClick={handleVisitClick}>
           방문
         </Button>
-        <Button
-          size="small"
-          theme="secondary"
-          onClick={handleDeleteClick}
-        >
+        <Button size="small" theme="secondary" onClick={handleDeleteClick}>
           삭제
         </Button>
       </div>
@@ -176,7 +185,7 @@ const FriendItem = ({ friend }: { friend: Friend }) => {
 };
 
 function isSentRequest(
-  request: SentRequest | ReceivedRequest
+  request: SentRequest | ReceivedRequest,
 ): request is SentRequest {
   return (request as SentRequest).receiverName !== undefined;
 } // 타입가드
@@ -259,9 +268,8 @@ export default function FriendListPage() {
     useGetReceivedRequests();
   const { data: sentRequests = [], isLoading: isLoadingSent } =
     useGetSentRequests();
-  const { refetch: fetchFriendByNickname } = useGetFriendByNickname(
-    searchQuery
-  );
+  const { refetch: fetchFriendByNickname } =
+    useGetFriendByNickname(searchQuery);
 
   const handleSearch = async () => {
     setSearched(true);
@@ -283,7 +291,7 @@ export default function FriendListPage() {
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    setSearched(false); 
+    setSearched(false);
   };
 
   const renderedFriendList = useMemo(
@@ -291,21 +299,21 @@ export default function FriendListPage() {
       friendList.map((friend) => (
         <FriendItem key={friend.userId} friend={friend} />
       )),
-    [friendList]
+    [friendList],
   );
   const renderedSentRequests = useMemo(
     () =>
       sentRequests.map((request) => (
         <RequestItem key={request.id} request={request} type="sent" />
       )),
-    [sentRequests]
+    [sentRequests],
   );
   const renderedReceivedRequests = useMemo(
     () =>
       receivedRequests.map((request) => (
         <RequestItem key={request.id} request={request} type="received" />
       )),
-    [receivedRequests]
+    [receivedRequests],
   );
 
   return (
@@ -357,7 +365,7 @@ export default function FriendListPage() {
                 css={searchInputStyles}
                 placeholder="검색"
                 value={searchQuery}
-                onChange={handleSearchInputChange} 
+                onChange={handleSearchInputChange}
               />
               <span css={searchButtonStyles} onClick={handleSearch}>
                 검색

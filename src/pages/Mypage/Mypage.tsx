@@ -2,10 +2,10 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import Switch from "@mui/material/Switch";
 import List from "@/components/common/List/List";
-import Button from "@/components/common/Button/Button"; 
-import Switch from "@mui/material/Switch"; 
-import useUserData from "@/api/hooks/useUserData"; 
+import Button from "@/components/common/Button/Button";
+import useUserData from "@/api/hooks/useUserData";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -89,7 +89,10 @@ export default function MyPage() {
       <ContentWrapper>
         {/* 프로필 카드 */}
         <Card>
-          <List name={userData.nickname} date={userData.isPremium ? "프리미엄 회원" : "일반 회원"} />
+          <List
+            name={userData.nickname}
+            date={userData.isPremium ? "프리미엄 회원" : "일반 회원"}
+          />
         </Card>
 
         {/* 정보 카드 그리드 */}
@@ -101,7 +104,9 @@ export default function MyPage() {
               <CardTitle>구독정보</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button size="small" onClick={handleSubscriptionClick}>결제 요청</Button>
+              <Button size="small" onClick={handleSubscriptionClick}>
+                결제 요청
+              </Button>
             </CardContent>
           </Card>
 

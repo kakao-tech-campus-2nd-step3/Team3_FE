@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../instance";
-import { Friend, SentRequest, ReceivedRequest, SearchResult } from "@/types/types";
+import {
+  Friend,
+  SentRequest,
+  ReceivedRequest,
+  SearchResult,
+} from "@/types/types";
 
 // 친구 목록을 가져오는 API 요청 함수
 export const fetchFriends = async (): Promise<Friend[]> => {

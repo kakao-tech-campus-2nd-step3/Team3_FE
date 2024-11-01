@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { apiClient } from "@/api/instance";
 import { useNavigate } from "react-router-dom";
+import { apiClient } from "@/api/instance";
 
 const useUserData = () => {
   const [userData, setUserData] = useState({
@@ -23,7 +23,7 @@ const useUserData = () => {
   const handlePaymentRequest = (subscriptionId: number) => {
     apiClient
       .post("/payment", {
-        subscriptionId: subscriptionId,
+        subscriptionId,
         price: 1000,
       })
       .then(() => {
@@ -34,14 +34,14 @@ const useUserData = () => {
 
   const handleSubscription = () => {
     apiClient
-    .post("/subscription/me/payment", {
-      type: "MONTHLY"
-    })
-    .then(()=> {
-      alert("구독이 완료되었습니다.");
-    })
-    .catch((error)=> console.error("error subscribtion:", error));
-  }
+      .post("/subscription/me/payment", {
+        type: "MONTHLY",
+      })
+      .then(() => {
+        alert("구독이 완료되었습니다.");
+      })
+      .catch((error) => console.error("error subscribtion:", error));
+  };
 
   const handleDeleteAccount = () => {
     // 회원 탈퇴 API 호출
