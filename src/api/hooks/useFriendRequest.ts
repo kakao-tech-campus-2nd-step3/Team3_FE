@@ -34,7 +34,8 @@ export const useAcceptFriendRequest = (requestId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => apiClient.post(`/api/friends/requests/${requestId}/accept`),
+    mutationFn: () =>
+      apiClient.post(`/api/friends/requests/${requestId}/accept`),
     onSuccess: () => {
       alert("친구 요청을 수락했습니다.");
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] }); // 친구 요청 목록 갱신
@@ -46,7 +47,8 @@ export const useRejectFriendRequest = (requestId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => apiClient.post(`/api/friends/requests/${requestId}/reject`),
+    mutationFn: () =>
+      apiClient.post(`/api/friends/requests/${requestId}/reject`),
     onSuccess: () => {
       alert("친구 요청을 거절했습니다.");
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] }); // 친구 요청 목록 갱신

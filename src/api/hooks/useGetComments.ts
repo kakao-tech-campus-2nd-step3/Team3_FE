@@ -23,7 +23,8 @@ const commentApi = {
   updateComment: (
     commentId: number,
     data: { userId: number; content: string },
-  ) => apiClient.put(`/api/comments/${commentId}`, data).then((res) => res.data),
+  ) =>
+    apiClient.put(`/api/comments/${commentId}`, data).then((res) => res.data),
 
   deleteComment: (commentId: number) =>
     apiClient.delete(`/api/comments/${commentId}`).then((res) => res.data),
