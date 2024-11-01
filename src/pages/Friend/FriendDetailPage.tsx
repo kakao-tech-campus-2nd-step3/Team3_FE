@@ -2,37 +2,14 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useParams } from "react-router-dom";
 import { Send, Edit, Delete } from "@mui/icons-material";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
-import { apiClient } from "@/api/instance";
-
-const commentApi = {
-  getComments: (userId: number) =>
-    apiClient.get<Comment[]>(`/comments/${userId}`).then((res) => res.data),
-
-  createComment: (data: { userId: number; content: string }) =>
-    apiClient.put("/comments", data).then((res) => res.data),
-
-  updateComment: (
-    commentId: number,
-    data: { userId: number; content: string },
-  ) => apiClient.put(`/comments/${commentId}`, data).then((res) => res.data),
-
-  deleteComment: (commentId: number) =>
-    apiClient.delete(`/comments/${commentId}`).then((res) => res.data),
-};
-
-interface Comment {
-  id: number;
-  userId: number;
-  writerId: number;
-  writerNickname: string;
-  writerProfileImage: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import {
+  useCommentsQuery,
+  useCreateCommentMutation,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+} from "@/api/hooks/useGetComments";
 
 const PageContainer = styled.div`
   width: 100%;
@@ -154,7 +131,6 @@ const IconButton = styled.button`
 `;
 
 export default function FriendDetailPage() {
-  const queryClient = useQueryClient();
   const { friendId } = useParams();
   const location = useLocation();
   const { friendName, userId } = location.state || {};
@@ -162,51 +138,22 @@ export default function FriendDetailPage() {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
 
-  // 댓글 목록 조회 쿼리
-  const { data: comments = [], isLoading } = useQuery({
-    queryKey: ["comments", friendId], // URL에서 추출한 friendId (userId)를 사용
-    queryFn: () => commentApi.getComments(Number(friendId)),
-    enabled: !!friendId, // friendId가 존재할 때만 쿼리 실행
-  });
-
-  // 댓글 작성 뮤테이션
-  const createCommentMutation = useMutation({
-    mutationFn: commentApi.createComment,
+  const { data: comments = [], isLoading } = useCommentsQuery(Number(friendId));
+  const createCommentMutation = useCreateCommentMutation(Number(friendId), {
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", friendId] });
+      // 댓글 작성 성공 시 알림 표시
+      alert("댓글 작성이 완료되었습니다");
       setNewComment("");
     },
   });
-
-  // 댓글 수정 뮤테이션
-  const updateCommentMutation = useMutation({
-    mutationFn: ({
-      commentId,
-      data,
-    }: {
-      commentId: number;
-      data: { userId: number; content: string };
-    }) => commentApi.updateComment(commentId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", friendId] });
-      setEditingCommentId(null);
-      setEditContent("");
-    },
-  });
-
-  // 댓글 삭제 뮤테이션
-  const deleteCommentMutation = useMutation({
-    mutationFn: commentApi.deleteComment,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", friendId] });
-    },
-  });
+  const updateCommentMutation = useUpdateCommentMutation(Number(friendId));
+  const deleteCommentMutation = useDeleteCommentMutation(Number(friendId));
 
   // 핸들러 함수들
   const handleSubmitComment = () => {
     if (!newComment.trim()) return;
     createCommentMutation.mutate({
-      userId,
+      userId: Number(friendId),
       content: newComment,
     });
   };
