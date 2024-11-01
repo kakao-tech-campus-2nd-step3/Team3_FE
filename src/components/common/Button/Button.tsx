@@ -1,6 +1,6 @@
 // Button.tsx
 import React from "react";
-import StyledButton from "./Button.styles";
+import StyledButton from "./StyledButton.styles";
 import { Props } from "./Button.types";
 
 const Button: React.FC<Props> = ({
@@ -10,6 +10,7 @@ const Button: React.FC<Props> = ({
   disabled,
   type,
   children,
+  ...props
 }) => {
   return (
     <StyledButton
@@ -18,6 +19,7 @@ const Button: React.FC<Props> = ({
       onClick={onClick}
       disabled={disabled}
       type={type}
+      {...props}
     >
       {children}
     </StyledButton>

@@ -1,12 +1,18 @@
+import { useState } from "react";
 import styled from "@emotion/styled";
-import { useLocation } from "react-router-dom";
-import { Send } from "@mui/icons-material";
+import { useLocation, useParams } from "react-router-dom";
+import { Send, Edit, Delete } from "@mui/icons-material";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
+import {
+  useCommentsQuery,
+  useCreateCommentMutation,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+} from "@/api/hooks/useGetComments";
 
 const PageContainer = styled.div`
   width: 100%;
-
   margin: 0 auto;
   padding: 16px;
 `;
@@ -14,22 +20,22 @@ const PageContainer = styled.div`
 const CommentSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 10px의 80% */
+  gap: 8px;
 `;
 
 const CommentInput = styled.div`
   display: flex;
   align-items: center;
-  gap: 24px; /* 30px의 80% */
-  padding: 8px; /* 10px의 80% */
+  gap: 24px;
+  padding: 8px;
 `;
 
 const InputWrapper = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-  padding: 10.4px 14.4px; /* 13px과 18px의 80% */
-  border-radius: 12.8px; /* 16px의 80% */
+  padding: 10.4px 14.4px;
+  border-radius: 12.8px;
   border: 1px solid black;
 `;
 
@@ -37,7 +43,7 @@ const Input = styled.input`
   flex: 1;
   border: none;
   outline: none;
-  font-size: 15.3px; /* 19.1px의 80% */
+  font-size: 15.3px;
   font-family: "Inter", sans-serif;
   font-weight: 700;
   color: #464646;
@@ -48,49 +54,50 @@ const Input = styled.input`
 
 const Divider = styled.hr`
   border: none;
-  height: 1.6px; /* 2px의 80% */
+  height: 1.6px;
   background-color: #eeeeee;
-  margin: 8px 0; /* 10px의 80% */
+  margin: 8px 0;
 `;
 
 const CommentItem = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 8px; /* 10px의 80% */
+  padding: 8px;
 `;
 
 const CommentContent = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 24px; /* 30px의 80% */
+  gap: 24px;
 `;
 
 const CommentBubble = styled.div`
   background-color: #d9d9d9;
-  border-radius: 12.8px; /* 16px의 80% */
-  padding: 8px 16.8px; /* 10px과 21px의 80% */
+  border-radius: 12.8px;
+  padding: 8px 16.8px;
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 10px의 80% */
+  gap: 8px;
 `;
 
 const CommentBox = styled.div`
-  border-radius: 12.8px; /* 16px의 80% */
+  flex: 1;
+  border-radius: 12.8px;
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 10px의 80% */
+  gap: 8px;
 `;
 
 const CommentAuthor = styled.div`
   color: black;
-  font-size: 15.3px; /* 19.1px의 80% */
+  font-size: 15.3px;
   font-family: "Inter", sans-serif;
   font-weight: 700;
 `;
 
 const CommentText = styled.div`
   color: #464646;
-  font-size: 15.3px; /* 19.1px의 80% */
+  font-size: 15.3px;
   font-family: "Inter", sans-serif;
   font-weight: 700;
 `;
@@ -98,16 +105,88 @@ const CommentText = styled.div`
 const CommentDate = styled.div`
   align-self: flex-start;
   color: rgba(55.95, 55.95, 55.95, 0.7);
-  font-size: 15.3px; /* 19.1px의 80% */
+  font-size: 15.3px;
   font-family: "Inter", sans-serif;
   font-weight: 700;
-  margin-top: 4px; /* 5px의 80% */
-  padding-left: 12px; /* 15px의 80% */
+  margin-top: 4px;
+  padding-left: 12px;
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+`;
+
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #464646;
+
+  &:hover {
+    color: #000;
+  }
 `;
 
 export default function FriendDetailPage() {
+  const { friendId } = useParams();
   const location = useLocation();
-  const { friendName } = location.state || {};
+  const { friendName, userId } = location.state || {};
+  const [newComment, setNewComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editContent, setEditContent] = useState("");
+
+  const { data: comments = [], isLoading } = useCommentsQuery(Number(friendId));
+  const createCommentMutation = useCreateCommentMutation(Number(friendId), {
+    onSuccess: () => {
+      // 댓글 작성 성공 시 알림 표시
+      alert("댓글 작성이 완료되었습니다");
+      setNewComment("");
+    },
+  });
+  const updateCommentMutation = useUpdateCommentMutation(Number(friendId));
+  const deleteCommentMutation = useDeleteCommentMutation(Number(friendId));
+
+  // 핸들러 함수들
+  const handleSubmitComment = () => {
+    if (!newComment.trim()) return;
+    createCommentMutation.mutate({
+      userId: Number(friendId),
+      content: newComment,
+    });
+  };
+
+  const handleUpdateComment = (commentId: number) => {
+    if (!editContent.trim()) return;
+    updateCommentMutation.mutate({
+      commentId,
+      data: {
+        userId,
+        content: editContent,
+      },
+    });
+  };
+
+  const handleDeleteComment = (commentId: number) => {
+    if (window.confirm("댓글을 삭제하시겠습니까?")) {
+      deleteCommentMutation.mutate(commentId);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return `${diffDays}일 전`;
+  };
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <PageContainer>
@@ -120,37 +199,89 @@ export default function FriendDetailPage() {
           <InputWrapper>
             <Input
               type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
               placeholder="댓글을 입력하세요."
               aria-label="댓글 입력"
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmitComment();
+                }
+              }}
+              disabled={createCommentMutation.isPending}
             />
-            <Send />
+            <IconButton
+              onClick={handleSubmitComment}
+              disabled={createCommentMutation.isPending}
+            >
+              <Send />
+            </IconButton>
           </InputWrapper>
         </CommentInput>
         <Divider />
-        <CommentItem>
-          <CommentContent>
-            <ProfileImage />
-            <CommentBox>
-              <CommentBubble>
-                <CommentAuthor>홍길동</CommentAuthor>
-                <CommentText>흥미로운 계획표군요.</CommentText>
-              </CommentBubble>
-              <CommentDate>4일전</CommentDate>
-            </CommentBox>
-          </CommentContent>
-        </CommentItem>
-        <CommentItem>
-          <CommentContent>
-            <ProfileImage />
-            <CommentBox>
-              <CommentBubble>
-                <CommentAuthor>김길동</CommentAuthor>
-                <CommentText>흥미로운 계획표군요.</CommentText>
-              </CommentBubble>
-              <CommentDate>2일전</CommentDate>
-            </CommentBox>
-          </CommentContent>
-        </CommentItem>
+        {comments.map((comment) => (
+          <CommentItem key={comment.id}>
+            <CommentContent>
+              <ProfileImage src={comment.writerProfileImage} />
+              <CommentBox>
+                {editingCommentId === comment.id ? (
+                  <InputWrapper>
+                    <Input
+                      type="text"
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          handleUpdateComment(comment.id);
+                        }
+                      }}
+                      disabled={updateCommentMutation.isPending}
+                    />
+                    <IconButton
+                      onClick={() => handleUpdateComment(comment.id)}
+                      disabled={updateCommentMutation.isPending}
+                    >
+                      <Send />
+                    </IconButton>
+                  </InputWrapper>
+                ) : (
+                  <>
+                    <CommentBubble>
+                      <CommentAuthor>{comment.writerNickname}</CommentAuthor>
+                      <CommentText>{comment.content}</CommentText>
+                    </CommentBubble>
+                    <CommentDate>{formatDate(comment.createdAt)}</CommentDate>
+                  </>
+                )}
+              </CommentBox>
+              {comment.writerId === userId && (
+                <ActionButtons>
+                  <IconButton
+                    onClick={() => {
+                      setEditingCommentId(comment.id);
+                      setEditContent(comment.content);
+                    }}
+                    disabled={
+                      updateCommentMutation.isPending ||
+                      deleteCommentMutation.isPending
+                    }
+                  >
+                    <Edit />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDeleteComment(comment.id)}
+                    disabled={
+                      updateCommentMutation.isPending ||
+                      deleteCommentMutation.isPending
+                    }
+                  >
+                    <Delete />
+                  </IconButton>
+                </ActionButtons>
+              )}
+            </CommentContent>
+          </CommentItem>
+        ))}
       </CommentSection>
     </PageContainer>
   );
