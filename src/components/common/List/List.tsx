@@ -24,7 +24,7 @@ const UserInfoWrapper = styled.div`
   padding: 10px;
 `;
 
-export const UserProfileItem: React.FC<UserProfileItemProps> = ({
+export const UserProfileItem: React.FC<ListProps> = ({
   profileSrc,
   name,
   date,
