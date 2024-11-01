@@ -7,6 +7,7 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useVoiceHook from "@/hooks/useVoiceHook";
+import useCreatePlan from "@/api/hooks/useCreatePlans";
 
 const PlanPageContainer = styled.div`
   width: 60%
@@ -68,7 +69,7 @@ function MessageSilderWithAnimation() {
   return <SubTitle>{messages[currentMessageIndex]}</SubTitle>;
 }
 
-const PreviewPlanPage: React.FC = () => {
+const PlanPage: React.FC = () => {
   const {
     transcript,
     setTranscript,
@@ -77,6 +78,26 @@ const PreviewPlanPage: React.FC = () => {
     handleStopRecording,
   } = useVoiceHook();
   const navigate = useNavigate();
+  const createPlanMutation = useCreatePlan();
+
+  const handleNextClick = async () => {
+    try {
+      await createPlanMutation.mutateAsync({
+        title: transcript,
+        description: transcript,
+        startDate: new Date().toISOString(), // 적절한 날짜로 수정 필요
+        endDate: new Date(new Date().getTime() + 3600 * 1000).toISOString(), // 적절한 날짜로 수정 필요
+        accessibility: true,
+        isCompleted: false,
+      });
+
+      // 플랜 생성 성공 후 다음 페이지로 이동
+      navigate(RouterPath.PLAN_SELECT);
+    } catch (error) {
+      // 에러 처리
+      console.error("플랜 생성 실패:", error);
+    }
+  };
 
   return (
     <PlanPageContainer>
@@ -93,9 +114,7 @@ const PreviewPlanPage: React.FC = () => {
           isRecording={isRecording}
         />
         <ButtonContainer>
-          <Button onClick={() => navigate(RouterPath.PREVIEW_PLAN_SELECT)}>
-            다음
-          </Button>
+          <Button onClick={handleNextClick}>다음</Button>
           <Button onClick={() => navigate(-1)} theme="secondary">
             취소
           </Button>
@@ -105,4 +124,4 @@ const PreviewPlanPage: React.FC = () => {
   );
 };
 
-export default PreviewPlanPage;
+export default PlanPage;
