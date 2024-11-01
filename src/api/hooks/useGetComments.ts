@@ -46,7 +46,9 @@ export const useCreateCommentMutation = (
     mutationFn: commentApi.createComment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", friendId] });
-      options?.onSuccess && options.onSuccess();
+      if (options?.onSuccess) {
+        options.onSuccess(); // onSuccess가 존재할 때만 호출
+      }
     },
   });
 };

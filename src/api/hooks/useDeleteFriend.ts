@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/api/instance";
 
-export const useDeleteFriend = (friendId: number) => {
+const useDeleteFriend = (friendId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -13,3 +13,5 @@ export const useDeleteFriend = (friendId: number) => {
     },
   });
 };
+
+export default useDeleteFriend;

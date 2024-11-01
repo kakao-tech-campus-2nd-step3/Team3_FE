@@ -15,7 +15,7 @@ import {
   useAcceptFriendRequest,
   useRejectFriendRequest,
 } from "@/api/hooks/useFriendRequest";
-import { useDeleteFriend } from "@/api/hooks/useDeleteFriend";
+import useDeleteFriend from "@/api/hooks/useDeleteFriend";
 import breakpoints from "@/variants/breakpoints";
 import {
   Friend,
@@ -367,7 +367,14 @@ export default function FriendListPage() {
                 value={searchQuery}
                 onChange={handleSearchInputChange}
               />
-              <span css={searchButtonStyles} onClick={handleSearch}>
+              <span
+                css={searchButtonStyles}
+                onClick={handleSearch}
+                role="button"
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                }}
+              >
                 검색
               </span>
             </div>

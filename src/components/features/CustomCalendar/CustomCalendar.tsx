@@ -89,7 +89,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   // 이벤트 삭제 핸들러
   const handleDelete = useCallback(
     (id: string) => {
-      // eslint-disable-next-line no-alert
       if (window.confirm("정말로 삭제하시겠습니까? ")) {
         deletePlan(Number(id));
       }
