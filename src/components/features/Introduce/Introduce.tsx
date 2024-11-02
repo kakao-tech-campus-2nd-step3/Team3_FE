@@ -8,161 +8,128 @@ import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
 
 const LandingContainer = styled.div`
-  width: 390px;
-  left: 0;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1;
-  position: relative;
+  max-width: 1280px;
+  padding: 140px 40px 90px;
   margin: 0 auto;
-  margin-top: 100px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   ${breakpoints.tablet} {
-    width: 868px;
-    overflow-x: visible;
-  }
-  ${breakpoints.desktop} {
-    width: 1440px;
-    margin-top: 150px;
-    margin-left: 40px;
-    margin: 0 auto;
-    overflow-x: visible;
+    padding: 140px 40px 60px;
+    flex-direction: column;
+    align-items: center;
   }
 `;
 
 const BackgroundCircle = styled.img`
+  display: block;
   position: absolute;
-  left: 0px;
-  width: 200px;
-  z-index: 0;
+  left: -100px;
+  width: 400px;
+  z-index: -1;
   opacity: 0.5;
-  bottom: 250px;
-  margin-bottom: 115px;
-  margin-left: -60px;
   ${breakpoints.tablet} {
-    width: 300px;
-    bottom: -150px;
-  }
-  ${breakpoints.desktop} {
-    width: 400px;
-    bottom: -110px;
+    display: none;
   }
 `;
+
 const TextWrapper = styled.div`
-  max-width: 300px;
-  margin-left: 90px;
-  margin-top: 140px;
+  width: 45%;
+  max-width: 500px;
+  text-align: left;
+  margin-bottom: 0;
+  margin-right: 5%;
+
   ${breakpoints.tablet} {
-    max-width: 400px;
-    margin-left: 150px;
-    margin-top: 150px;
-  }
-  ${breakpoints.desktop} {
-    max-width: 600px;
-    margin-left: 150px;
-    margin-top: 150px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 40px;
   }
 `;
+
 const TitleWithImage = styled.div`
   display: flex;
   align-items: center;
-  margin-left: -100px;
-  margin-top: -60px;
   justify-content: flex-start;
+  margin-bottom: 10px;
+
+  ${breakpoints.tablet} {
+    justify-content: center;
+  }
 `;
-const Title = styled.h1`  
-font-size: 30px;
+
+const Title = styled.h1`
+  font-size: clamp(28px, 5vw, 48px);
   font-weight: bold;
   color: #39a7f7;
-  margin-bottom: 0px;
-  ${breakpoints.desktop} {
-    font-size: 50px;`;
+  white-space: nowrap;
+`;
 
 const SubTitle = styled.p`
-  font-size: 30px;
+  font-size: clamp(24px, 4vw, 40px);
   font-weight: bold;
   color: #39a7f7;
-  margin-top: -10px;
-  margin-left: -90px;
-
-  ${breakpoints.desktop} {
-    font-size: 66px;
-    margin-top: -20px;
-    margin-bottom: 0px;
-    margin-left: -70px;
-  }
+  margin-top: 10px;
 `;
+
 const AdditionalText = styled.p`
-  font-size: 20px;
+  font-size: clamp(18px, 3vw, 30px);
   font-weight: bold;
   color: #3f3f3f;
-  margin-top: -10px;
-  margin-left: -95px;
-  ${breakpoints.desktop} {
-    font-size: 40px;
-    margin-top: 20px;
-    margin-left: -80px;
-  }
+  margin-top: 20px;
 `;
+
 const HighlightText = styled.span`
-width: 25px;
-height: 53px;
-margin-left: 10px;
-${breakpoints.desktop} {
-width: 50px,
-height: 63px;
+  color: #39a7f7;
 }`;
 
 const EffectImage = styled.img`
-width: 25px;
-height: 53px;
+width: clamp(30px, 5vw, 50px);
+height: auto;
 margin-left: 10px;
-${breakpoints.desktop} {
-width: 50px,
-height: 63px;
 }`;
 
 const ButtonContainer = styled.div`
   display: flex;
-  gap: 20px;
-  position: absolute;
-  bottom: 400px;
-  z-index: 1;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-top: 20px;
+
   ${breakpoints.tablet} {
-    display: flex;
-    margin-left: 60px;
-    bottom: 150px;
-  }
-  ${breakpoints.desktop} {
-    display: flex;
-    margin-left: 80px;
-    bottom: 200px;
+    justify-content: center;
   }
 `;
 
 const KakaoLoginButton = styled.img`
   cursor: pointer;
-  width: 160px;
-  ${breakpoints.desktop} {
-    cursor: pointer;
-    width: 200px;
+  width: 200px;
+
+  ${breakpoints.tablet} {
+    width: 160px;
   }
 `;
 
-const MockupImage = styled.img`
-  visibility: hidden;
+const MockupImageWrapper = styled.div`
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 150px;
+  max-width: 500px;
   ${breakpoints.tablet} {
-    visibility: visible;
-    width: 400px;
-    margin-top: -60px;
-    margin-left: 300px;
-  }
-  ${breakpoints.desktop} {
-    visibility: visible;
-    width: 700px;
-    margin-top: -190px;
-    margin-left: 600px;
+    max-width: 100%;
+    justify-content: center;
+    padding-top: 50px;
   }
 `;
+const MockupImage = styled.img`
+  max-width: 450px;
+  height: auto;
+  object-fit: contain;
+`;
+
 const Introduce = () => {
   const navigate = useNavigate();
 
@@ -185,18 +152,19 @@ const Introduce = () => {
           <HighlightText>내 목소리</HighlightText>로 일정을 만들고, <br />
           쉽게 관리해보세요!
         </AdditionalText>
-        <MockupImage src={mockSVG} alt="목업 이미지" />
-        <BackgroundCircle src={circleSVG} alt="배경 원" />
+        <ButtonContainer>
+          <KakaoLoginButton
+            src={kakao}
+            alt="카카오 로그인"
+            onClick={handleLoginClick}
+          />
+          <Button onClick={handleStartClick}>시작하기</Button>
+        </ButtonContainer>
       </TextWrapper>
-
-      <ButtonContainer>
-        <KakaoLoginButton
-          src={kakao}
-          alt="카카오 로그인"
-          onClick={handleLoginClick}
-        />
-        <Button onClick={handleStartClick}>시작하기</Button>
-      </ButtonContainer>
+      <MockupImageWrapper>
+        <MockupImage src={mockSVG} alt="목업 이미지" />
+      </MockupImageWrapper>
+      <BackgroundCircle src={circleSVG} alt="배경 원" />
     </LandingContainer>
   );
 };

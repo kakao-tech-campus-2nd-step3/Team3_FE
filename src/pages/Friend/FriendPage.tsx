@@ -8,9 +8,21 @@ import {
   useGetFriends,
   useGetReceivedRequests,
   useGetSentRequests,
+  useGetFriendByNickname,
 } from "@/api/hooks/useGetFriends";
+import {
+  useFriendRequest,
+  useAcceptFriendRequest,
+  useRejectFriendRequest,
+} from "@/api/hooks/useFriendRequest";
+import useDeleteFriend from "@/api/hooks/useDeleteFriend";
 import breakpoints from "@/variants/breakpoints";
-import { Friend, SentRequest, ReceivedRequest } from "@/types/types";
+import {
+  Friend,
+  SentRequest,
+  ReceivedRequest,
+  SearchResult,
+} from "@/types/types";
 import Button from "@/components/common/Button/Button";
 
 // Styles
@@ -59,6 +71,13 @@ const searchInputStyles = css`
   }
 `;
 
+const searchButtonStyles = css`
+  color: #aab2c8;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 10px;
+`;
+
 const tabsStyles = css`
   display: flex;
   justify-content: flex-end;
@@ -103,37 +122,61 @@ const friendItemStyles = css`
 
 const buttonContainerStyles = css`
   display: flex;
-  gap: 10px; // 버튼 사이의 간격
-  margin-left: auto; // 오른쪽 끝으로 배치
+  gap: 10px;
+  margin-left: auto;
   margin-right: 20px;
 `;
+
+// 검색 결과 아이템 컴포넌트
+const SearchResultItem = ({ friend }: { friend: SearchResult }) => {
+  const { sendFriendRequest, isLoading } = useFriendRequest();
+
+  const handleFriendRequest = () => {
+    sendFriendRequest(friend.id);
+  };
+
+  return (
+    <div css={friendItemStyles}>
+      <List profileSrc={friend.profileImage} name={friend.nickname} />
+      <div css={buttonContainerStyles}>
+        <Button
+          size="small"
+          theme="primary"
+          onClick={handleFriendRequest}
+          disabled={isLoading}
+        >
+          친구 요청
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 // List 아이템을 렌더링하는 컴포넌트
 const FriendItem = ({ friend }: { friend: Friend }) => {
   const navigate = useNavigate();
+  const deleteFriendMutation = useDeleteFriend(friend.userId);
 
   const handleVisitClick = () => {
-    navigate(`/friend/${friend.friend_id}`, {
-      state: { friendName: friend.friend_name },
+    navigate(`/friend/${friend.userId}`, {
+      state: { friendName: friend.nickname },
     });
   };
 
+  const handleDeleteClick = () => {
+    if (window.confirm("정말로 삭제하시겠습니까?")) {
+      deleteFriendMutation.mutate();
+    }
+  };
+
   return (
-    <div key={friend.friend_id} css={friendItemStyles}>
-      <List
-        profileSrc={friend.friend_profile_image}
-        name={friend.friend_name}
-        date={new Date(friend.createdAt).toLocaleString()}
-      />
+    <div key={friend.userId} css={friendItemStyles}>
+      <List profileSrc={friend.profileImage} name={friend.nickname} />
       <div css={buttonContainerStyles}>
         <Button size="small" theme="primary" onClick={handleVisitClick}>
           방문
         </Button>
-        <Button
-          size="small"
-          theme="secondary"
-          onClick={() => console.log("삭제 clicked")}
-        >
+        <Button size="small" theme="secondary" onClick={handleDeleteClick}>
           삭제
         </Button>
       </div>
@@ -144,7 +187,7 @@ const FriendItem = ({ friend }: { friend: Friend }) => {
 function isSentRequest(
   request: SentRequest | ReceivedRequest,
 ): request is SentRequest {
-  return (request as SentRequest).receiver_name !== undefined;
+  return (request as SentRequest).receiverName !== undefined;
 } // 타입가드
 
 const RequestItem = ({
@@ -154,16 +197,28 @@ const RequestItem = ({
   request: SentRequest | ReceivedRequest;
   type: "sent" | "received";
 }) => {
+  const acceptFriendRequestMutation = useAcceptFriendRequest(request.id);
+  const rejectFriendRequestMutation = useRejectFriendRequest(request.id);
+
+  const handleAcceptClick = () => {
+    if (window.confirm("이 친구 요청을 수락하시겠습니까?")) {
+      acceptFriendRequestMutation.mutate();
+    }
+  };
+
+  const handleRejectClick = () => {
+    if (window.confirm("이 친구 요청을 거절하시겠습니까?")) {
+      rejectFriendRequestMutation.mutate();
+    }
+  };
+
   return (
     <div key={request.id} css={friendItemStyles}>
       <List
-        profileSrc={request.friend_profile_image}
+        profileSrc={request.profileImage}
         name={
-          isSentRequest(request)
-            ? request.receiver_name
-            : request.requester_name
+          isSentRequest(request) ? request.receiverName : request.requesterName
         }
-        date={request.status}
       />
       <div css={buttonContainerStyles}>
         {type === "sent" ? (
@@ -181,7 +236,7 @@ const RequestItem = ({
               style={{ paddingRight: "10px" }}
               size="small"
               theme="primary"
-              onClick={() => console.log("수락 clicked")}
+              onClick={handleAcceptClick}
             >
               수락
             </Button>
@@ -189,7 +244,7 @@ const RequestItem = ({
               style={{ margin: "10px" }}
               size="small"
               theme="secondary"
-              onClick={() => console.log("거절 clicked")}
+              onClick={handleRejectClick}
             >
               거절
             </Button>
@@ -203,6 +258,8 @@ const RequestItem = ({
 export default function FriendListPage() {
   const [activeTab, setActiveTab] = useState("friendList");
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
+  const [searched, setSearched] = useState(false);
 
   // React Query 훅 사용
   const { data: friendList = [], isLoading: isLoadingFriends } =
@@ -211,11 +268,36 @@ export default function FriendListPage() {
     useGetReceivedRequests();
   const { data: sentRequests = [], isLoading: isLoadingSent } =
     useGetSentRequests();
+  const { refetch: fetchFriendByNickname } =
+    useGetFriendByNickname(searchQuery);
+
+  const handleSearch = async () => {
+    setSearched(true);
+    if (searchQuery.trim()) {
+      const { data } = await fetchFriendByNickname();
+      if (data) {
+        setSearchResults({
+          id: data.id,
+          nickname: data.nickname,
+          profileImage: data.profileImage,
+        });
+      } else {
+        setSearchResults(null);
+      }
+    } else {
+      alert("검색어를 입력해주세요.");
+    }
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setSearched(false);
+  };
 
   const renderedFriendList = useMemo(
     () =>
       friendList.map((friend) => (
-        <FriendItem key={friend.friend_id} friend={friend} />
+        <FriendItem key={friend.userId} friend={friend} />
       )),
     [friendList],
   );
@@ -276,14 +358,28 @@ export default function FriendListPage() {
       </div>
       <div css={friendListStyles}>
         {activeTab === "friendSearch" && (
-          <div css={searchBarStyles}>
-            <Search css={searchIconStyles} />
-            <input
-              css={searchInputStyles}
-              placeholder="검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div>
+            <div css={searchBarStyles}>
+              <Search css={searchIconStyles} />
+              <input
+                css={searchInputStyles}
+                placeholder="검색"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+              />
+              <span
+                css={searchButtonStyles}
+                onClick={handleSearch}
+                role="button"
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                }}
+              >
+                검색
+              </span>
+            </div>
+            {searched && !searchResults && <p>검색 결과가 없습니다.</p>}
+            {searchResults && <SearchResultItem friend={searchResults} />}
           </div>
         )}
         {activeTab === "friendList" && !isLoadingFriends && renderedFriendList}
