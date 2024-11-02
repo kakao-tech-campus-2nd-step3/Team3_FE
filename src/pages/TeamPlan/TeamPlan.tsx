@@ -89,11 +89,15 @@ export default function TeamPlanPage() {
     navigate(`/team-plan/1`);
   };
 
+  const handleVisitMaking = () => {
+    navigate("/team-plan/making");
+  };
+
   return (
     <PageContainer>
       <PageTitle>팀 플랜</PageTitle>
       <ButtonWrapper>
-        <Button theme="primary" size="long">
+        <Button theme="primary" size="long" onClick={handleVisitMaking}>
           팀 플랜 추가하기
         </Button>
       </ButtonWrapper>

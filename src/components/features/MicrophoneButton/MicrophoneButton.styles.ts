@@ -19,17 +19,12 @@ export const ButtonContainer = styled(motion.button)({
   },
 
   // 반응형 설정
-  width: "50px",
-  height: "50px",
+  width: "58px",
+  height: "58px",
 
   [breakpoints.tablet]: {
-    width: "58px",
-    height: "58px",
-  },
-
-  [breakpoints.desktop]: {
-    width: "64px",
-    height: "64px",
+    width: "50px",
+    height: "50px",
   },
 });
 
@@ -64,10 +59,5 @@ export const Wave = styled(motion.div)({
   [breakpoints.tablet]: {
     width: "6px",
     height: "6px",
-  },
-
-  [breakpoints.desktop]: {
-    width: "8px",
-    height: "8px",
   },
 });

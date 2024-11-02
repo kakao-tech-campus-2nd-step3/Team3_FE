@@ -1,9 +1,11 @@
+import { useState } from "react";
 import styled from "@emotion/styled";
-import PersonIcon from "@mui/icons-material/Person";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import SettingsIcon from "@mui/icons-material/Settings";
+import Switch from "@mui/material/Switch";
 import List from "@/components/common/List/List";
+import Button from "@/components/common/Button/Button";
+import useUserData from "@/api/hooks/useUserData";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -60,34 +62,41 @@ const GridLayout = styled.div`
   }
 `;
 
+const DeleteButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+`;
+
 export default function MyPage() {
+  const [isNotificationEnabled, setNotificationEnabled] = useState(false);
+  const { userData, handleDeleteAccount, handleSubscription } = useUserData();
+
+  const handleNotificationToggle = () => {
+    setNotificationEnabled(!isNotificationEnabled);
+  };
+
+  const handleSubscriptionClick = () => {
+    if (userData.isPremium) {
+      alert("이미 구독중입니다.");
+    } else {
+      handleSubscription();
+    }
+  };
+
   return (
     <PageWrapper>
       <ContentWrapper>
         {/* 프로필 카드 */}
         <Card>
           <List
-            profileSrc="/placeholder.svg?height=96&width=96"
-            name="홍길동"
-            date="@hong_gildong"
+            name={userData.nickname}
+            date={userData.isPremium ? "프리미엄 회원" : "일반 회원"}
           />
         </Card>
 
         {/* 정보 카드 그리드 */}
         <GridLayout>
-          {/* 개인정보 카드 */}
-          <Card>
-            <CardHeader>
-              <PersonIcon fontSize="small" />
-              <CardTitle>개인정보</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul>
-                <li>이메일: hong@example.com</li>
-              </ul>
-            </CardContent>
-          </Card>
-
           {/* 결제정보 카드 */}
           <Card>
             <CardHeader>
@@ -95,9 +104,9 @@ export default function MyPage() {
               <CardTitle>구독정보</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul>
-                <li>만료일: 12/25</li>
-              </ul>
+              <Button size="small" onClick={handleSubscriptionClick}>
+                결제 요청
+              </Button>
             </CardContent>
           </Card>
 
@@ -109,26 +118,22 @@ export default function MyPage() {
             </CardHeader>
             <CardContent>
               <ul>
-                <li>이메일 알림: 켜짐</li>
-                <li>푸시 알림: 켜짐</li>
-                <li>SMS 알림: 꺼짐</li>
+                <li>알림 켜기</li>
               </ul>
-            </CardContent>
-          </Card>
-
-          {/* 계정설정 카드 */}
-          <Card>
-            <CardHeader>
-              <SettingsIcon fontSize="small" />
-              <CardTitle>계정설정</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul>
-                <li>aaa</li>
-              </ul>
+              <Switch
+                checked={isNotificationEnabled}
+                onChange={handleNotificationToggle}
+              />
             </CardContent>
           </Card>
         </GridLayout>
+
+        {/* 회원 탈퇴 버튼 */}
+        <DeleteButtonWrapper>
+          <Button onClick={handleDeleteAccount} size="small" theme="secondary">
+            회원 탈퇴
+          </Button>
+        </DeleteButtonWrapper>
       </ContentWrapper>
     </PageWrapper>
   );

@@ -39,6 +39,8 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'off',
     "jsx-a11y/click-events-have-key-events": "off",
     "no-underscore-dangle": "off",
+    "no-alert": "off",
+    "react-hooks/exhaustive-deps": "off",
     "import/no-extraneous-dependencies": [
       "error",
       {

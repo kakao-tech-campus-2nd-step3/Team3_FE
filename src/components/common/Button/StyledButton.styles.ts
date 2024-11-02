@@ -1,29 +1,27 @@
+// Button.styles.ts
 import styled from "@emotion/styled";
 import breakpoints from "@/variants/breakpoints";
 import { Props } from "./Button.types";
 
 const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
   {
-    borderRadius: "8px",
+    borderRadius: "16px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     cursor: "pointer",
     transition: "background-color 200ms",
     padding: "0 16px",
-    fontWeight: "bold",
     outline: "none",
     "&:focus": {
       outline: "none",
     },
   },
-
   ({ size = "responsive" }) => {
     const smallStyle = {
-      width: "90px",
+      width: "100px",
       height: "40px",
       fontSize: "14px",
-      borderRadius: "16px",
     };
 
     const largeStyle = {
@@ -33,8 +31,8 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
     };
 
     const longStyle = {
-      width: "200px",
-      height: "50px",
+      width: "170px",
+      height: "40px",
       fontSize: "15px",
     };
 
@@ -52,20 +50,16 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
 
     // 반응형
     return {
-      ...smallStyle,
-      [breakpoints.tablet]: {
-        width: "120px",
-        height: "43px",
-        fontSize: "16px",
+      [breakpoints.mobile]: {
+        width: "100px",
+        height: "40px",
+        fontSize: "14px",
       },
-      [breakpoints.desktop]: {
-        width: "150px",
-        height: "50px",
-        fontSize: "20px",
-      },
+      width: "150px",
+      height: "50px",
+      fontSize: "20px",
     };
   },
-
   ({ theme }) => {
     switch (theme) {
       case "primary":
@@ -90,17 +84,19 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
             border: "1px solid #39A7F7",
           },
         };
-      default:
+      case "kakao":
         return {
-          height: "50px",
-          fontSize: "16px",
-          backgroundColor: "#fee500",
-          color: "black",
+          backgroundColor: "#ffe401",
+          color: "#1e1e1f",
           border: "none",
           "&:hover": {
-            backgroundColor: "#fada0a",
+            backgroundColor: "#ffcd00",
+            color: "#1a1a1a",
+            transition: "all 0.3s ease",
           },
         };
+      default:
+        return {};
     }
   },
 );

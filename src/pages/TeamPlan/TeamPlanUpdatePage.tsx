@@ -6,7 +6,6 @@ import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar"
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-
 // 슬라이드 애니메이션
 const slideDown = keyframes`
   0% {
@@ -23,6 +22,7 @@ const slideDown = keyframes`
 const PlanUpdateContainer = styled.div`
   display: grid;
   align-items: center;
+  max-width: 1440px; /* 기본 최대 너비를 1440px로 설정 */
   margin: 0 auto;
   margin-top: 20px;
 `;
@@ -32,19 +32,18 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  gap: 40px;
 `;
 
 // 캘린더 컨테이너
 const CalendarContainer = styled.div`
-  margin-bottom: 40px;
-  ${breakpoints.mobile} {
-    margin-bottom: -50px;
-  }
+  width: 100%; /* 전체 너비를 차지하도록 설정 */
 `;
 
 // 텍스트 스타일
 const StyledText = styled.p`
-  font-size: 30px; /* 기본 폰트 크기 */
+  font-size: 23px; /* 기본 폰트 크기 */
   font-weight: bold;
   text-align: center;
 
@@ -52,14 +51,13 @@ const StyledText = styled.p`
     animation: ${slideDown} 1s ease-in-out;
   }
   ${breakpoints.mobile} {
-    font-size: 18px;
-    white-space: pre-line;
+    font-size: 16px;
+    margin-top: 20px;
   }
 `;
 
 const StyledTextContainer = styled.div`
   height: 70px;
-  margin-bottom: 20px;
 `;
 // 버튼 섹션
 const ButtonContainer = styled.div`
@@ -68,15 +66,12 @@ const ButtonContainer = styled.div`
   align-items: center;
   gap: 130px; /* 버튼 간 간격 */
   margin-bottom: 30px;
-  ${breakpoints.mobile} {
-    gap: 30px;
-  }
 `;
 
-const PreviewPlanUpdate = () => {
+const TeamPlanUpdate = () => {
   const TitleMessages = [
-    "플랜을 수정하거나, 바로 저장하세요.",
-    "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
+    "팀 플랜을 수정하거나, 바로 저장하세요.",
+    "일정을 옮기고 크기를 조정하여 원하는대로 플랜을 수정해보세요",
   ];
 
   // 메시지 애니메이션과 인덱스 상태
@@ -122,4 +117,4 @@ const PreviewPlanUpdate = () => {
   );
 };
 
-export default PreviewPlanUpdate;
+export default TeamPlanUpdate;

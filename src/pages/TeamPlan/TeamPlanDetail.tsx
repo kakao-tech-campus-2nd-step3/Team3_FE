@@ -27,7 +27,7 @@ const SectionTitle = styled(PageTitle)`
   margin-bottom: 13px;
 `;
 
-const ParticipantsContainer = styled.div`
+export const ParticipantsContainer = styled.div`
   padding: 8px;
   border-radius: 12.8px;
   overflow: hidden;
@@ -40,7 +40,7 @@ const ParticipantsContainer = styled.div`
   margin-right: 8px;
 `;
 
-const Participant = styled.div`
+export const Participant = styled.div`
   padding: 8px;
   background: #f4f4f4;
   border-radius: 12.8px;
@@ -51,7 +51,7 @@ const Participant = styled.div`
   display: flex;
 `;
 
-const ParticipantName = styled.div`
+export const ParticipantName = styled.div`
   color: black;
   font-size: 15.3px;
   font-family: "Inter", sans-serif;

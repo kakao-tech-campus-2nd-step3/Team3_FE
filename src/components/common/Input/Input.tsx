@@ -7,9 +7,14 @@ export type Props = {
   disabled?: boolean;
 };
 
-const Input: React.FC<Props> = ({ value, placeholder, onChange }) => {
+const Input: React.FC<Props> = ({ value, placeholder, onChange, ...props }) => {
   return (
-    <StyledInput onChange={onChange} value={value} placeholder={placeholder} />
+    <StyledInput
+      onChange={onChange}
+      value={value}
+      placeholder={placeholder}
+      {...props}
+    />
   );
 };
 
