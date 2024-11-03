@@ -1,12 +1,14 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import { useGetPlans } from "@/api/hooks/useGetPlans";
+import useGetPlanCard, { PlanCard } from "@/api/hooks/useGetPlanCard";
 
 const PreviewPlanSelectPageContainer = styled.div`
   display: grid;
@@ -49,8 +51,32 @@ const ButtonContainer = styled.div`
   }
 `;
 
+// 쿠키에서 정확하게 deviceId를 가져오는 함수
+const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
+  return null;
+};
+// PlanCard 데이터를 CalendarEvent 형식으로 매핑
+const mapPlanCardToCalendarEvent = (planCards: PlanCard[]): CalendarEvent[] => {
+  console.log("Mapping PlanCards:", planCards);
+  return planCards.map((card) => ({
+    id: card.cardId,
+    title: card.title,
+    description: card.description,
+    startDate: new Date(card.startDate),
+    endDate: new Date(card.endDate),
+    accessibility: true, // 필요에 따라 실제 데이터로 설정
+    complete: false, // 필요에 따라 실제 데이터로 설정
+  }));
+};
+
 const PlanSelectPage = () => {
-  const { data: plans } = useGetPlans();
+  // 쿠키에서 deviceId 가져오기
+  const deviceId = getCookie("device_id");
+  console.log("Fetched deviceId:", deviceId);
+  const { data: plans } = useGetPlanCard(deviceId || "");
 
   // 선택된 버튼 번호를 저장할 상태
   const [clickedNumber, setClickedNumber] = useState<number | null>(null);
@@ -59,6 +85,18 @@ const PlanSelectPage = () => {
   const handleNumberButtonClick = (number: number) => {
     setClickedNumber(number);
   };
+
+  const calendarEvents =
+    plans && plans.length > 0 && plans[0].planCards
+      ? mapPlanCardToCalendarEvent(plans[0].planCards)
+      : [];
+
+  console.log("Plans data:", plans);
+  console.log(
+    "Plans.planCards data:",
+    plans && plans.length > 0 ? plans[0].planCards : undefined,
+  );
+  console.log("Mapped calendar events:", calendarEvents);
 
   return (
     <PreviewPlanSelectPageContainer>
@@ -83,7 +121,7 @@ const PlanSelectPage = () => {
         </NumberButtonContainer>
       </SidebarSection>
       <CalendarSection>
-        <CustomCalendar plans={plans || []} />
+        <CustomCalendar plans={calendarEvents} />
       </CalendarSection>
 
       <ButtonContainer>
