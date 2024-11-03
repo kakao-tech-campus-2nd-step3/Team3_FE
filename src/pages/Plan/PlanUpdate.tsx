@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
@@ -77,9 +77,11 @@ const PlanUpdate = () => {
     "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
   ];
 
+  const location = useLocation();
   const [cookies] = useCookies(["device_id"]);
   const navigate = useNavigate();
   const deviceId = cookies.device_id;
+  const { selectedGroup = 1 } = location.state || {};
 
   // deviceId가 준비되었을 때만 useGetPlanCard 호출
   const { data: planData, isLoading, error } = useGetPlanCard(deviceId);
@@ -113,15 +115,17 @@ const PlanUpdate = () => {
   if (error) return <div>데이터 로드 중 오류가 발생했습니다.</div>;
 
   const plans =
-    planData?.[0]?.planCards.map((card) => ({
-      id: card.cardId,
-      title: card.title,
-      description: card.description,
-      startDate: new Date(card.startDate),
-      endDate: new Date(card.endDate),
-      accessibility: true,
-      complete: false,
-    })) || [];
+    selectedGroup && planData && planData[selectedGroup - 1]
+      ? planData[selectedGroup - 1].planCards.map((card) => ({
+          id: card.cardId,
+          title: card.title,
+          description: card.description,
+          startDate: new Date(card.startDate),
+          endDate: new Date(card.endDate),
+          accessibility: true,
+          complete: false,
+        }))
+      : [];
 
   return (
     <PlanUpdateContainer>

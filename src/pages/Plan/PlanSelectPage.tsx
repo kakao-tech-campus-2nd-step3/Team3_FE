@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { selectClasses } from "@mui/material";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
@@ -75,7 +76,6 @@ const mapPlanCardToCalendarEvent = (planCards: PlanCard[]): CalendarEvent[] => {
 const PlanSelectPage = () => {
   // 쿠키에서 deviceId 가져오기
   const deviceId = getCookie("device_id");
-  console.log("Fetched deviceId:", deviceId);
   const { data: plans } = useGetPlanCard(deviceId || "");
 
   // 선택된 버튼 번호를 저장할 상태
@@ -86,17 +86,15 @@ const PlanSelectPage = () => {
     setClickedNumber(number);
   };
 
-  const calendarEvents =
-    plans && plans.length > 0 && plans[0].planCards
-      ? mapPlanCardToCalendarEvent(plans[0].planCards)
-      : [];
+  // 각 버튼 번호에 따라 적절한 그룹을 선택
+  const selectedGroup: { planCards: PlanCard[] } | null =
+    clickedNumber && plans && plans[clickedNumber - 1]
+      ? plans[clickedNumber - 1]
+      : null;
 
-  console.log("Plans data:", plans);
-  console.log(
-    "Plans.planCards data:",
-    plans && plans.length > 0 ? plans[0].planCards : undefined,
-  );
-  console.log("Mapped calendar events:", calendarEvents);
+  const calendarEvents = selectedGroup
+    ? mapPlanCardToCalendarEvent(selectedGroup.planCards)
+    : [];
 
   return (
     <PreviewPlanSelectPageContainer>
@@ -127,7 +125,11 @@ const PlanSelectPage = () => {
       <ButtonContainer>
         <Button
           size="responsive"
-          onClick={() => navigate(RouterPath.PLAN_UPDATE)}
+          onClick={() =>
+            navigate(RouterPath.PLAN_UPDATE, {
+              state: { selectedGroup: clickedNumber },
+            })
+          }
         >
           확인
         </Button>
