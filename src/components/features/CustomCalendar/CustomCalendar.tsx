@@ -14,6 +14,7 @@ import {
   eventItemStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlans";
+import useUpdatePlans from "@/api/hooks/useUpdatePlans";
 
 // event interface
 export interface CalendarEvent {
@@ -49,6 +50,7 @@ const calculateEventStatus = (event: CalendarEvent) => {
 const renderEventContent = (
   eventInfo: EventContentArg,
   handleDelete: (id: string) => void,
+  handleUpdate: (event: CalendarEvent) => void,
 ) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
@@ -70,6 +72,28 @@ const renderEventContent = (
       >
         삭제
       </button>
+      <button
+        type="button"
+        onClick={() =>
+          handleUpdate({
+            id: event.id,
+            title: event.title,
+            description,
+            start: event.start!,
+            end: event.end!,
+            accessibility: event.extendedProps?.accessibility || null,
+            complete: event.extendedProps?.complete || false,
+          })
+        }
+        style={{
+          marginTop: "4px",
+          color: "blue",
+          backgroundColor: "transparent",
+          cursor: "pointer",
+        }}
+      >
+        수정
+      </button>
     </div>
   );
 };
@@ -85,6 +109,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(() => new Date());
 
   const { mutate: deletePlan } = useDeletePlan();
+  const { mutate: updatePlan } = useUpdatePlans();
 
   // 이벤트 삭제 핸들러
   const handleDelete = useCallback(
@@ -94,6 +119,51 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       }
     },
     [deletePlan],
+  );
+
+  // 이벤트 수정 핸들러
+  const handleUpdate = useCallback(
+    (event: CalendarEvent) => {
+      const newTitle = prompt("새 제목을 입력하세요", event.title);
+      const newDescription = prompt("새 설명을 입력하세요", event.description);
+      // 시작 날짜와 종료 날짜를 입력받습니다.
+      const newStartDate = prompt(
+        "새 시작 날짜를 입력하세요 (YYYY-MM-DDTHH:mm:ss 형식)",
+        event.start.toISOString(),
+      );
+      const newEndDate = prompt(
+        "새 종료 날짜를 입력하세요 (YYYY-MM-DDTHH:mm:ss 형식)",
+        event.end.toISOString(),
+      );
+
+      // 새로 입력한 날짜 문자열을 Date 객체로 변환
+      const parsedStartDate = newStartDate
+        ? new Date(newStartDate)
+        : event.start;
+      const parsedEndDate = newEndDate ? new Date(newEndDate) : event.end;
+
+      if (
+        newTitle != null &&
+        newDescription != null &&
+        // eslint-disable-next-line no-restricted-globals
+        !isNaN(parsedStartDate.getTime()) &&
+        // eslint-disable-next-line no-restricted-globals
+        !isNaN(parsedEndDate.getTime())
+      ) {
+        updatePlan({
+          planId: Number(event.id),
+          planData: {
+            title: newTitle,
+            description: newDescription,
+            startDate: event.start.toISOString(),
+            endDate: event.end.toISOString(),
+            accessibility: event.accessibility || false,
+            isCompleted: event.complete,
+          },
+        });
+      }
+    },
+    [updatePlan],
   );
 
   // Handle window resize
@@ -205,7 +275,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           eventDrop={handleEventChange}
           eventResize={handleEventChange}
           eventContent={(eventInfo) =>
-            renderEventContent(eventInfo, handleDelete)
+            renderEventContent(eventInfo, handleDelete, handleUpdate)
           }
           selectable={false}
           selectMirror={false}
