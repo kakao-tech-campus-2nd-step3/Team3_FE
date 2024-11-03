@@ -1,13 +1,15 @@
 import styled from "@emotion/styled";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import useGptRequest from "@/api/hooks/useGptRequest";
 import Input from "@/components/common/Input/Input";
 import MicrophoneButton from "@/components/features/MicrophoneButton/MicrophoneButton";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useVoiceHook from "@/hooks/useVoiceHook";
-import useCreatePlan from "@/api/hooks/useCreatePlans";
+import useGenerateDeviceId from "@/api/hooks/useGenerateDeviceId";
+import useSavePlan from "@/api/hooks/useSavePlan";
 
 const PlanPageContainer = styled.div`
   width: 60%
@@ -78,27 +80,65 @@ const PlanPage: React.FC = () => {
     handleStopRecording,
   } = useVoiceHook();
   const navigate = useNavigate();
-  const createPlanMutation = useCreatePlan();
+  const { data: deviceId } = useGenerateDeviceId();
+  const useGptRequesetMutation = useGptRequest();
+  const savePlanMutation = useSavePlan();
 
   const handleNextClick = async () => {
+    if (!deviceId) {
+      alert("Device ID를 가져오는 중입니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
     try {
-      await createPlanMutation.mutateAsync({
-        title: transcript,
-        description: transcript,
-        startDate: new Date().toISOString(), // 적절한 날짜로 수정 필요
-        endDate: new Date(new Date().getTime() + 3600 * 1000).toISOString(), // 적절한 날짜로 수정 필요
-        accessibility: true,
-        isCompleted: false,
+      // 1. GPT 요청 보내기
+      const gptResponse = await useGptRequesetMutation.mutateAsync({
+        deviceId,
+        text: transcript,
       });
 
-      // 플랜 생성 성공 후 다음 페이지로 이동
+      console.log("GPT 응답 데이터:", gptResponse);
+
+      // gptResponse의 구조에 따라 data에서 필요한 데이터 추출
+      const { groupId, planCards } = gptResponse[0] || {};
+
+      // 데이터 유효성 검사
+      if (!groupId || !Array.isArray(planCards) || planCards.length === 0) {
+        throw new Error(
+          "응답 데이터가 올바르지 않습니다. groupId와 planCards를 확인해 주세요.",
+        );
+      }
+
+      // planCards 배열의 각 카드가 필요한 필드를 포함하는지 확인
+      const formattedPlanCards = planCards.map((card) => ({
+        title: card.title || "기본 제목",
+        description: card.description || "기본 설명",
+        startDate: card.startDate || new Date().toISOString(),
+        endDate:
+          card.endDate ||
+          new Date(new Date().getTime() + 3600 * 1000).toISOString(),
+        accessibility: card.accessibility ?? true,
+        isCompleted: card.isCompleted ?? false,
+      }));
+
+      console.log("플랜 저장 요청 데이터:", {
+        deviceId,
+        groupId,
+        planCards: formattedPlanCards,
+      });
+
+      // 2. GPT 응답을 사용하여 플랜 저장 요청 보내기
+      await savePlanMutation.mutateAsync({
+        deviceId,
+        groupId,
+        planCards: formattedPlanCards,
+      });
+
       navigate(RouterPath.PLAN_SELECT);
     } catch (error) {
-      // 에러 처리
-      console.error("플랜 생성 실패:", error);
+      console.error("플랜 저장 실패:", error);
     }
   };
-
   return (
     <PlanPageContainer>
       <InputWrapper>
