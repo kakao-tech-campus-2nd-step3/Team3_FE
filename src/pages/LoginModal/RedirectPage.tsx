@@ -13,7 +13,6 @@ const OAuthRedirectHandler = () => {
       const queryParams = new URLSearchParams(window.location.search);
       const accessToken = queryParams.get("access");
       const refreshToken = queryParams.get("refresh");
-      const deviceId = queryParams.get("deviceId");
 
       if (accessToken && refreshToken) {
         const cookieOptions = "path=/; Secure; SameSite=Strict;";
@@ -22,7 +21,6 @@ const OAuthRedirectHandler = () => {
         document.cookie = `access_token=${accessToken}; ${cookieOptions}`;
         document.cookie = `refresh_token=${refreshToken}; ${cookieOptions}`;
 
-        document.cookie = `device_id=${deviceId}; ${cookieOptions}`;
         // 상태 업데이트
         setAuthState({
           isAuthenticated: true,
