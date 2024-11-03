@@ -21,8 +21,8 @@ export interface CalendarEvent {
   id: string;
   title: string;
   description: string;
-  start: Date;
-  end: Date;
+  startDate: Date;
+  endDate: Date;
   accessibility: boolean | null;
   complete: boolean;
 }
@@ -41,8 +41,8 @@ const VIEW_MODES = {
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
   if (event.complete) return "completed";
-  if (event.start > now) return "upcoming";
-  if (!event.complete && event.end < now) return "incomplete";
+  if (event.startDate > now) return "upcoming";
+  if (!event.complete && event.endDate < now) return "incomplete";
   return "incomplete";
 };
 
@@ -79,8 +79,8 @@ const renderEventContent = (
             id: event.id,
             title: event.title,
             description,
-            start: event.start!,
-            end: event.end!,
+            startDate: event.start!,
+            endDate: event.end!,
             accessibility: event.extendedProps?.accessibility || null,
             complete: event.extendedProps?.complete || false,
           })
@@ -129,18 +129,18 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       // 시작 날짜와 종료 날짜를 입력받습니다.
       const newStartDate = prompt(
         "새 시작 날짜를 입력하세요 (YYYY-MM-DDTHH:mm:ss 형식)",
-        event.start.toISOString(),
+        event.startDate.toISOString(),
       );
       const newEndDate = prompt(
         "새 종료 날짜를 입력하세요 (YYYY-MM-DDTHH:mm:ss 형식)",
-        event.end.toISOString(),
+        event.endDate.toISOString(),
       );
 
       // 새로 입력한 날짜 문자열을 Date 객체로 변환
       const parsedStartDate = newStartDate
         ? new Date(newStartDate)
-        : event.start;
-      const parsedEndDate = newEndDate ? new Date(newEndDate) : event.end;
+        : event.startDate;
+      const parsedEndDate = newEndDate ? new Date(newEndDate) : event.endDate;
 
       if (
         newTitle != null &&
@@ -155,8 +155,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           planData: {
             title: newTitle,
             description: newDescription,
-            startDate: event.start.toISOString(),
-            endDate: event.end.toISOString(),
+            startDate: event.startDate.toISOString(),
+            endDate: event.endDate.toISOString(),
             accessibility: event.accessibility || false,
             isCompleted: event.complete,
           },
@@ -194,8 +194,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     const parsedEvents = plans.map((plan) => ({
       id: plan.id,
       title: plan.title,
-      start: new Date(plan.start),
-      end: new Date(plan.end),
+      start: new Date(plan.startDate),
+      end: new Date(plan.endDate),
       className: `fc-event-${calculateEventStatus(plan)}`,
       extendedProps: {
         description: plan.description,
@@ -205,6 +205,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     // 기존 events와 비교하여 변경된 경우에만 상태 업데이트
     const areEventsEqual =
       JSON.stringify(events) === JSON.stringify(parsedEvents);
+    console.log("CustomCalendar events:", events);
     if (!areEventsEqual) {
       setEvents(parsedEvents);
     }
@@ -225,8 +226,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                 id: info.event.id || "",
                 title: info.event.title || "",
                 description,
-                start: new Date(info.event.start),
-                end: new Date(info.event.end),
+                startDate: new Date(info.event.start),
+                endDate: new Date(info.event.end),
                 accessibility: null,
                 complete: false,
               })}`,
