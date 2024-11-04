@@ -161,8 +161,8 @@ const MainPage: React.FC = () => {
     createPlanMutation.mutate({
       title,
       description,
-      startDate: new Date(startDate).toISOString(),
-      endDate: new Date(endDate).toISOString(),
+      startTimestamp: Math.floor(new Date(startDate).getTime() / 1000),
+      endTimestamp: Math.floor(new Date(endDate).getTime() / 1000),
       accessibility: isAccessible,
       isCompleted,
     });

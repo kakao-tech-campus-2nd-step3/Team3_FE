@@ -120,8 +120,8 @@ const PlanUpdate = () => {
           id: card.cardId,
           title: card.title,
           description: card.description,
-          startDate: new Date(card.startDate),
-          endDate: new Date(card.endDate),
+          start: new Date(card.startDate),
+          end: new Date(card.endDate),
           accessibility: true,
           complete: false,
         }))

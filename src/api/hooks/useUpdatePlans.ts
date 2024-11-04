@@ -4,8 +4,8 @@ import { apiClient } from "@/api/instance";
 interface UpdatePlanData {
   title: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  startTimestamp: number;
+  endTimestamp: number;
   accessibility: boolean;
   isCompleted: boolean;
 }

@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { selectClasses } from "@mui/material";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
@@ -10,6 +9,8 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useGetPlanCard, { PlanCard } from "@/api/hooks/useGetPlanCard";
+import useDeletePlanCard from "@/api/hooks/useDeletePlanCard";
+import { queryClient } from "@/api/instance";
 
 const PreviewPlanSelectPageContainer = styled.div`
   display: grid;
@@ -66,8 +67,8 @@ const mapPlanCardToCalendarEvent = (planCards: PlanCard[]): CalendarEvent[] => {
     id: card.cardId,
     title: card.title,
     description: card.description,
-    startDate: new Date(card.startDate),
-    endDate: new Date(card.endDate),
+    start: new Date(card.startDate),
+    end: new Date(card.endDate),
     accessibility: true, // 필요에 따라 실제 데이터로 설정
     complete: false, // 필요에 따라 실제 데이터로 설정
   }));
@@ -77,6 +78,7 @@ const PlanSelectPage = () => {
   // 쿠키에서 deviceId 가져오기
   const deviceId = getCookie("device_id");
   const { data: plans } = useGetPlanCard(deviceId || "");
+  const deletePlanCard = useDeletePlanCard();
 
   // 선택된 버튼 번호를 저장할 상태
   const [clickedNumber, setClickedNumber] = useState<number | null>(null);
@@ -95,6 +97,27 @@ const PlanSelectPage = () => {
   const calendarEvents = selectedGroup
     ? mapPlanCardToCalendarEvent(selectedGroup.planCards)
     : [];
+
+  // 플랜 삭제 처리 함수
+  const handleDeletePlanCard = (cardId: string, groupId: string) => {
+    deletePlanCard.mutate(
+      {
+        deviceId: deviceId || "",
+        groupId,
+        cardId,
+      },
+      {
+        onSuccess: () => {
+          console.log("플랜 카드 삭제 성공");
+          // 플랜 목록을 최신 상태로 가져오기
+          queryClient.invalidateQueries({ queryKey: ["planCards"] });
+        },
+        onError: (error) => {
+          console.error("플랜 카드 삭제 실패:", error);
+        },
+      },
+    );
+  };
 
   return (
     <PreviewPlanSelectPageContainer>
@@ -118,8 +141,40 @@ const PlanSelectPage = () => {
           />
         </NumberButtonContainer>
       </SidebarSection>
+
       <CalendarSection>
         <CustomCalendar plans={calendarEvents} />
+        <div>
+          {calendarEvents.map((event) => (
+            <div
+              key={event.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <span>{event.title}</span>
+              <button
+                type="button"
+                onClick={() =>
+                  handleDeletePlanCard(
+                    event.id,
+                    selectedGroup?.planCards[0].groupId || "",
+                  )
+                }
+                style={{
+                  marginLeft: "10px",
+                  color: "red",
+                  backgroundColor: "transparent",
+                  cursor: "pointer",
+                }}
+              >
+                삭제
+              </button>
+            </div>
+          ))}
+        </div>
       </CalendarSection>
 
       <ButtonContainer>
