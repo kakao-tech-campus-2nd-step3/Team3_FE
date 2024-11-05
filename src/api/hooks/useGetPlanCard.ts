@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/api/instance";
 
 export interface PlanCard {
+  endTimestamp: number;
+  startTimestamp: number;
   deviceId: string;
   groupId: string;
   cardId: string;
