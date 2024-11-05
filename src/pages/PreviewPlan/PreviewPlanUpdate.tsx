@@ -1,8 +1,10 @@
 import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
-import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
@@ -98,6 +100,8 @@ const PreviewPlanUpdate = () => {
   }, []);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedPlan = location.state?.selectedPlan || [];
 
   return (
     <PlanUpdateContainer>
@@ -109,7 +113,7 @@ const PreviewPlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar />
+          <CustomCalendar plans={selectedPlan} />
         </CalendarContainer>
         <ButtonContainer>
           <Button onClick={() => navigate(RouterPath.MAIN)}>저장</Button>
