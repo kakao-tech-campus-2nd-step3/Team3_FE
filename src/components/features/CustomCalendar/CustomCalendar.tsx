@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /** @jsxImportSource @emotion/react */
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
@@ -6,6 +7,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
+import { useQueryClient } from "@tanstack/react-query";
 import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
@@ -14,7 +16,11 @@ import {
   eventItemStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlans";
-
+import useUpdatePlans from "@/api/hooks/useUpdatePlans";
+import useDeletePlanCard from "@/api/hooks/useDeletePlanCard";
+import useUpdatePlanCard, {
+  UpdatePlanCardData,
+} from "@/api/hooks/useUpdatePlanCard";
 // event interface
 export interface CalendarEvent {
   id: string;
@@ -29,6 +35,9 @@ export interface CalendarEvent {
 interface CustomCalendarProps {
   calendarOwner?: string;
   plans?: CalendarEvent[];
+  isPreviewMode?: boolean;
+  previewDeviceId?: string; // Preview 모드에서 사용될 deviceId
+  previewGroupId?: string; // Preview 모드에서 사용될 groupId
 }
 
 const VIEW_MODES = {
@@ -49,6 +58,7 @@ const calculateEventStatus = (event: CalendarEvent) => {
 const renderEventContent = (
   eventInfo: EventContentArg,
   handleDelete: (id: string) => void,
+  handleUpdate: (event: CalendarEvent) => void,
 ) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
@@ -58,18 +68,43 @@ const renderEventContent = (
       <div>{timeText}</div>
       <div>{event.title}</div>
       <div>{description}</div>
-      <button
-        type="button"
-        onClick={() => handleDelete(event.id)}
-        style={{
-          marginTop: "4px",
-          color: "red",
-          backgroundColor: "transparent",
-          cursor: "pointer",
-        }}
-      >
-        삭제
-      </button>
+      <div>
+        <button
+          type="button"
+          onClick={() => handleDelete(event.id)}
+          style={{
+            marginTop: "4px",
+            color: "red",
+            backgroundColor: "transparent",
+            cursor: "pointer",
+            marginRight: "8px",
+          }}
+        >
+          삭제
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            handleUpdate({
+              id: event.id,
+              title: event.title,
+              description,
+              start: event.start!,
+              end: event.end!,
+              accessibility: event.extendedProps?.accessibility || null,
+              complete: event.extendedProps?.complete || false,
+            })
+          }
+          style={{
+            marginTop: "4px",
+            color: "blue",
+            backgroundColor: "transparent",
+            cursor: "pointer",
+          }}
+        >
+          수정
+        </button>
+      </div>
     </div>
   );
 };
@@ -78,6 +113,9 @@ const renderEventContent = (
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
   calendarOwner,
   plans = [],
+  isPreviewMode = false,
+  previewDeviceId,
+  previewGroupId,
 }) => {
   const [events, setEvents] = useState<EventInput[]>([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
@@ -85,15 +123,149 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(() => new Date());
 
   const { mutate: deletePlan } = useDeletePlan();
+  const { mutate: updatePlan } = useUpdatePlans();
+  const { mutate: deletePlanCard } = useDeletePlanCard();
+  const { mutate: updatePlanCard } = useUpdatePlanCard();
+  const queryClient = useQueryClient();
 
+  // 이벤트 삭제 핸들러
   // 이벤트 삭제 핸들러
   const handleDelete = useCallback(
     (id: string) => {
-      if (window.confirm("정말로 삭제하시겠습니까? ")) {
-        deletePlan(Number(id));
+      console.log("isPreviewMode:", isPreviewMode);
+      console.log("previewDeviceId:", previewDeviceId);
+      console.log("previewGroupId:", previewGroupId);
+
+      if (window.confirm("정말로 삭제하시겠습니까?")) {
+        if (isPreviewMode && previewDeviceId && previewGroupId) {
+          // Preview 모드에서 삭제
+          console.log("Using deletePlanCard with:", {
+            deviceId: previewDeviceId,
+            groupId: previewGroupId,
+            cardId: id,
+          });
+          deletePlanCard(
+            {
+              deviceId: previewDeviceId,
+              groupId: previewGroupId,
+              cardId: id,
+            },
+            {
+              onSuccess: () => {
+                queryClient.invalidateQueries({
+                  queryKey: ["planCards"],
+                  exact: true,
+                });
+              },
+            },
+          );
+        } else {
+          console.log("Calling deletePlan");
+          deletePlan(Number(id));
+        }
       }
     },
-    [deletePlan],
+    [
+      deletePlan,
+      deletePlanCard,
+      isPreviewMode,
+      previewDeviceId,
+      previewGroupId,
+    ],
+  );
+
+  const handleUpdate = useCallback(
+    (event: CalendarEvent) => {
+      if (isPreviewMode && previewDeviceId && previewGroupId) {
+        const newTitle = prompt("새 제목을 입력하세요", event.title);
+        const newDescription = prompt(
+          "새 설명을 입력하세요",
+          event.description,
+        );
+        const newStartDate = prompt(
+          "새 시작 날짜를 입력하세요 (YYYY-MM-DDTHH:mm:ss 형식)",
+          event.start.toLocaleString("ko-KR", {
+            timeZone: "Asia/Seoul",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          }),
+        );
+
+        const newEndDate = prompt(
+          "새 종료 날짜를 입력하세요 (YYYY-MM-DD HH:mm:ss 형식)",
+          event.end.toLocaleString("ko-KR", {
+            timeZone: "Asia/Seoul",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          }),
+        );
+
+        const parsedStartDate = newStartDate
+          ? new Date(newStartDate)
+          : event.start;
+        const parsedEndDate = newEndDate ? new Date(newEndDate) : event.end;
+
+        // 시간 유효성 체크
+        if (parsedEndDate <= parsedStartDate) {
+          alert("종료 시간은 시작 시간보다 늦어야 합니다.");
+          return;
+        }
+
+        if (
+          newTitle != null &&
+          newDescription != null &&
+          !isNaN(parsedStartDate.getTime()) &&
+          !isNaN(parsedEndDate.getTime())
+        ) {
+          // 타임스탬프 별도 계산
+          const startTime = parsedStartDate.getTime();
+          const endTime = parsedEndDate.getTime();
+
+          // 데이터 생성 전 로깅
+          console.log("날짜 및 타임스탬프 확인:", {
+            startDate: parsedStartDate.toISOString(),
+            endDate: parsedEndDate.toISOString(),
+            startTime,
+            endTime,
+            startTimestamp: Math.floor(startTime / 1000),
+            endTimestamp: Math.floor(endTime / 1000),
+          });
+
+          const requestData: UpdatePlanCardData = {
+            title: newTitle,
+            description: newDescription,
+            startDate: parsedStartDate.toISOString(),
+            endDate: parsedEndDate.toISOString(),
+            startTimestamp: Math.floor(startTime / 1000),
+            endTimestamp: Math.floor(endTime / 1000),
+          };
+
+          updatePlanCard({
+            deviceId: previewDeviceId,
+            groupId: previewGroupId,
+            cardId: event.id,
+            planData: requestData,
+          });
+        }
+      } else {
+        // 기존 MainPage 수정 로직...
+      }
+    },
+    [
+      updatePlan,
+      updatePlanCard,
+      isPreviewMode,
+      previewDeviceId,
+      previewGroupId,
+    ],
   );
 
   // Handle window resize
@@ -135,6 +307,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     // 기존 events와 비교하여 변경된 경우에만 상태 업데이트
     const areEventsEqual =
       JSON.stringify(events) === JSON.stringify(parsedEvents);
+    console.log("CustomCalendar events:", events);
     if (!areEventsEqual) {
       setEvents(parsedEvents);
     }
@@ -205,7 +378,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           eventDrop={handleEventChange}
           eventResize={handleEventChange}
           eventContent={(eventInfo) =>
-            renderEventContent(eventInfo, handleDelete)
+            renderEventContent(eventInfo, handleDelete, handleUpdate)
           }
           selectable={false}
           selectMirror={false}

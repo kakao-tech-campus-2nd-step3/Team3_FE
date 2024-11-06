@@ -7,14 +7,15 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useVoiceHook from "@/hooks/useVoiceHook";
-import useCreatePlan from "@/api/hooks/useCreatePlans";
+import useGptRequest from "@/api/hooks/useGptRequest";
+import useGenerateDeviceId from "@/api/hooks/useGenerateDeviceId";
+import useSavePlan from "@/api/hooks/useSavePlan";
 
 const PlanPageContainer = styled.div`
   width: 60%
   display: grid;
   justify-content: center;
   align-items: center;
- 
 `;
 const InputWrapper = styled.div`
   display: flex;
@@ -49,7 +50,6 @@ const ButtonContainer = styled.div`
   gap: 130px;
   margin-bottom: 40px;
 `;
-
 function MessageSilderWithAnimation() {
   const messages = [
     "일정의 예상 소요 시간을 말해주시면 더 정확해요.",
@@ -59,13 +59,13 @@ function MessageSilderWithAnimation() {
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
-  // 타이머 실행
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
   return <SubTitle>{messages[currentMessageIndex]}</SubTitle>;
 }
 
@@ -78,24 +78,45 @@ const PlanPage: React.FC = () => {
     handleStopRecording,
   } = useVoiceHook();
   const navigate = useNavigate();
-  const createPlanMutation = useCreatePlan();
 
-  const handleNextClick = async () => {
+  const { data: deviceId } = useGenerateDeviceId();
+  const gptRequestMutation = useGptRequest();
+  const savePlanMutation = useSavePlan();
+
+  const handleSaveClick = async () => {
+    if (!deviceId) {
+      alert("Device ID를 생성하는 중입니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
     try {
-      await createPlanMutation.mutateAsync({
-        title: transcript,
-        description: transcript,
-        startDate: new Date().toISOString(), // 적절한 날짜로 수정 필요
-        endDate: new Date(new Date().getTime() + 3600 * 1000).toISOString(), // 적절한 날짜로 수정 필요
-        accessibility: true,
-        isCompleted: false,
+      // GPT 요청 보내기
+      const gptResponses = await gptRequestMutation.mutateAsync({
+        deviceId,
+        text: transcript,
       });
 
-      // 플랜 생성 성공 후 다음 페이지로 이동
+      console.log("GPT 응답 데이터:", gptResponses);
+
+      // GPT 응답 데이터를 그대로 save API 호출에 전달
+      await Promise.all(
+        gptResponses.map((response) => {
+          const { groupId, planCards } = response;
+          return savePlanMutation.mutateAsync({
+            deviceId,
+            groupId,
+            planCards: planCards.map((card) => ({
+              ...card, // title, description, startDate, endDate를 그대로 유지
+              accessibility: card.accessibility || true,
+              isCompleted: card.isCompleted || false,
+            })),
+          });
+        }),
+      );
+
       navigate(RouterPath.PLAN_SELECT);
     } catch (error) {
-      // 에러 처리
-      console.error("플랜 생성 실패:", error);
+      console.error("GPT 요청 또는 플랜 저장 실패:", error);
     }
   };
 
@@ -114,8 +135,14 @@ const PlanPage: React.FC = () => {
           isRecording={isRecording}
         />
         <ButtonContainer>
-          <Button onClick={handleNextClick}>다음</Button>
-          <Button onClick={() => navigate(-1)} theme="secondary">
+          <Button size="responsive" onClick={handleSaveClick}>
+            다음
+          </Button>
+          <Button
+            theme="secondary"
+            size="responsive"
+            onClick={() => navigate(-1)}
+          >
             취소
           </Button>
         </ButtonContainer>
