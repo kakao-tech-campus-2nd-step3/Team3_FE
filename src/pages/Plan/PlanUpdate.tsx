@@ -2,12 +2,10 @@ import styled from "@emotion/styled";
 import { useNavigate, useLocation } from "react-router-dom";
 import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
-import { useCookies } from "react-cookie";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
-import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import useGetPlanCard from "@/api/hooks/useGetPlanCard";
+import RouterPath from "@/router/RouterPath";
 
 // 슬라이드 애니메이션
 const slideDown = keyframes`
@@ -77,23 +75,6 @@ const PlanUpdate = () => {
     "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
   ];
 
-  const location = useLocation();
-  const [cookies] = useCookies(["device_id"]);
-  const navigate = useNavigate();
-  const deviceId = cookies.device_id;
-  const { selectedGroup = 1 } = location.state || {};
-
-  // deviceId가 준비되었을 때만 useGetPlanCard 호출
-  const { data: planData, isLoading, error } = useGetPlanCard(deviceId);
-
-  // 디버깅을 위해 deviceId 및 API 호출 상태를 콘솔에 출력
-  useEffect(() => {
-    console.log("Device ID:", deviceId);
-    console.log("Plan Data:", planData);
-    console.log("isLoading:", isLoading);
-    console.log("error:", error);
-  }, [deviceId, planData, isLoading, error]);
-
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
 
@@ -110,22 +91,41 @@ const PlanUpdate = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (!deviceId) return <div>Device ID가 없습니다.</div>;
-  if (isLoading) return <div>로딩 중...</div>;
-  if (error) return <div>데이터 로드 중 오류가 발생했습니다.</div>;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const selectedPlan = location.state?.selectedPlan || [];
+  const previewDeviceId = location.state?.deviceId;
+  const previewGroupId = location.state?.groupId;
 
-  const plans =
-    selectedGroup && planData && planData[selectedGroup - 1]
-      ? planData[selectedGroup - 1].planCards.map((card) => ({
-          id: card.cardId,
-          title: card.title,
-          description: card.description,
-          start: new Date(card.startDate),
-          end: new Date(card.endDate),
-          accessibility: true,
-          complete: false,
-        }))
-      : [];
+  const handleSave = async () => {
+    try {
+      if (!selectedPlan || selectedPlan.length === 0) {
+        alert("저장할 플랜이 없습니다.");
+        return;
+      }
+
+      if (!previewDeviceId || !previewGroupId) {
+        alert("디바이스 ID 또는 그룹 ID가 없습니다.");
+        return;
+      }
+
+      // 플랜 데이터를 로컬 스토리지에 저장
+      localStorage.setItem(
+        "previewPlanData",
+        JSON.stringify({
+          selectedPlan,
+          previewDeviceId,
+          previewGroupId,
+        }),
+      );
+
+      // 카카오 로그인 페이지로 리다이렉트
+      window.location.href = RouterPath.MAIN;
+    } catch (error) {
+      console.error("플랜 저장 중 오류 발생:", error);
+      alert("플랜 저장에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
 
   return (
     <PlanUpdateContainer>
@@ -137,10 +137,15 @@ const PlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar plans={plans} />
+          <CustomCalendar
+            plans={selectedPlan}
+            isPreviewMode
+            previewDeviceId={previewDeviceId}
+            previewGroupId={previewGroupId}
+          />
         </CalendarContainer>
         <ButtonContainer>
-          <Button onClick={() => navigate(RouterPath.MAIN)}>저장</Button>
+          <Button onClick={handleSave}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>
             취소
           </Button>
