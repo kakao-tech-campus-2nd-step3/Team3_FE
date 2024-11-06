@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useParams } from "react-router-dom";
-import { Send, Edit, Delete } from "@mui/icons-material";
+import { Send, Edit, Delete, Check } from "@mui/icons-material";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
 import {
@@ -10,6 +10,7 @@ import {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
 } from "@/api/hooks/useGetComments";
+import { useGetFriendPlans } from "@/api/hooks/useGetPlans";
 
 const PageContainer = styled.div`
   width: 100%;
@@ -20,7 +21,6 @@ const PageContainer = styled.div`
 const CommentSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
 `;
 
 const CommentInput = styled.div`
@@ -81,7 +81,6 @@ const CommentBubble = styled.div`
 `;
 
 const CommentBox = styled.div`
-  flex: 1;
   border-radius: 12.8px;
   display: flex;
   flex-direction: column;
@@ -103,7 +102,8 @@ const CommentText = styled.div`
 `;
 
 const CommentDate = styled.div`
-  align-self: flex-start;
+  display: flex;
+  align-items: center;
   color: rgba(55.95, 55.95, 55.95, 0.7);
   font-size: 15.3px;
   font-family: "Inter", sans-serif;
@@ -114,8 +114,8 @@ const CommentDate = styled.div`
 
 const ActionButtons = styled.div`
   display: flex;
-  gap: 8px;
-  margin-left: auto;
+  align-items: center;
+  margin-left: 3px;
 `;
 
 const IconButton = styled.button`
@@ -123,8 +123,10 @@ const IconButton = styled.button`
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: #464646;
-
+  color: rgba(55.95, 55.95, 55.95, 0.7); 
+  font-size: 10px; 
+  display: flex;
+  align-items: center;
   &:hover {
     color: #000;
   }
@@ -137,11 +139,12 @@ export default function FriendDetailPage() {
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
+  
+  const { data: plans = [], isLoading: isLoadingPlans } = useGetFriendPlans(Number(friendId));
 
-  const { data: comments = [], isLoading } = useCommentsQuery(Number(friendId));
+  const { data: comments = [], isLoading: isLoadingComments } = useCommentsQuery(Number(friendId));
   const createCommentMutation = useCreateCommentMutation(Number(friendId), {
     onSuccess: () => {
-      // 댓글 작성 성공 시 알림 표시
       alert("댓글 작성이 완료되었습니다");
       setNewComment("");
     },
@@ -149,7 +152,6 @@ export default function FriendDetailPage() {
   const updateCommentMutation = useUpdateCommentMutation(Number(friendId));
   const deleteCommentMutation = useDeleteCommentMutation(Number(friendId));
 
-  // 핸들러 함수들
   const handleSubmitComment = () => {
     if (!newComment.trim()) return;
     createCommentMutation.mutate({
@@ -160,13 +162,22 @@ export default function FriendDetailPage() {
 
   const handleUpdateComment = (commentId: number) => {
     if (!editContent.trim()) return;
-    updateCommentMutation.mutate({
-      commentId,
-      data: {
-        userId,
-        content: editContent,
+    updateCommentMutation.mutate(
+      {
+        commentId,
+        data: {
+          userId,
+          content: editContent,
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          alert("수정이 완료되었습니다.");
+          setEditingCommentId(null); // 수정 후 수정 모드 종료
+          setEditContent("");
+        },
+      },
+    );
   };
 
   const handleDeleteComment = (commentId: number) => {
@@ -180,18 +191,16 @@ export default function FriendDetailPage() {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
     return `${diffDays}일 전`;
   };
 
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
+  if (isLoadingPlans || isLoadingComments) return <div>로딩 중...</div>;
 
   return (
     <PageContainer>
       <CustomCalendar
         calendarOwner={friendName ? `${friendName}님의 계획표` : "계획표"}
+        plans={plans}
       />
       <CommentSection>
         <CommentInput>
@@ -204,9 +213,7 @@ export default function FriendDetailPage() {
               placeholder="댓글을 입력하세요."
               aria-label="댓글 입력"
               onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  handleSubmitComment();
-                }
+                if (e.key === "Enter") handleSubmitComment();
               }}
               disabled={createCommentMutation.isPending}
             />
@@ -231,9 +238,7 @@ export default function FriendDetailPage() {
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          handleUpdateComment(comment.id);
-                        }
+                        if (e.key === "Enter") handleUpdateComment(comment.id);
                       }}
                       disabled={updateCommentMutation.isPending}
                     />
@@ -241,7 +246,7 @@ export default function FriendDetailPage() {
                       onClick={() => handleUpdateComment(comment.id)}
                       disabled={updateCommentMutation.isPending}
                     >
-                      <Send />
+                      <Check />
                     </IconButton>
                   </InputWrapper>
                 ) : (
@@ -250,35 +255,37 @@ export default function FriendDetailPage() {
                       <CommentAuthor>{comment.writerNickname}</CommentAuthor>
                       <CommentText>{comment.content}</CommentText>
                     </CommentBubble>
-                    <CommentDate>{formatDate(comment.createdAt)}</CommentDate>
+                    <CommentDate>
+                      {formatDate(comment.createdAt)}
+                      {comment.writerId === userId && (
+                        <ActionButtons>
+                          <IconButton
+                            onClick={() => {
+                              setEditingCommentId(comment.id);
+                              setEditContent(comment.content);
+                            }}
+                            disabled={
+                              updateCommentMutation.isPending ||
+                              deleteCommentMutation.isPending
+                            }
+                          >
+                            <Edit />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleDeleteComment(comment.id)}
+                            disabled={
+                              updateCommentMutation.isPending ||
+                              deleteCommentMutation.isPending
+                            }
+                          >
+                            <Delete />
+                          </IconButton>
+                        </ActionButtons>
+                      )}
+                    </CommentDate>
                   </>
                 )}
               </CommentBox>
-              {comment.writerId === userId && (
-                <ActionButtons>
-                  <IconButton
-                    onClick={() => {
-                      setEditingCommentId(comment.id);
-                      setEditContent(comment.content);
-                    }}
-                    disabled={
-                      updateCommentMutation.isPending ||
-                      deleteCommentMutation.isPending
-                    }
-                  >
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDeleteComment(comment.id)}
-                    disabled={
-                      updateCommentMutation.isPending ||
-                      deleteCommentMutation.isPending
-                    }
-                  >
-                    <Delete />
-                  </IconButton>
-                </ActionButtons>
-              )}
             </CommentContent>
           </CommentItem>
         ))}
