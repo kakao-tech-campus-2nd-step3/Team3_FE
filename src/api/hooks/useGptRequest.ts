@@ -10,7 +10,7 @@ interface GptResponse {
   planCards: any[]; // 정확한 구조를 알고 있다면 any 대신 구체적인 타입으로 지정하세요.
 }
 const sendGptRequest = async (
-  level: "strong" | "moderate" | "light",
+  level: "light" | "moderate" | "strong",
   data: GptRequestData,
 ): Promise<GptResponse> => {
   const response = await apiClient.post(
@@ -24,7 +24,7 @@ const sendGptRequest = async (
 const useGptRequest = () => {
   return useMutation({
     mutationFn: async (data: GptRequestData) => {
-      const levels = ["strong", "moderate", "light"] as const;
+      const levels = ["light", "moderate", "strong"] as const;
       const responses = await Promise.all(
         levels.map((level) => sendGptRequest(level, data)),
       );
