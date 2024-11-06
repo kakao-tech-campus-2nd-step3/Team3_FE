@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import FullCalendar from "@fullcalendar/react";
-import { EventInput, EventContentArg } from "@fullcalendar/core/index.js";
+import { EventContentArg } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -14,8 +14,8 @@ import {
   eventItemStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlans";
-
-// event interface
+import Modal from "./PlanModal";
+import Button from "@/components/common/Button/Button";
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -29,6 +29,9 @@ export interface CalendarEvent {
 interface CustomCalendarProps {
   calendarOwner?: string;
   plans?: CalendarEvent[];
+  isReadOnly?: boolean;
+  onPlanChange?: (plans: CalendarEvent[]) => void;
+  onDeletePlan?: (planId: string) => void;
 }
 
 const VIEW_MODES = {
@@ -36,7 +39,6 @@ const VIEW_MODES = {
   WEEK: "timeGridWeek",
 };
 
-// event 상태 계산기
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
   if (event.complete) return "completed";
@@ -45,10 +47,10 @@ const calculateEventStatus = (event: CalendarEvent) => {
   return "incomplete";
 };
 
-// render event
 const renderEventContent = (
   eventInfo: EventContentArg,
   handleDelete: (id: string) => void,
+  handleEdit: (id: string, title: string, description: string) => void,
 ) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
@@ -70,101 +72,109 @@ const renderEventContent = (
       >
         삭제
       </button>
+      <button
+        type="button"
+        onClick={() => handleEdit(event.id, event.title, description)}
+        style={{ color: "blue", backgroundColor: "transparent", cursor: "pointer" }}
+      >
+        수정
+      </button>
     </div>
   );
 };
 
-// Main CustomCalendar component
+const parseDate = (date: any) => {
+  return typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+};
+
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
   calendarOwner,
   plans = [],
+  isReadOnly = false,
+  onPlanChange,
+  onDeletePlan,
 }) => {
-  const [events, setEvents] = useState<EventInput[]>([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const calendarRef = useRef<FullCalendar>(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
-
   const { mutate: deletePlan } = useDeletePlan();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+const [currentEditPlan, setCurrentEditPlan] = useState<Partial<CalendarEvent> | null>(null);
 
-  // 이벤트 삭제 핸들러
   const handleDelete = useCallback(
     (id: string) => {
       if (window.confirm("정말로 삭제하시겠습니까? ")) {
-        deletePlan(Number(id));
+        if (onDeletePlan) {
+          onDeletePlan(id); // Use the provided onDeletePlan function
+        } else {
+          deletePlan(Number(id)); // Fall back to internal delete function if not provided
+        }
       }
     },
     [deletePlan],
   );
 
-  // Handle window resize
+  const handleEdit = (id: string, title: string, description: string) => {
+    setCurrentEditPlan({ id, title, description });
+    setIsEditModalOpen(true);
+  };
 
-  useEffect(() => {
-    const handleResize = () => {
-      const currentMobile = window.innerWidth <= breakpoints.sm;
-      setIsMobile(currentMobile);
-
-      const calendarApi = calendarRef.current?.getApi();
-      if (calendarApi) {
-        calendarApi.changeView(
-          currentMobile ? "timeGridThreeDay" : "timeGridWeek",
-        );
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // 초기 화면 크기 설정
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []); // 빈 종속성 배열로 설정하여 처음 렌더링 시에만 실행
-
-  // Initialize events from props
-  useEffect(() => {
-    const parsedEvents = plans.map((plan) => ({
-      id: plan.id,
-      title: plan.title,
-      start: new Date(plan.start),
-      end: new Date(plan.end),
-      className: `fc-event-${calculateEventStatus(plan)}`,
-      extendedProps: {
-        description: plan.description,
-      },
-    }));
-
-    // 기존 events와 비교하여 변경된 경우에만 상태 업데이트
-    const areEventsEqual =
-      JSON.stringify(events) === JSON.stringify(parsedEvents);
-    if (!areEventsEqual) {
-      setEvents(parsedEvents);
+  const handleEditSubmit = () => {
+    if (currentEditPlan && currentEditPlan.id) {
+      const updatedPlans = plans.map((plan) =>
+        plan.id === currentEditPlan.id
+          ? { ...plan, title: currentEditPlan.title || "", description: currentEditPlan.description || "" }
+          : plan
+      );
+      onPlanChange?.(updatedPlans); // 업데이트된 플랜 반영
+      setIsEditModalOpen(false); // 모달 닫기
+      setCurrentEditPlan(null);
     }
-  }, [plans, events]);
+  };
 
-  // event drop 및 resize handle
-  const handleEventChange = useCallback((info: { event: any }) => {
-    const description = info.event.extendedProps?.description || "";
+  const handleResize = useCallback(() => {
+    const currentMobile = window.innerWidth <= breakpoints.sm;
+    setIsMobile(currentMobile);
+    const calendarApi = calendarRef.current?.getApi();
+    calendarApi?.changeView(currentMobile ? "timeGridThreeDay" : "timeGridWeek");
+  }, []);
 
-    setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === info.event.id
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, [handleResize]);
+
+  const parsedEvents = useMemo(
+    () =>
+      (plans || []).map((plan) => ({
+        id: plan.id,
+        title: plan.title,
+        start: parseDate(plan.start),
+        end: parseDate(plan.end),
+        className: `fc-event-${calculateEventStatus(plan)}`,
+        extendedProps: {
+          description: plan.description,
+        },
+      })),
+    [plans],
+  );
+
+  const handleEventChange = useCallback(
+    (info: { event: any }) => {
+      const updatedPlans = plans.map((plan) =>
+        plan.id === info.event.id
           ? {
-              ...event,
+              ...plan,
               start: info.event.start,
               end: info.event.end,
-              className: `fc-event-${calculateEventStatus({
-                id: info.event.id || "",
-                title: info.event.title || "",
-                description,
-                start: new Date(info.event.start),
-                end: new Date(info.event.end),
-                accessibility: null,
-                complete: false,
-              })}`,
             }
-          : event,
-      ),
-    );
-  }, []);
+          : plan,
+      );
+      onPlanChange?.(updatedPlans); // 외부에 변경된 plans 전달
+    },
+    [onPlanChange, plans],
+  );
 
   return (
     <div css={appContainerStyles}>
@@ -187,41 +197,62 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
             right: "prev,next,today",
           }}
           locale={koLocale}
-          slotDuration="00:30:00" // 30분 간격 설정
-          slotLabelInterval="01:00:00" // 1시간 간격으로 시간 레이블 표시
+          slotDuration="00:10:00"
+          slotLabelInterval="01:00:00"
           slotLabelFormat={{
             hour: "2-digit",
             minute: "2-digit",
-            hour12: false, // 24시간 형식
+            hour12: false,
           }}
           eventTimeFormat={{
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,
           }}
-          allDaySlot={false} // 하루 종일 슬롯 비활성화
-          editable // 이벤트 드래그 및 드롭 가능
-          eventResizableFromStart
-          eventDrop={handleEventChange}
+          allDaySlot={false}
+          editable={!isReadOnly}
+          eventStartEditable={!isReadOnly}
+          eventDurationEditable={!isReadOnly}
+          eventResizableFromStart={!isReadOnly}
+          eventDrop={isReadOnly ? undefined : handleEventChange}
           eventResize={handleEventChange}
-          eventContent={(eventInfo) =>
-            renderEventContent(eventInfo, handleDelete)
-          }
+          eventContent={(eventInfo) => renderEventContent(eventInfo, handleDelete, handleEdit)}
           selectable={false}
           selectMirror={false}
-          dayMaxEvents // 하루에 최대 이벤트 수 제한
-          weekends // 주말 표시
-          firstDay={1} // 주 시작 요일을 월요일로 설정
-          events={events} // 이벤트 데이터
-          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)} // 날짜 범위가 변경될 때 호출
+          dayMaxEvents
+          weekends
+          firstDay={1}
+          events={parsedEvents}
+          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
           dayHeaderFormat={{
             weekday: "short",
             month: "numeric",
             day: "numeric",
             omitCommas: true,
           }}
-          height={isMobile ? "85%" : "100%"} // 모바일에서의 높이 설정
+          height={isMobile ? "85%" : "100%"}
         />
+        {/* Edit Modal */}
+      {isEditModalOpen && currentEditPlan && (
+        <Modal onClose={() => setIsEditModalOpen(false)}>
+          <h2>플랜 수정</h2>
+          <input
+            placeholder="제목"
+            value={currentEditPlan.title || ""}
+            onChange={(e) =>
+              setCurrentEditPlan((prev) => prev ? { ...prev, title: e.target.value } : prev)
+            }
+          />
+          <input
+            placeholder="설명"
+            value={currentEditPlan.description || ""}
+            onChange={(e) =>
+              setCurrentEditPlan((prev) => prev ? { ...prev, description: e.target.value } : prev)
+            }
+          />
+          <Button onClick={handleEditSubmit}>저장</Button>
+        </Modal>
+      )}
       </div>
     </div>
   );
