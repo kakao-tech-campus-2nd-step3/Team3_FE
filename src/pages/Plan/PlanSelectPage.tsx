@@ -1,25 +1,30 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import { useGetPlans } from "@/api/hooks/useGetPlans";
+import useGetPlanCard from "@/api/hooks/useGetPlanCard";
+import useGenerateDeviceId from "@/api/hooks/useGenerateDeviceId";
 
-const PreviewPlanSelectPageContainer = styled.div`
+const PlanSelectPageContainer = styled.div`
   display: grid;
   align-items: center;
   margin: 0 auto;
   margin-top: 20px;
 `;
+
 const CalendarSection = styled.div`
   margin-bottom: 40px;
   ${breakpoints.mobile} {
     margin-bottom: -50px;
   }
 `;
+
 const SidebarSection = styled.div`
   font-size: 30px;
   font-weight: bold;
@@ -38,6 +43,7 @@ const NumberButtonContainer = styled.div`
   align-items: center;
   gap: 10px;
 `;
+
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -50,9 +56,9 @@ const ButtonContainer = styled.div`
 `;
 
 const PlanSelectPage = () => {
-  const { data: plans } = useGetPlans();
+  const { data: deviceId } = useGenerateDeviceId();
+  const { data: plans } = useGetPlanCard(deviceId);
 
-  // 선택된 버튼 번호를 저장할 상태
   const [clickedNumber, setClickedNumber] = useState<number | null>(null);
   const navigate = useNavigate();
 
@@ -60,8 +66,25 @@ const PlanSelectPage = () => {
     setClickedNumber(number);
   };
 
+  // 선택된 플랜 그룹의 이벤트 변환
+  const selectedPlanGroup = plans?.find(
+    (plan) => plan.groupId === String(clickedNumber),
+  );
+
+  const calendarEvents: CalendarEvent[] = selectedPlanGroup
+    ? selectedPlanGroup.planCards.map((planCard) => ({
+        id: planCard.cardId,
+        title: planCard.title,
+        description: planCard.description,
+        start: new Date(planCard.startDate),
+        end: new Date(planCard.endDate),
+        accessibility: true, // 기본값 설정
+        complete: false, // 기본값 설정
+      }))
+    : [];
+
   return (
-    <PreviewPlanSelectPageContainer>
+    <PlanSelectPageContainer>
       <SidebarSection>
         <StyledText>원하는 플랜을 선택하세요.</StyledText>
         <NumberButtonContainer>
@@ -82,14 +105,28 @@ const PlanSelectPage = () => {
           />
         </NumberButtonContainer>
       </SidebarSection>
+
       <CalendarSection>
-        <CustomCalendar plans={plans || []} />
+        <CustomCalendar
+          isPreviewMode
+          plans={calendarEvents}
+          previewDeviceId={deviceId}
+          previewGroupId={selectedPlanGroup?.groupId}
+        />
       </CalendarSection>
 
       <ButtonContainer>
         <Button
           size="responsive"
-          onClick={() => navigate(RouterPath.PLAN_UPDATE)}
+          onClick={() =>
+            navigate(RouterPath.PREVIEW_PLAN_UPDATE, {
+              state: {
+                selectedPlan: calendarEvents,
+                deviceId, // 실제 deviceId 값
+                groupId: selectedPlanGroup?.groupId, // 선택된 그룹의 groupId },
+              },
+            })
+          }
         >
           확인
         </Button>
@@ -101,7 +138,7 @@ const PlanSelectPage = () => {
           취소
         </Button>
       </ButtonContainer>
-    </PreviewPlanSelectPageContainer>
+    </PlanSelectPageContainer>
   );
 };
 

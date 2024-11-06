@@ -1,55 +1,88 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import RouterPath from "@/router/RouterPath";
+import useSavePreviewPlan from "@/api/hooks/useSavePreviewPlan";
 import useAuth from "@/hooks/useAuth";
 import { apiClient } from "@/api/instance";
-import RouterPath from "@/router/RouterPath";
+import { CalendarEvent } from "@/components/features/CustomCalendar/CustomCalendar";
 
 const OAuthRedirectHandler = () => {
   const navigate = useNavigate();
   const { setAuthState, authState } = useAuth();
+  const { mutate: savePreviewPlan } = useSavePreviewPlan();
+  const [hasSaved, setHasSaved] = useState(false);
 
+  // 인증 처리를 위한 useEffect
   useEffect(() => {
-    try {
+    const handleAuth = async () => {
       const queryParams = new URLSearchParams(window.location.search);
       const accessToken = queryParams.get("access");
       const refreshToken = queryParams.get("refresh");
-      const deviceId = queryParams.get("deviceId");
+      // const deviceId = queryParams.get("deviceId");
 
-      if (accessToken && refreshToken) {
-        const cookieOptions = "path=/; Secure; SameSite=Strict; ";
+      if (!accessToken || !refreshToken) {
+        navigate(RouterPath.LOGIN);
+        return;
+      }
 
-        // 토큰을 쿠키에 저장
-        document.cookie = `access_token=${accessToken}; ${cookieOptions}`;
-        document.cookie = `refresh_token=${refreshToken}; ${cookieOptions}`;
+      const cookieOptions = "path=/; Secure; SameSite=Strict;";
+      document.cookie = `access_token=${accessToken}; ${cookieOptions}`;
+      document.cookie = `refresh_token=${refreshToken}; ${cookieOptions}`;
 
-        document.cookie = `device_id=${deviceId}; ${cookieOptions}`;
-        // 상태 업데이트
-        setAuthState({
-          isAuthenticated: true,
-          accessToken,
+      setAuthState({
+        isAuthenticated: true,
+        accessToken,
+      });
+
+      apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+    };
+
+    handleAuth();
+  }, []); // 빈 의존성 배열
+
+  // 플랜 저장을 위한 useEffect
+  useEffect(() => {
+    const savePlans = async () => {
+      if (!authState.isAuthenticated || hasSaved) return;
+
+      const savedPlanData = localStorage.getItem("previewPlanData");
+      if (!savedPlanData) {
+        setHasSaved(true);
+        navigate(RouterPath.MAIN);
+        return;
+      }
+
+      try {
+        const { selectedPlan, previewDeviceId, previewGroupId } =
+          JSON.parse(savedPlanData);
+
+        // 모든 플랜을 한 번에 전송
+        const planDataList = selectedPlan.map((plan: CalendarEvent) => ({
+          title: plan.title,
+          description: plan.description,
+          startDate: new Date(plan.start).toISOString(),
+          endDate: new Date(plan.end).toISOString(),
+        }));
+
+        await savePreviewPlan({
+          deviceId: previewDeviceId,
+          groupId: previewGroupId,
+          planDataList, // 전체 플랜 배열 전송
         });
 
-        // axios 인스턴스 헤더에 토큰 추가
-        apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-      } else {
-        // 토큰이 없으면 로그인 페이지로 리다이렉트
-        navigate(RouterPath.LOGIN);
+        localStorage.removeItem("previewPlanData");
+        setHasSaved(true);
+        navigate(RouterPath.MAIN);
+      } catch (error) {
+        console.error("플랜 저장 실패:", error);
+        navigate(RouterPath.MAIN);
       }
-    } catch (error) {
-      console.error("OAuth 리다이렉트 처리 중 오류 발생:", error);
-      navigate(RouterPath.LOGIN);
-    }
-  }, [navigate, setAuthState]);
+    };
 
-  // authState가 업데이트되었을 때 메인 페이지로 리다이렉트
-  useEffect(() => {
-    // console.log("현재 authState:", authState);
-    if (authState.isAuthenticated) {
-      navigate(RouterPath.MAIN);
-    }
-  }, [authState, navigate]);
+    savePlans();
+  }, [authState.isAuthenticated]);
 
-  return <div>리다이렉트 처리 중...</div>;
+  return <div>로그인 처리 중...</div>;
 };
 
 export default OAuthRedirectHandler;

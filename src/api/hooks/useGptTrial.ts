@@ -14,14 +14,14 @@ const sendGptRequest = async (
   data: GptRequestData,
 ): Promise<GptResponse> => {
   const response = await apiClient.post(
-    `/api/gpt/member/${level}?deviceId=${data.deviceId}`,
+    `/api/gpt/trial/${level}?deviceId=${data.deviceId}`,
     {
       text: data.text,
     },
   );
   return response.data;
 };
-const useGptRequest = () => {
+const useGptTrial = () => {
   return useMutation({
     mutationFn: async (data: GptRequestData) => {
       const levels = ["light", "moderate", "strong"] as const;
@@ -32,4 +32,4 @@ const useGptRequest = () => {
     },
   });
 };
-export default useGptRequest;
+export default useGptTrial;
