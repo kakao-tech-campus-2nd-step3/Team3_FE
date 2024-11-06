@@ -107,7 +107,12 @@ const PreviewPlanSelectPage = () => {
       </SidebarSection>
 
       <CalendarSection>
-        <CustomCalendar plans={calendarEvents} />
+        <CustomCalendar
+          plans={calendarEvents}
+          isPreviewMode
+          previewDeviceId={deviceId}
+          previewGroupId={selectedPlanGroup?.groupId}
+        />
       </CalendarSection>
 
       <ButtonContainer>
@@ -115,7 +120,11 @@ const PreviewPlanSelectPage = () => {
           size="responsive"
           onClick={() =>
             navigate(RouterPath.PREVIEW_PLAN_UPDATE, {
-              state: { selectedPlan: calendarEvents },
+              state: {
+                selectedPlan: calendarEvents,
+                deviceId, // 실제 deviceId 값
+                groupId: selectedPlanGroup?.groupId, // 선택된 그룹의 groupId },
+              },
             })
           }
         >
