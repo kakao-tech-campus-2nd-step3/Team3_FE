@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import { useGetPlans } from "@/api/hooks/useGetPlans";
 import useCreatePlan from "@/api/hooks/useCreatePlans";
@@ -169,6 +169,14 @@ const MainPage: React.FC = () => {
     setIsModalOpen(false); // 폼 제출 후 모달 닫기
   };
 
+  useEffect(() => {
+    // 로컬 스토리지 정리 (필요한 경우)
+    const savedPreviewData = localStorage.getItem("previewPlanData");
+    if (savedPreviewData) {
+      localStorage.removeItem("previewPlanData");
+    }
+  }, []);
+
   if (isLoading) {
     return <div>Loading...</div>; // 로딩 상태 처리
   }
@@ -182,7 +190,7 @@ const MainPage: React.FC = () => {
       <ButtonWrapper>
         <CircleButton onClick={handleButtonClick}>+</CircleButton>
       </ButtonWrapper>
-      <CustomCalendar plans={plans || []} />
+      <CustomCalendar isPreviewMode={false} plans={plans || []} />
 
       {modalOpen && (
         <ModalOverlay>
