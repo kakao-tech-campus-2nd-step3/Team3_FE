@@ -241,18 +241,10 @@ const RequestItem = ({
           </Button>
         ) : (
           <>
-            <Button
-              size="small"
-              theme="primary"
-              onClick={handleAcceptClick}
-            >
+            <Button size="small" theme="primary" onClick={handleAcceptClick}>
               수락
             </Button>
-            <Button             
-              size="small"
-              theme="secondary"
-              onClick={handleRejectClick}
-            >
+            <Button size="small" theme="secondary" onClick={handleRejectClick}>
               거절
             </Button>
           </>

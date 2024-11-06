@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
-import CustomCalendar from "../../components/features/CustomCalendar/CustomCalendar";
-import { useGptLight, useGptModerate, useGptStrong } from "@/api/hooks/useTeamPlan";
-import { CalendarEvent } from "../../components/features/CustomCalendar/CustomCalendar";
-import { useLocation } from "react-router-dom";
-import Button from "@/components/common/Button/Button";
-import { useNavigate } from "react-router-dom";
-import RouterPath from "@/router/RouterPath";
+import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import CustomCalendar, {
+  CalendarEvent,
+} from "../../components/features/CustomCalendar/CustomCalendar";
+import {
+  useGptLight,
+  useGptModerate,
+  useGptStrong,
+} from "@/api/hooks/useTeamPlan";
+import Button from "@/components/common/Button/Button";
+import RouterPath from "@/router/RouterPath";
 
 const PageContainer = styled.div`
   width: 100%;
@@ -35,7 +39,9 @@ const TeamPlanSelectPage: React.FC = () => {
     strong: [],
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedLevel, setSelectedLevel] = useState<"light" | "moderate" | "strong">("light");
+  const [selectedLevel, setSelectedLevel] = useState<
+    "light" | "moderate" | "strong"
+  >("light");
 
   const { mutate: fetchLightPlans } = useGptLight();
   const { mutate: fetchModeratePlans } = useGptModerate();
@@ -45,7 +51,6 @@ const TeamPlanSelectPage: React.FC = () => {
     navigate(RouterPath.TEAM_PLAN_UPDATE, {
       state: { plans: planCache[selectedLevel] }, // 현재 선택된 플랜 전달
     });
-    return;
   };
 
   // 레벨에 따라 요청을 보내는 함수
@@ -55,7 +60,12 @@ const TeamPlanSelectPage: React.FC = () => {
       return; // 이미 캐싱된 값이 있을 경우 요청 생략
     }
     setIsLoading(true);
-    const fetchFn = level === "light" ? fetchLightPlans : level === "moderate" ? fetchModeratePlans : fetchStrongPlans;
+    const fetchFn =
+      level === "light"
+        ? fetchLightPlans
+        : level === "moderate"
+          ? fetchModeratePlans
+          : fetchStrongPlans;
 
     fetchFn(
       { deviceId, text: transcript || "기본 추천 텍스트" },
@@ -75,10 +85,10 @@ const TeamPlanSelectPage: React.FC = () => {
           console.error("플랜 요청 실패:", error);
           setIsLoading(false);
         },
-      }
+      },
     );
   };
-  
+
   // 첫 화면 진입 시 자동으로 light 요청
   useEffect(() => {
     if (planCache.light.length === 0) {
@@ -92,22 +102,34 @@ const TeamPlanSelectPage: React.FC = () => {
     <PageContainer>
       <ButtonContainer>
         <button onClick={() => handleFetchPlans("light")}>1 (Light)</button>
-        <button onClick={() => handleFetchPlans("moderate")}>2 (Moderate)</button>
+        <button onClick={() => handleFetchPlans("moderate")}>
+          2 (Moderate)
+        </button>
         <button onClick={() => handleFetchPlans("strong")}>3 (Strong)</button>
-        <button onClick={() => console.log("현재 플랜 데이터:", planCache[selectedLevel])}></button>
+        <button
+          onClick={() =>
+            console.log("현재 플랜 데이터:", planCache[selectedLevel])
+          }
+        />
       </ButtonContainer>
 
       {isLoading ? (
         <p>로딩 중...</p>
       ) : (
-        <CustomCalendar calendarOwner="Team Plans" plans={planCache[selectedLevel]} isReadOnly={true} />
+        <CustomCalendar
+          calendarOwner="Team Plans"
+          plans={planCache[selectedLevel]}
+          isReadOnly
+        />
       )}
       <ButtonContainer>
-          <Button onClick={handleNextClick} size="small">다음</Button>
-          <Button onClick={() => navigate(-1)} theme="secondary" size="small">
-            취소
-          </Button>
-        </ButtonContainer>
+        <Button onClick={handleNextClick} size="small">
+          다음
+        </Button>
+        <Button onClick={() => navigate(-1)} theme="secondary" size="small">
+          취소
+        </Button>
+      </ButtonContainer>
     </PageContainer>
   );
 };

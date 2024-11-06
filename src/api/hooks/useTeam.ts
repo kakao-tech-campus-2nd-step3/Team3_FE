@@ -1,9 +1,11 @@
-import { useQuery, useMutation, useQueryClient  } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/api/instance";
-import { Team } from "@/types/types";
-import { Invitation } from "@/types/types";
-import { InviteUserParams } from "@/types/types";
-import { SentInvitation } from "@/types/types";
+import {
+  Team,
+  Invitation,
+  InviteUserParams,
+  SentInvitation,
+} from "@/types/types";
 
 // 팀 목록을 가져오는 API 요청 함수
 export const fetchTeams = async (): Promise<Team[]> => {
@@ -68,7 +70,10 @@ export const useFetchInvitations = () => {
 };
 
 // 초대 응답 API 요청 함수
-const respondToInvitation = async (params: { invitationId: number; isAccepted: boolean }): Promise<void> => {
+const respondToInvitation = async (params: {
+  invitationId: number;
+  isAccepted: boolean;
+}): Promise<void> => {
   const { invitationId, isAccepted } = params;
   await apiClient.put(`/api/teams/invitation/${invitationId}/response`, null, {
     params: { isAccepted },
@@ -79,15 +84,17 @@ const respondToInvitation = async (params: { invitationId: number; isAccepted: b
 export const useRespondToInvitation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, { invitationId: number; isAccepted: boolean }>(
-    {
-      mutationFn: respondToInvitation,
-      onSuccess: () => {
-        // 성공 시 초대 목록을 다시 가져옴
-        queryClient.invalidateQueries({ queryKey: ["invitations"] });
-      },
-    }
-  );
+  return useMutation<
+    void,
+    Error,
+    { invitationId: number; isAccepted: boolean }
+  >({
+    mutationFn: respondToInvitation,
+    onSuccess: () => {
+      // 성공 시 초대 목록을 다시 가져옴
+      queryClient.invalidateQueries({ queryKey: ["invitations"] });
+    },
+  });
 };
 
 export const useInviteUserToTeam = () => {
@@ -112,5 +119,3 @@ export const useFetchSentInvitations = (teamId: number) => {
     retry: false,
   });
 };
-
-

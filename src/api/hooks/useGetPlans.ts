@@ -8,8 +8,12 @@ export const transformPlanData = (data: any[]): CalendarEvent[] => {
     id: plan.id ? plan.id.toString() : `generated-id-${index}`, // id가 없을 때 고유 ID 생성
     title: plan.title,
     description: plan.description,
-    start: plan.startDate ? new Date(plan.startDate) : new Date(plan.startTimestamp * 1000), // ISO와 timestamp 대응
-    end: plan.endDate ? new Date(plan.endDate) : new Date(plan.endTimestamp * 1000),       // ISO와 timestamp 대응
+    start: plan.startDate
+      ? new Date(plan.startDate)
+      : new Date(plan.startTimestamp * 1000), // ISO와 timestamp 대응
+    end: plan.endDate
+      ? new Date(plan.endDate)
+      : new Date(plan.endTimestamp * 1000), // ISO와 timestamp 대응
     accessibility: plan.accessibility ?? true, // 기본값 설정
     complete: plan.isCompleted ?? false,
     status: plan.isCompleted ? "completed" : "incomplete",
@@ -31,7 +35,9 @@ export const useGetPlans = () => {
 };
 
 // 친구의 플랜을 가져오는 API 요청 함수
-export const fetchFriendPlans = async (friendId: number): Promise<CalendarEvent[]> => {
+export const fetchFriendPlans = async (
+  friendId: number,
+): Promise<CalendarEvent[]> => {
   const response = await apiClient.get(`/api/friends/${friendId}/plans`);
   console.log(response.data);
   return transformPlanData(response.data); // 변환 함수 사용

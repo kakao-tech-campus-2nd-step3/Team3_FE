@@ -6,16 +6,16 @@ import { CalendarEvent } from "@/components/features/CustomCalendar/CustomCalend
 const fetchTeamPlans = async (teamId: number): Promise<CalendarEvent[]> => {
   const response = await apiClient.get(`/api/teams/${teamId}/plans`);
   // return transformPlanData(response.data); // 응답 데이터를 CalendarEvent 형식으로 변환
-  const transformedData = transformPlanData(response.data).map(plan => ({
+  const transformedData = transformPlanData(response.data).map((plan) => ({
     ...plan,
     start: new Date(plan.start.getTime() + 9 * 60 * 60 * 1000), // KST 변환
-    end: new Date(plan.end.getTime() + 9 * 60 * 60 * 1000),     // KST 변환
+    end: new Date(plan.end.getTime() + 9 * 60 * 60 * 1000), // KST 변환
   }));
 
   return transformedData;
 };
 
-export const useGetTeamPlans = (teamId: number) => {
+const useGetTeamPlans = (teamId: number) => {
   const result = useQuery({
     queryKey: ["teamPlans", teamId],
     queryFn: () => fetchTeamPlans(teamId),
@@ -26,3 +26,5 @@ export const useGetTeamPlans = (teamId: number) => {
   console.log("team number:", teamId);
   return result;
 };
+
+export default useGetTeamPlans;

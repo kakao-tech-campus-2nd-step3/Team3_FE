@@ -6,8 +6,8 @@ interface DeletePlanParams {
   planId: number;
 }
 
-export const useDeleteTeamPlan = (
-  options?: UseMutationOptions<void, Error, DeletePlanParams>
+const useDeleteTeamPlan = (
+  options?: UseMutationOptions<void, Error, DeletePlanParams>,
 ) => {
   return useMutation<void, Error, DeletePlanParams>({
     mutationFn: async ({ teamId, planId }: DeletePlanParams): Promise<void> => {
@@ -16,3 +16,5 @@ export const useDeleteTeamPlan = (
     ...options,
   });
 };
+
+export default useDeleteTeamPlan;

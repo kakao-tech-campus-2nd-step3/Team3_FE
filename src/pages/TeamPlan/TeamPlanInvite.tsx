@@ -123,7 +123,7 @@ export default function TeamInvitePage() {
           추가
         </Button>
       </div>
-      
+
       {errorMessage && <div css={errorMessageStyles}>{errorMessage}</div>}
 
       <InviteList>

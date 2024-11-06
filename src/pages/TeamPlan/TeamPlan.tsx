@@ -2,9 +2,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
-import { useFetchTeams, useDeleteTeam, useLeaveTeam, useRespondToInvitation } from "@/api/hooks/useTeam";
+import {
+  useFetchTeams,
+  useDeleteTeam,
+  useLeaveTeam,
+  useRespondToInvitation,
+  useFetchInvitations,
+  useFetchSentInvitations,
+} from "@/api/hooks/useTeam";
 import useUserData from "@/api/hooks/useUserData";
-import { useFetchInvitations,useFetchSentInvitations } from "@/api/hooks/useTeam";
 import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
 import { apiClient } from "@/api/instance";
@@ -123,14 +129,17 @@ export default function TeamPlanPage() {
   const navigate = useNavigate();
   const { userData } = useUserData();
   const { data: teams = [], isLoading: isLoadingTeams } = useFetchTeams();
-  const { data: invitations = [], isLoading: isLoadingInvitations } = useFetchInvitations();
+  const { data: invitations = [], isLoading: isLoadingInvitations } =
+    useFetchInvitations();
   const deleteTeamMutation = useDeleteTeam();
   const leaveTeamMutation = useLeaveTeam();
   const respondToInvitationMutation = useRespondToInvitation();
-  
+
   const [activeTab, setActiveTab] = useState("teamList");
   const [teamMembers, setTeamMembers] = useState<{ [key: number]: any[] }>({});
-  const [sentInvitations, setSentInvitations] = useState<{ [key: number]: any[] }>({});
+  const [sentInvitations, setSentInvitations] = useState<{
+    [key: number]: any[];
+  }>({});
 
   // 팀 멤버 정보 가져오기
   useEffect(() => {
@@ -141,12 +150,14 @@ export default function TeamPlanPage() {
       await Promise.all(
         teams.map(async (team) => {
           try {
-            const response = await apiClient.get(`/api/teams/${team.id}/members`);
+            const response = await apiClient.get(
+              `/api/teams/${team.id}/members`,
+            );
             memberData[team.id] = response.data; // 팀 ID를 키로 멤버 데이터 저장
           } catch (error) {
             console.error(`Error fetching members for team ${team.id}:`, error);
           }
-        })
+        }),
       );
 
       setTeamMembers(memberData);
@@ -155,20 +166,25 @@ export default function TeamPlanPage() {
     if (teams.length > 0) fetchAllMembers();
   }, [teams]);
 
-   // 보낸 초대 정보 가져오기
-   useEffect(() => {
+  // 보낸 초대 정보 가져오기
+  useEffect(() => {
     const fetchSentInvitations = async () => {
       const invitationsData: { [key: number]: any[] } = {};
 
       await Promise.all(
         teams.map(async (team) => {
           try {
-            const response = await apiClient.get(`/api/teams/${team.id}/invitations`);
+            const response = await apiClient.get(
+              `/api/teams/${team.id}/invitations`,
+            );
             invitationsData[team.id] = response.data;
           } catch (error) {
-            console.error(`Error fetching sent invitations for team ${team.id}:`, error);
+            console.error(
+              `Error fetching sent invitations for team ${team.id}:`,
+              error,
+            );
           }
-        })
+        }),
       );
 
       setSentInvitations(invitationsData);
@@ -196,17 +212,20 @@ export default function TeamPlanPage() {
 
   const renderedTeamList = teams.map((team) => {
     const members = teamMembers[team.id] || [];
-    const isAdmin = members.some((member) => member.role === "ADMIN" && member.userId === userData.id);
+    const isAdmin = members.some(
+      (member) => member.role === "ADMIN" && member.userId === userData.id,
+    );
 
     return (
       <PlanCard key={team.id}>
         <PlanTitleContainer>
-          <PlanTitle>{team.teamName}
+          <PlanTitle>
+            {team.teamName}
             <RoleBadge isAdmin={isAdmin}>
-            {isAdmin ? "관리자" : "멤버"}
-          </RoleBadge>
+              {isAdmin ? "관리자" : "멤버"}
+            </RoleBadge>
           </PlanTitle>
-          
+
           <Participants>
             참여자: {members.map((member) => member.nickname).join(", ")}
           </Participants>
@@ -245,12 +264,19 @@ export default function TeamPlanPage() {
     <PlanCard key={invite.invitationId}>
       <PlanTitleContainer>
         <PlanTitle>{invite.teamName}</PlanTitle>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}></div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }} />
       </PlanTitleContainer>
-      <Button size="small" onClick={() => handleAcceptInvitation(invite.invitationId)}>
+      <Button
+        size="small"
+        onClick={() => handleAcceptInvitation(invite.invitationId)}
+      >
         수락
       </Button>
-      <Button size="small" theme="secondary" onClick={() => handleRejectInvitation(invite.invitationId)}>
+      <Button
+        size="small"
+        theme="secondary"
+        onClick={() => handleRejectInvitation(invite.invitationId)}
+      >
         거절
       </Button>
     </PlanCard>
@@ -258,9 +284,11 @@ export default function TeamPlanPage() {
 
   const renderedSentInvitations = teams.map((team) => {
     const members = teamMembers[team.id] || [];
-    const isAdmin = members.some((member) => member.role === "ADMIN" && member.userId === userData.id);
+    const isAdmin = members.some(
+      (member) => member.role === "ADMIN" && member.userId === userData.id,
+    );
     if (!isAdmin) return null;
-    
+
     const teamInvitations = sentInvitations[team.id] || [];
 
     return (
@@ -289,13 +317,24 @@ export default function TeamPlanPage() {
       </ButtonWrapper>
 
       <TabsContainer>
-        <Tab active={activeTab === "teamList"} onClick={() => setActiveTab("teamList")}>
+        <Tab
+          active={activeTab === "teamList"}
+          onClick={() => setActiveTab("teamList")}
+        >
           팀 목록
         </Tab>
-        <Tab active={activeTab === "invitations"} onClick={() => setActiveTab("invitations")}>
+        <Tab
+          active={activeTab === "invitations"}
+          onClick={() => setActiveTab("invitations")}
+        >
           받은 요청
         </Tab>
-        <Tab active={activeTab === "sentInvitations"} onClick={() => setActiveTab("sentInvitations")}>보낸 요청</Tab>
+        <Tab
+          active={activeTab === "sentInvitations"}
+          onClick={() => setActiveTab("sentInvitations")}
+        >
+          보낸 요청
+        </Tab>
       </TabsContainer>
 
       {activeTab === "teamList" && renderedTeamList}

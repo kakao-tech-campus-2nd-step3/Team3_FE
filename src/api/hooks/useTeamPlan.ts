@@ -17,8 +17,15 @@ interface GptResponse {
 }
 
 // gpt 요청 함수 - 동적 URL로 공통 함수 생성
-const fetchGptData = async (url: string, { deviceId, text }: GptRequestParams): Promise<GptResponse> => {
-  const response = await apiClient.post(url, { text }, { params: { deviceId } });
+const fetchGptData = async (
+  url: string,
+  { deviceId, text }: GptRequestParams,
+): Promise<GptResponse> => {
+  const response = await apiClient.post(
+    url,
+    { text },
+    { params: { deviceId } },
+  );
   return {
     ...response.data,
     planCards: transformPlanData(response.data.planCards), // 변환 함수 사용
@@ -26,25 +33,26 @@ const fetchGptData = async (url: string, { deviceId, text }: GptRequestParams): 
 };
 
 // 레벨별 훅
-export const useGptLight = (options?: UseMutationOptions<GptResponse, Error, GptRequestParams>) => 
+export const useGptLight = (
+  options?: UseMutationOptions<GptResponse, Error, GptRequestParams>,
+) =>
   useMutation<GptResponse, Error, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/light", params),
     ...options,
   });
 
-export const useGptModerate = (options?: UseMutationOptions<GptResponse, Error, GptRequestParams>) => 
+export const useGptModerate = (
+  options?: UseMutationOptions<GptResponse, Error, GptRequestParams>,
+) =>
   useMutation<GptResponse, Error, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/moderate", params),
     ...options,
   });
 
-export const useGptStrong = (options?: UseMutationOptions<GptResponse, Error, GptRequestParams>) => 
+export const useGptStrong = (
+  options?: UseMutationOptions<GptResponse, Error, GptRequestParams>,
+) =>
   useMutation<GptResponse, Error, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/strong", params),
     ...options,
   });
-
-
-  
-
-  

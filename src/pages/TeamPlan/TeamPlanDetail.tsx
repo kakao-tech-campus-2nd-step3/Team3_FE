@@ -1,9 +1,8 @@
 import styled from "@emotion/styled";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
-import { useGetTeamPlans } from "@/api/hooks/useGetTeamPlan";
+import useGetTeamPlans from "@/api/hooks/useGetTeamPlan";
 import { TeamMember } from "@/types/types";
-import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 
@@ -89,9 +88,15 @@ export default function TeamPlanDetailPage() {
           </Participant>
         ))}
       </ParticipantsContainer>
-      <Button onClick={() => navigate(RouterPath.TEAM_PLAN_CHANGE, { state: { plans: teamPlans, teamId, teamName } })}>
-  수정하기
-</Button>
+      <Button
+        onClick={() =>
+          navigate(RouterPath.TEAM_PLAN_CHANGE, {
+            state: { plans: teamPlans, teamId, teamName },
+          })
+        }
+      >
+        수정하기
+      </Button>
     </PageContainer>
   );
 }

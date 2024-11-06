@@ -8,7 +8,7 @@ interface GptRequestData {
 
 interface GptResponse {
   groupId: string;
-  planCards: any[]; 
+  planCards: any[];
 }
 
 const sendGptRequest = async (

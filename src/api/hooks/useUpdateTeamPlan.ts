@@ -1,6 +1,6 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
-import { apiClient } from "@/api/instance";
 import { AxiosResponse } from "axios";
+import { apiClient } from "@/api/instance";
 
 interface UpdatePlanParams {
   teamId: number;
@@ -15,8 +15,8 @@ interface UpdatePlanParams {
   };
 }
 
-export const useUpdateTeamPlan = (
-  options?: UseMutationOptions<AxiosResponse<any>, Error, UpdatePlanParams>
+const useUpdateTeamPlan = (
+  options?: UseMutationOptions<AxiosResponse<any>, Error, UpdatePlanParams>,
 ) => {
   return useMutation<AxiosResponse<any>, Error, UpdatePlanParams>({
     mutationFn: ({ teamId, planId, plan }) =>
@@ -24,3 +24,5 @@ export const useUpdateTeamPlan = (
     ...options,
   });
 };
+
+export default useUpdateTeamPlan;

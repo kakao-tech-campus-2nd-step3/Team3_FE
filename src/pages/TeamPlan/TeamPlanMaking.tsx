@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useState, useEffect, } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "@/components/common/Input/Input";
 import MicrophoneButton from "@/components/features/MicrophoneButton/MicrophoneButton";
@@ -89,8 +89,7 @@ const TeamPlanMakingPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleNextClick = async () => {
-    navigate(RouterPath.TEAM_PLAN_SELECT , { state: { transcript } });
-    return;
+    navigate(RouterPath.TEAM_PLAN_SELECT, { state: { transcript } });
   };
 
   return (

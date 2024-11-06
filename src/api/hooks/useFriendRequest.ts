@@ -64,7 +64,7 @@ export const useCancelFriendRequest = (requestId: number) => {
     },
     onSuccess: () => {
       alert("친구 요청이 취소되었습니다.");
-      queryClient.invalidateQueries({queryKey: ["sentRequests"]}); // 보낸 요청 목록 갱신
+      queryClient.invalidateQueries({ queryKey: ["sentRequests"] }); // 보낸 요청 목록 갱신
     },
     onError: (error) => {
       console.error("친구 요청 취소 중 오류가 발생했습니다:", error);

@@ -12,8 +12,12 @@ interface CreateTeamResponse {
   teamMembers: Array<{ id: number; nickname: string }>;
 }
 
-export const useCreateTeam = (
-  options?: UseMutationOptions<AxiosResponse<CreateTeamResponse>, Error, string>
+const useCreateTeam = (
+  options?: UseMutationOptions<
+    AxiosResponse<CreateTeamResponse>,
+    Error,
+    string
+  >,
 ) => {
   return useMutation<AxiosResponse<CreateTeamResponse>, Error, string>({
     mutationFn: (teamName) =>
@@ -23,3 +27,5 @@ export const useCreateTeam = (
     ...options,
   });
 };
+
+export default useCreateTeam;

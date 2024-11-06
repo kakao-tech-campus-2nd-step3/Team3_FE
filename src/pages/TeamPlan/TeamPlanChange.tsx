@@ -1,12 +1,15 @@
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import CustomCalendar, { CalendarEvent } from "@/components/features/CustomCalendar/CustomCalendar";
-import { useSaveTeamPlan } from "@/api/hooks/useTeamPlanSave";
-import { useUpdateTeamPlan } from "@/api/hooks/useUpdateTeamPlan";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
+import useSaveTeamPlan from "@/api/hooks/useTeamPlanSave";
+import useUpdateTeamPlan  from "@/api/hooks/useUpdateTeamPlan";
 import Button from "@/components/common/Button/Button";
 import Modal from "@/components/common/Modal/Modal";
-import { useDeleteTeamPlan } from "@/api/hooks/useDeleteTeamPlan";
+import useDeleteTeamPlan  from "@/api/hooks/useDeleteTeamPlan";
+
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -35,15 +38,41 @@ export default function TeamPlanChangePage() {
   const handleAddPlan = () => setIsAddModalOpen(true); // 모달 열기
 
   const handleAddPlanSubmit = () => {
-    const { title, description, startDate, endDate, accessibility, isCompleted } = newPlanData;
+    const {
+      title,
+      description,
+      startDate,
+      endDate,
+      accessibility,
+      isCompleted,
+    } = newPlanData;
     const utcStartDate = new Date(startDate).toISOString();
     const utcEndDate = new Date(endDate).toISOString();
     savePlan(
-      { teamId, plan: { title, description, startDate: utcStartDate, endDate: utcEndDate, accessibility, isCompleted } },
+      {
+        teamId,
+        plan: {
+          title,
+          description,
+          startDate: utcStartDate,
+          endDate: utcEndDate,
+          accessibility,
+          isCompleted,
+        },
+      },
       {
         onSuccess: () => {
           alert("플랜이 추가되었습니다.");
-          setModifiedPlans([...modifiedPlans, { ...newPlanData, id: Date.now().toString(), start: new Date(startDate), end: new Date(endDate), complete: isCompleted }]);
+          setModifiedPlans([
+            ...modifiedPlans,
+            {
+              ...newPlanData,
+              id: Date.now().toString(),
+              start: new Date(startDate),
+              end: new Date(endDate),
+              complete: isCompleted,
+            },
+          ]);
           setIsAddModalOpen(false);
         },
         onError: (error) => {
@@ -60,12 +89,14 @@ export default function TeamPlanChangePage() {
         {
           onSuccess: () => {
             alert("플랜이 삭제되었습니다.");
-            setModifiedPlans((prevPlans) => prevPlans.filter((plan) => plan.id !== planId));
+            setModifiedPlans((prevPlans) =>
+              prevPlans.filter((plan) => plan.id !== planId),
+            );
           },
           onError: (error) => {
             alert(`삭제 중 오류 발생: ${error.message}`);
           },
-        }
+        },
       );
     }
   };
@@ -76,7 +107,8 @@ export default function TeamPlanChangePage() {
 
   const handleSaveAll = () => {
     modifiedPlans.forEach((plan) => {
-      if (plan.id && typeof plan.id === "string") { // 문자열로 확인
+      if (plan.id && typeof plan.id === "string") {
+        // 문자열로 확인
         updatePlan({
           teamId,
           planId: parseInt(plan.id, 10),
@@ -113,24 +145,32 @@ export default function TeamPlanChangePage() {
           <input
             placeholder="제목"
             value={newPlanData.title}
-            onChange={(e) => setNewPlanData({ ...newPlanData, title: e.target.value })}
+            onChange={(e) =>
+              setNewPlanData({ ...newPlanData, title: e.target.value })
+            }
           />
           <input
             placeholder="설명"
             value={newPlanData.description}
-            onChange={(e) => setNewPlanData({ ...newPlanData, description: e.target.value })}
+            onChange={(e) =>
+              setNewPlanData({ ...newPlanData, description: e.target.value })
+            }
           />
           <input
             type="datetime-local"
             placeholder="시작 시간"
             value={newPlanData.startDate}
-            onChange={(e) => setNewPlanData({ ...newPlanData, startDate: e.target.value })}
+            onChange={(e) =>
+              setNewPlanData({ ...newPlanData, startDate: e.target.value })
+            }
           />
           <input
             type="datetime-local"
             placeholder="종료 시간"
             value={newPlanData.endDate}
-            onChange={(e) => setNewPlanData({ ...newPlanData, endDate: e.target.value })}
+            onChange={(e) =>
+              setNewPlanData({ ...newPlanData, endDate: e.target.value })
+            }
           />
           <Button onClick={handleAddPlanSubmit}>추가</Button>
         </Modal>

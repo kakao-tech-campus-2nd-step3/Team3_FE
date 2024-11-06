@@ -123,8 +123,8 @@ const IconButton = styled.button`
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: rgba(55.95, 55.95, 55.95, 0.7); 
-  font-size: 10px; 
+  color: rgba(55.95, 55.95, 55.95, 0.7);
+  font-size: 10px;
   display: flex;
   align-items: center;
   &:hover {
@@ -139,10 +139,13 @@ export default function FriendDetailPage() {
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
-  
-  const { data: plans = [], isLoading: isLoadingPlans } = useGetFriendPlans(Number(friendId));
 
-  const { data: comments = [], isLoading: isLoadingComments } = useCommentsQuery(Number(friendId));
+  const { data: plans = [], isLoading: isLoadingPlans } = useGetFriendPlans(
+    Number(friendId),
+  );
+
+  const { data: comments = [], isLoading: isLoadingComments } =
+    useCommentsQuery(Number(friendId));
   const createCommentMutation = useCreateCommentMutation(Number(friendId), {
     onSuccess: () => {
       alert("댓글 작성이 완료되었습니다");

@@ -84,10 +84,10 @@ function Router() {
         { path: RouterPath.PLAN_SELECT, element: <PlanSelectPage /> },
         { path: RouterPath.PLAN_UPDATE, element: <PlanUpdate /> },
         { path: RouterPath.TEAM_PLAN_MAKING, element: <TeamPlanMakingPage /> },
-        { path: RouterPath.TEAM_PLAN_SELECT, element: <TeamPlanSelectPage/>},
+        { path: RouterPath.TEAM_PLAN_SELECT, element: <TeamPlanSelectPage /> },
         { path: RouterPath.TEAM_PLAN_UPDATE, element: <TeamPlanUpdate /> },
-        {path: RouterPath.TEAM_PLAN_INVITE, element: <TeamInvitePage/>},
-        {path: RouterPath.TEAM_PLAN_CHANGE, element: <TeamPlanChangePage/>}
+        { path: RouterPath.TEAM_PLAN_INVITE, element: <TeamInvitePage /> },
+        { path: RouterPath.TEAM_PLAN_CHANGE, element: <TeamPlanChangePage /> },
       ],
     },
   ]);

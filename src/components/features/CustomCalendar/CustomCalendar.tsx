@@ -1,5 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+} from "react";
 import FullCalendar from "@fullcalendar/react";
 import { EventContentArg } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -16,6 +22,7 @@ import {
 import useDeletePlan from "@/api/hooks/useDeletePlans";
 import Modal from "./PlanModal";
 import Button from "@/components/common/Button/Button";
+
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -75,7 +82,11 @@ const renderEventContent = (
       <button
         type="button"
         onClick={() => handleEdit(event.id, event.title, description)}
-        style={{ color: "blue", backgroundColor: "transparent", cursor: "pointer" }}
+        style={{
+          color: "blue",
+          backgroundColor: "transparent",
+          cursor: "pointer",
+        }}
       >
         수정
       </button>
@@ -84,7 +95,9 @@ const renderEventContent = (
 };
 
 const parseDate = (date: any) => {
-  return typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+  return typeof date === "string" || typeof date === "number"
+    ? new Date(date)
+    : date;
 };
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
@@ -99,7 +112,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const { mutate: deletePlan } = useDeletePlan();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-const [currentEditPlan, setCurrentEditPlan] = useState<Partial<CalendarEvent> | null>(null);
+  const [currentEditPlan, setCurrentEditPlan] =
+    useState<Partial<CalendarEvent> | null>(null);
 
   const handleDelete = useCallback(
     (id: string) => {
@@ -123,8 +137,12 @@ const [currentEditPlan, setCurrentEditPlan] = useState<Partial<CalendarEvent> | 
     if (currentEditPlan && currentEditPlan.id) {
       const updatedPlans = plans.map((plan) =>
         plan.id === currentEditPlan.id
-          ? { ...plan, title: currentEditPlan.title || "", description: currentEditPlan.description || "" }
-          : plan
+          ? {
+              ...plan,
+              title: currentEditPlan.title || "",
+              description: currentEditPlan.description || "",
+            }
+          : plan,
       );
       onPlanChange?.(updatedPlans); // 업데이트된 플랜 반영
       setIsEditModalOpen(false); // 모달 닫기
@@ -136,7 +154,9 @@ const [currentEditPlan, setCurrentEditPlan] = useState<Partial<CalendarEvent> | 
     const currentMobile = window.innerWidth <= breakpoints.sm;
     setIsMobile(currentMobile);
     const calendarApi = calendarRef.current?.getApi();
-    calendarApi?.changeView(currentMobile ? "timeGridThreeDay" : "timeGridWeek");
+    calendarApi?.changeView(
+      currentMobile ? "timeGridThreeDay" : "timeGridWeek",
+    );
   }, []);
 
   useEffect(() => {
@@ -216,7 +236,9 @@ const [currentEditPlan, setCurrentEditPlan] = useState<Partial<CalendarEvent> | 
           eventResizableFromStart={!isReadOnly}
           eventDrop={isReadOnly ? undefined : handleEventChange}
           eventResize={handleEventChange}
-          eventContent={(eventInfo) => renderEventContent(eventInfo, handleDelete, handleEdit)}
+          eventContent={(eventInfo) =>
+            renderEventContent(eventInfo, handleDelete, handleEdit)
+          }
           selectable={false}
           selectMirror={false}
           dayMaxEvents
@@ -233,26 +255,30 @@ const [currentEditPlan, setCurrentEditPlan] = useState<Partial<CalendarEvent> | 
           height={isMobile ? "85%" : "100%"}
         />
         {/* Edit Modal */}
-      {isEditModalOpen && currentEditPlan && (
-        <Modal onClose={() => setIsEditModalOpen(false)}>
-          <h2>플랜 수정</h2>
-          <input
-            placeholder="제목"
-            value={currentEditPlan.title || ""}
-            onChange={(e) =>
-              setCurrentEditPlan((prev) => prev ? { ...prev, title: e.target.value } : prev)
-            }
-          />
-          <input
-            placeholder="설명"
-            value={currentEditPlan.description || ""}
-            onChange={(e) =>
-              setCurrentEditPlan((prev) => prev ? { ...prev, description: e.target.value } : prev)
-            }
-          />
-          <Button onClick={handleEditSubmit}>저장</Button>
-        </Modal>
-      )}
+        {isEditModalOpen && currentEditPlan && (
+          <Modal onClose={() => setIsEditModalOpen(false)}>
+            <h2>플랜 수정</h2>
+            <input
+              placeholder="제목"
+              value={currentEditPlan.title || ""}
+              onChange={(e) =>
+                setCurrentEditPlan((prev) =>
+                  prev ? { ...prev, title: e.target.value } : prev,
+                )
+              }
+            />
+            <input
+              placeholder="설명"
+              value={currentEditPlan.description || ""}
+              onChange={(e) =>
+                setCurrentEditPlan((prev) =>
+                  prev ? { ...prev, description: e.target.value } : prev,
+                )
+              }
+            />
+            <Button onClick={handleEditSubmit}>저장</Button>
+          </Modal>
+        )}
       </div>
     </div>
   );

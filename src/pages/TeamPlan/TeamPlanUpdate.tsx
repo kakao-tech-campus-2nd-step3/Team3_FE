@@ -1,14 +1,15 @@
 import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
-import CustomCalendar, { CalendarEvent } from "@/components/features/CustomCalendar/CustomCalendar";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
-import { useCreateTeam } from "@/api/hooks/useCreateTeam";
-import { useSaveTeamPlan } from "@/api/hooks/useTeamPlanSave";
+import useCreateTeam from "@/api/hooks/useCreateTeam";
+import useSaveTeamPlan from "@/api/hooks/useTeamPlanSave";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import { useLocation } from "react-router-dom";
 
 // 슬라이드 애니메이션
 const slideDown = keyframes`
@@ -102,11 +103,13 @@ const PlanUpdate = () => {
   // 상태 정의
   const [teamName, setTeamName] = useState("");
   // 초기 modifiedPlans에 전달된 plans 데이터 설정
-  const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(plans || []);
+  const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(
+    plans || [],
+  );
   const createTeamMutation = useCreateTeam();
   const savePlanMutation = useSaveTeamPlan();
   const navigate = useNavigate();
- 
+
   // 메시지와 애니메이션 설정
   useEffect(() => {
     const interval = setInterval(() => {
@@ -175,9 +178,13 @@ const PlanUpdate = () => {
         </div>
 
         <CalendarContainer>
-          <CustomCalendar plans={modifiedPlans} onPlanChange={handlePlanChange} isReadOnly={false} />
+          <CustomCalendar
+            plans={modifiedPlans}
+            onPlanChange={handlePlanChange}
+            isReadOnly={false}
+          />
         </CalendarContainer>
-        
+
         <ButtonContainer>
           <Button onClick={handleSave}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>
