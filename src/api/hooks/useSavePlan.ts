@@ -4,8 +4,10 @@ import { apiClient } from "../instance";
 interface PlanCard {
   title: string;
   description: string;
-  startDate: number;
-  endDate: number;
+  startTimestamp: number; // startDate 대신
+  endTimestamp: number; // endDate 대신
+  accessibility?: boolean;
+  isCompleted?: boolean;
 }
 interface SavePlanData {
   deviceId: string;
