@@ -159,11 +159,6 @@ const Introduce = () => {
           쉽게 관리해보세요!
         </AdditionalText>
         <ButtonContainer>
-          <KakaoLoginButton
-            src={kakao}
-            alt="카카오 로그인"
-            onClick={handleLoginClick}
-          />
           <Button theme="kakao" size="long" onClick={handleLoginClick}>
             <SymbolImage src={kakao_symbol} alt="Login"/>
             카카오 로그인
