@@ -129,7 +129,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const queryClient = useQueryClient();
 
   // 이벤트 삭제 핸들러
-  // 이벤트 삭제 핸들러
   const handleDelete = useCallback(
     (id: string) => {
       console.log("isPreviewMode:", isPreviewMode);
@@ -177,6 +176,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const handleUpdate = useCallback(
     (event: CalendarEvent) => {
       if (isPreviewMode && previewDeviceId && previewGroupId) {
+        // PreviewMode 수정 로직...
+      } else {
+        // 일반 모드 수정 로직 추가
         const newTitle = prompt("새 제목을 입력하세요", event.title);
         const newDescription = prompt(
           "새 설명을 입력하세요",
@@ -206,23 +208,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           }),
         );
 
-        // 입력받은 날짜 파싱
         const parsedStartDate = newStartDate
           ? new Date(newStartDate)
           : event.start;
         const parsedEndDate = newEndDate ? new Date(newEndDate) : event.end;
-
-        // YYYY-MM-ddTHH:mm:ss 형식으로 변환
-        const formatDate = (date: Date) => {
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, "0");
-          const day = String(date.getDate()).padStart(2, "0");
-          const hours = String(date.getHours()).padStart(2, "0");
-          const minutes = String(date.getMinutes()).padStart(2, "0");
-          const seconds = String(date.getSeconds()).padStart(2, "0");
-
-          return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`; // 'T' 구분자 추가
-        };
 
         if (
           newTitle != null &&
@@ -230,23 +219,15 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           !isNaN(parsedStartDate.getTime()) &&
           !isNaN(parsedEndDate.getTime())
         ) {
-          // 요청 데이터 로깅
-          console.log("Update Request Data:", {
-            title: newTitle,
-            description: newDescription,
-            startDate: formatDate(parsedStartDate),
-            endDate: formatDate(parsedEndDate),
-          });
-
-          updatePlanCard({
-            deviceId: previewDeviceId,
-            groupId: previewGroupId,
-            cardId: event.id,
+          updatePlan({
+            planId: Number(event.id),
             planData: {
               title: newTitle,
               description: newDescription,
-              startDate: formatDate(parsedStartDate),
-              endDate: formatDate(parsedEndDate),
+              startTimestamp: Math.floor(parsedStartDate.getTime() / 1000),
+              endTimestamp: Math.floor(parsedEndDate.getTime() / 1000),
+              accessibility: event.accessibility || false,
+              isCompleted: event.complete,
             },
           });
         }
