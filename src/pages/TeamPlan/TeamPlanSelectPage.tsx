@@ -78,6 +78,15 @@ const TeamPlanSelectPage: React.FC = () => {
       }
     );
   };
+  
+  // 첫 화면 진입 시 자동으로 light 요청
+  useEffect(() => {
+    if (planCache.light.length === 0) {
+      handleFetchPlans("light"); // 첫 진입 시 light 데이터 요청
+    } else {
+      setSelectedLevel("light"); // 캐싱된 light 데이터가 있을 경우 바로 설정
+    }
+  }, [planCache.light]);
 
   return (
     <PageContainer>
@@ -91,7 +100,7 @@ const TeamPlanSelectPage: React.FC = () => {
       {isLoading ? (
         <p>로딩 중...</p>
       ) : (
-        <CustomCalendar calendarOwner="Team Plans" plans={planCache[selectedLevel]} isReadOnly={false} />
+        <CustomCalendar calendarOwner="Team Plans" plans={planCache[selectedLevel]} isReadOnly={true} />
       )}
       <ButtonContainer>
           <Button onClick={handleNextClick} size="small">다음</Button>
