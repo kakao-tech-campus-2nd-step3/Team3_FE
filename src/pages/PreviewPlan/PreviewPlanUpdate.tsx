@@ -2,11 +2,9 @@ import styled from "@emotion/styled";
 import { useNavigate, useLocation } from "react-router-dom";
 import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
-import CustomCalendar, {
-  CalendarEvent,
-} from "@/components/features/CustomCalendar/CustomCalendar";
+import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
-import RouterPath from "@/router/RouterPath";
+
 import breakpoints from "@/variants/breakpoints";
 
 // 슬라이드 애니메이션
@@ -102,6 +100,39 @@ const PreviewPlanUpdate = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedPlan = location.state?.selectedPlan || [];
+  const previewDeviceId = location.state?.deviceId;
+  const previewGroupId = location.state?.groupId;
+
+  const handleSave = async () => {
+    try {
+      if (!selectedPlan || selectedPlan.length === 0) {
+        alert("저장할 플랜이 없습니다.");
+        return;
+      }
+
+      if (!previewDeviceId || !previewGroupId) {
+        alert("디바이스 ID 또는 그룹 ID가 없습니다.");
+        return;
+      }
+
+      // 플랜 데이터를 로컬 스토리지에 저장
+      localStorage.setItem(
+        "previewPlanData",
+        JSON.stringify({
+          selectedPlan,
+          previewDeviceId,
+          previewGroupId,
+        }),
+      );
+
+      // 카카오 로그인 페이지로 리다이렉트
+      window.location.href =
+        "https://api.splanet.co.kr/oauth2/authorization/kakao";
+    } catch (error) {
+      console.error("플랜 저장 중 오류 발생:", error);
+      alert("플랜 저장에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
 
   return (
     <PlanUpdateContainer>
@@ -113,10 +144,15 @@ const PreviewPlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar plans={selectedPlan} />
+          <CustomCalendar
+            plans={selectedPlan}
+            isPreviewMode
+            previewDeviceId={previewDeviceId}
+            previewGroupId={previewGroupId}
+          />
         </CalendarContainer>
         <ButtonContainer>
-          <Button onClick={() => navigate(RouterPath.MAIN)}>저장</Button>
+          <Button onClick={handleSave}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>
             취소
           </Button>
