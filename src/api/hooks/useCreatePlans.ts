@@ -4,8 +4,8 @@ import { apiClient } from "@/api/instance";
 interface CreatePlanData {
   title: string;
   description: string;
-  startTimestamp: number;
-  endTimestamp: number;
+  startDate: string;
+  endDate: string;
   accessibility: boolean;
   isCompleted: boolean;
 }

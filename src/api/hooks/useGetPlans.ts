@@ -11,8 +11,8 @@ export const fetchPlans = async (): Promise<CalendarEvent[]> => {
     id: plan.id.toString(), // id를 string으로 변환
     title: plan.title,
     description: plan.description,
-    start: new Date(plan.startTimestamp * 1000), // 날짜를 Date 객체로 변환
-    end: new Date(plan.endTimestamp * 1000),
+    start: new Date(plan.startDate), // 날짜를 Date 객체로 변환
+    end: new Date(plan.endDate),
     accessibility: plan.accessibility,
     complete: plan.isCompleted,
     status: plan.isCompleted ? "completed" : "incomplete", // 상태를 미리 계산

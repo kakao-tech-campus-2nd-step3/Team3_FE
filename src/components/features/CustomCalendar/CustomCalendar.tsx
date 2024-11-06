@@ -18,9 +18,7 @@ import {
 import useDeletePlan from "@/api/hooks/useDeletePlans";
 import useUpdatePlans from "@/api/hooks/useUpdatePlans";
 import useDeletePlanCard from "@/api/hooks/useDeletePlanCard";
-import useUpdatePlanCard, {
-  UpdatePlanCardData,
-} from "@/api/hooks/useUpdatePlanCard";
+import useUpdatePlanCard from "@/api/hooks/useUpdatePlanCard";
 // event interface
 export interface CalendarEvent {
   id: string;
@@ -184,6 +182,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           "새 설명을 입력하세요",
           event.description,
         );
+
         const newStartDate = prompt(
           "새 시작 날짜를 입력하세요 (YYYY-MM-DD HH:mm:ss 형식)",
           event.start.toLocaleString("ko-KR", {
@@ -208,24 +207,24 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           }),
         );
 
-        const parsedStartDate = newStartDate
-          ? new Date(newStartDate)
-          : event.start;
-        const parsedEndDate = newEndDate ? new Date(newEndDate) : event.end;
+        // 유효한 ISO 형식인지 확인하는 간단한 검사
+        const isValidDate = (dateString: string | null): boolean => {
+          return dateString !== null && !isNaN(new Date(dateString).getTime());
+        };
 
         if (
-          newTitle != null &&
-          newDescription != null &&
-          !isNaN(parsedStartDate.getTime()) &&
-          !isNaN(parsedEndDate.getTime())
+          newTitle !== null &&
+          newDescription !== null &&
+          isValidDate(newStartDate) &&
+          isValidDate(newEndDate)
         ) {
           updatePlan({
             planId: Number(event.id),
             planData: {
               title: newTitle,
               description: newDescription,
-              startTimestamp: Math.floor(parsedStartDate.getTime() / 1000),
-              endTimestamp: Math.floor(parsedEndDate.getTime() / 1000),
+              startDate: newStartDate!,
+              endDate: newEndDate!,
               accessibility: event.accessibility || false,
               isCompleted: event.complete,
             },

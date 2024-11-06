@@ -76,8 +76,8 @@ const PreviewPlanSelectPage = () => {
         id: planCard.cardId,
         title: planCard.title,
         description: planCard.description,
-        start: new Date(planCard.startTimestamp * 1000),
-        end: new Date(planCard.endTimestamp * 1000),
+        start: new Date(planCard.startDate),
+        end: new Date(planCard.endDate),
         accessibility: true, // 기본값 설정
         complete: false, // 기본값 설정
       }))

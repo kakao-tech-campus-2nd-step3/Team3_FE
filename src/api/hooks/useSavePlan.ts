@@ -4,8 +4,8 @@ import { apiClient } from "../instance";
 interface PlanCard {
   title: string;
   description: string;
-  startTimestamp: number; // startDate 대신
-  endTimestamp: number; // endDate 대신
+  startDate: string;
+  endDate: string;
   accessibility?: boolean;
   isCompleted?: boolean;
 }
