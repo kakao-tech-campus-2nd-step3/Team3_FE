@@ -183,9 +183,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           event.description,
         );
         const newStartDate = prompt(
-          "새 시작 날짜를 입력하세요 (YYYY-MM-DDTHH:mm:ss 형식)",
+          "새 시작 날짜를 입력하세요 (YYYY-MM-DD HH:mm:ss 형식)",
           event.start.toLocaleString("ko-KR", {
-            timeZone: "Asia/Seoul",
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
@@ -198,7 +197,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         const newEndDate = prompt(
           "새 종료 날짜를 입력하세요 (YYYY-MM-DD HH:mm:ss 형식)",
           event.end.toLocaleString("ko-KR", {
-            timeZone: "Asia/Seoul",
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
@@ -208,16 +206,23 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           }),
         );
 
+        // 입력받은 날짜 파싱
         const parsedStartDate = newStartDate
           ? new Date(newStartDate)
           : event.start;
         const parsedEndDate = newEndDate ? new Date(newEndDate) : event.end;
 
-        // 시간 유효성 체크
-        if (parsedEndDate <= parsedStartDate) {
-          alert("종료 시간은 시작 시간보다 늦어야 합니다.");
-          return;
-        }
+        // YYYY-MM-ddTHH:mm:ss 형식으로 변환
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          const hours = String(date.getHours()).padStart(2, "0");
+          const minutes = String(date.getMinutes()).padStart(2, "0");
+          const seconds = String(date.getSeconds()).padStart(2, "0");
+
+          return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`; // 'T' 구분자 추가
+        };
 
         if (
           newTitle != null &&
@@ -225,38 +230,26 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           !isNaN(parsedStartDate.getTime()) &&
           !isNaN(parsedEndDate.getTime())
         ) {
-          // 타임스탬프 별도 계산
-          const startTime = parsedStartDate.getTime();
-          const endTime = parsedEndDate.getTime();
-
-          // 데이터 생성 전 로깅
-          console.log("날짜 및 타임스탬프 확인:", {
-            startDate: parsedStartDate.toISOString(),
-            endDate: parsedEndDate.toISOString(),
-            startTime,
-            endTime,
-            startTimestamp: Math.floor(startTime / 1000),
-            endTimestamp: Math.floor(endTime / 1000),
-          });
-
-          const requestData: UpdatePlanCardData = {
+          // 요청 데이터 로깅
+          console.log("Update Request Data:", {
             title: newTitle,
             description: newDescription,
-            startDate: parsedStartDate.toISOString(),
-            endDate: parsedEndDate.toISOString(),
-            startTimestamp: Math.floor(startTime / 1000),
-            endTimestamp: Math.floor(endTime / 1000),
-          };
+            startDate: formatDate(parsedStartDate),
+            endDate: formatDate(parsedEndDate),
+          });
 
           updatePlanCard({
             deviceId: previewDeviceId,
             groupId: previewGroupId,
             cardId: event.id,
-            planData: requestData,
+            planData: {
+              title: newTitle,
+              description: newDescription,
+              startDate: formatDate(parsedStartDate),
+              endDate: formatDate(parsedEndDate),
+            },
           });
         }
-      } else {
-        // 기존 MainPage 수정 로직...
       }
     },
     [
@@ -267,7 +260,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       previewGroupId,
     ],
   );
-
   // Handle window resize
 
   useEffect(() => {

@@ -6,8 +6,6 @@ export interface UpdatePlanCardData {
   description: string;
   startDate: string;
   endDate: string;
-  startTimestamp: number;
-  endTimestamp: number;
 }
 
 // mutation 파라미터 타입 정의
