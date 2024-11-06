@@ -5,7 +5,8 @@ import mockSVG from "@/assets/mock2.svg"; // 목업 이미지
 import effectSVG from "@/assets/effect.svg";
 import kakao from "@/assets/Login.svg";
 import Button from "@/components/common/Button/Button";
-import breakpoints from "@/variants/breakpoints";
+import breakpoints from "@/variants/breakpoints"
+import kakao_symbol from "@/assets/kakao_symbol.svg"
 
 const LandingContainer = styled.div`
   max-width: 1280px;
@@ -37,7 +38,7 @@ const BackgroundCircle = styled.img`
 
 const TextWrapper = styled.div`
   width: 45%;
-  max-width: 500px;
+  max-width: 550px;
   text-align: left;
   margin-bottom: 0;
   margin-right: 5%;
@@ -129,6 +130,11 @@ const MockupImage = styled.img`
   height: auto;
   object-fit: contain;
 `;
+const SymbolImage = styled.img`
+  width: 20px;
+  height: 20px;
+  padding-right: 3px;
+`
 
 const Introduce = () => {
   const navigate = useNavigate();
@@ -158,7 +164,11 @@ const Introduce = () => {
             alt="카카오 로그인"
             onClick={handleLoginClick}
           />
-          <Button onClick={handleStartClick}>시작하기</Button>
+          <Button theme="kakao" size="long" onClick={handleLoginClick}>
+            <SymbolImage src={kakao_symbol} alt="Login"/>
+            카카오 로그인
+          </Button>
+          <Button onClick={handleStartClick} size="long">시작하기</Button>
         </ButtonContainer>
       </TextWrapper>
       <MockupImageWrapper>
