@@ -133,19 +133,6 @@ const ToggleLabel = styled.span`
   color: #333;
 `;
 
-const DebugButton = styled.button`
-  position: absolute;
-  top: 10%;
-  right: 20px;
-  background-color: #39a7f7;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  z-index: 1;
-`;
-
 const MainPage: React.FC = () => {
   const { data: plans, isLoading, error } = useGetPlans();
   const [modalOpen, setIsModalOpen] = useState(false);
@@ -155,11 +142,6 @@ const MainPage: React.FC = () => {
   const [endDate, setEndDate] = useState("");
   const [isAccessible, setIsAccessible] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-
-  // 테스트를 위한 버튼 클릭 핸들러
-  const handleDebugClick = () => {
-    console.log("plans 데이터:", plans);
-  };
 
   // useCreatePlan 훅 사용
   const createPlanMutation = useCreatePlan();
@@ -201,7 +183,6 @@ const MainPage: React.FC = () => {
         <CircleButton onClick={handleButtonClick}>+</CircleButton>
       </ButtonWrapper>
       <CustomCalendar plans={plans || []} />
-      <DebugButton onClick={handleDebugClick}>Debug</DebugButton>
 
       {modalOpen && (
         <ModalOverlay>
