@@ -5,10 +5,10 @@ import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
 import useSaveTeamPlan from "@/api/hooks/useTeamPlanSave";
-import useUpdateTeamPlan  from "@/api/hooks/useUpdateTeamPlan";
+import useUpdateTeamPlan from "@/api/hooks/useUpdateTeamPlan";
 import Button from "@/components/common/Button/Button";
 import Modal from "@/components/common/Modal/Modal";
-import useDeleteTeamPlan  from "@/api/hooks/useDeleteTeamPlan";
+import useDeleteTeamPlan from "@/api/hooks/useDeleteTeamPlan";
 
 const PageContainer = styled.div`
   max-width: 1200px;

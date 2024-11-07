@@ -8,7 +8,6 @@ import {
   useLeaveTeam,
   useRespondToInvitation,
   useFetchInvitations,
-  useFetchSentInvitations,
 } from "@/api/hooks/useTeam";
 import useUserData from "@/api/hooks/useUserData";
 import Button from "@/components/common/Button/Button";

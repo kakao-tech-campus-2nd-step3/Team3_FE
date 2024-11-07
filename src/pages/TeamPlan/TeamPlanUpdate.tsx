@@ -95,7 +95,7 @@ const PlanUpdate = () => {
     "일정을 옮기고 크기를 조정하여 원하는대로 플랜을 수정해보세요",
   ];
   const { state } = useLocation();
-  const { plans } = state || {}; // 이전 페이지에서 전달된 plans
+  const { plans: initialPlans } = state || {}; // 이전 페이지에서 전달된 plans
   // 메시지 애니메이션과 인덱스 상태
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
@@ -104,7 +104,7 @@ const PlanUpdate = () => {
   const [teamName, setTeamName] = useState("");
   // 초기 modifiedPlans에 전달된 plans 데이터 설정
   const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(
-    plans || [],
+    initialPlans || [],
   );
   const createTeamMutation = useCreateTeam();
   const savePlanMutation = useSaveTeamPlan();
@@ -143,13 +143,23 @@ const PlanUpdate = () => {
       const teamResponse = await createTeamMutation.mutateAsync(teamName);
       const teamId = teamResponse.data.id;
 
-      // 플랜들을 순차적으로 저장
-      for (const plan of modifiedPlans) {
-        await savePlanMutation.mutateAsync({
+      // 모든 플랜을 저장하는 비동기 작업 생성
+      const savePlanPromises = modifiedPlans.map((plan) =>
+        savePlanMutation.mutateAsync({
           teamId,
           plan: convertToSavePlanFormat(plan), // 변환 후 전달
-        });
-      }
+        }),
+      );
+
+      // 모든 비동기 작업을 병렬로 실행
+      await Promise.all(savePlanPromises);
+
+      // for (const plan of modifiedPlans) {
+      //   await savePlanMutation.mutateAsync({
+      //     teamId,
+      //     plan: convertToSavePlanFormat(plan), // 변환 후 전달
+      //   });
+      // }
 
       alert("저장이 완료되었습니다!");
       navigate(RouterPath.TEAM_PLAN_INVITE, { state: { teamId } });

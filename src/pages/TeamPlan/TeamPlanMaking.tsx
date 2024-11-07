@@ -5,15 +5,9 @@ import Input from "@/components/common/Input/Input";
 import MicrophoneButton from "@/components/features/MicrophoneButton/MicrophoneButton";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
-import {
-  ParticipantsContainer,
-  Participant,
-  ParticipantName,
-} from "./TeamPlanDetail";
 import breakpoints from "@/variants/breakpoints";
 import useVoiceHook from "@/hooks/useVoiceHook";
-import useGenerateDeviceId from "@/api/hooks/useGenerateDeviceId";
-import { useInviteUserToTeam } from "@/api/hooks/useTeam";
+// import useGenerateDeviceId from "@/api/hooks/useGenerateDeviceId";
 
 const PlanPageContainer = styled.div`
   width: 60%
@@ -78,7 +72,7 @@ function MessageSilderWithAnimation() {
 }
 
 const TeamPlanMakingPage: React.FC = () => {
-  const { data: deviceId } = useGenerateDeviceId();
+  // const { data: deviceId } = useGenerateDeviceId();
   const {
     transcript,
     setTranscript,

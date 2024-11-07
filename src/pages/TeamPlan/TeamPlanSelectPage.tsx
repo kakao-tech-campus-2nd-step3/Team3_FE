@@ -60,12 +60,15 @@ const TeamPlanSelectPage: React.FC = () => {
       return; // 이미 캐싱된 값이 있을 경우 요청 생략
     }
     setIsLoading(true);
-    const fetchFn =
-      level === "light"
-        ? fetchLightPlans
-        : level === "moderate"
-          ? fetchModeratePlans
-          : fetchStrongPlans;
+
+    let fetchFn;
+    if (level === "light") {
+      fetchFn = fetchLightPlans;
+    } else if (level === "moderate") {
+      fetchFn = fetchModeratePlans;
+    } else {
+      fetchFn = fetchStrongPlans;
+    }
 
     fetchFn(
       { deviceId, text: transcript || "기본 추천 텍스트" },
@@ -101,16 +104,15 @@ const TeamPlanSelectPage: React.FC = () => {
   return (
     <PageContainer>
       <ButtonContainer>
-        <button onClick={() => handleFetchPlans("light")}>1 (Light)</button>
-        <button onClick={() => handleFetchPlans("moderate")}>
+        <button type="button" onClick={() => handleFetchPlans("light")}>
+          1 (Light)
+        </button>
+        <button type="button" onClick={() => handleFetchPlans("moderate")}>
           2 (Moderate)
         </button>
-        <button onClick={() => handleFetchPlans("strong")}>3 (Strong)</button>
-        <button
-          onClick={() =>
-            console.log("현재 플랜 데이터:", planCache[selectedLevel])
-          }
-        />
+        <button type="button" onClick={() => handleFetchPlans("strong")}>
+          3 (Strong)
+        </button>
       </ButtonContainer>
 
       {isLoading ? (
