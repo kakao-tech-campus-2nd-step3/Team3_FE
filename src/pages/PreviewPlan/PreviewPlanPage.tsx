@@ -87,7 +87,9 @@ const PreviewPlanPage: React.FC = () => {
   // 다음 버튼 클릭시 단순히 deviceId 값이 있는지 확인하기
   const handleNext = () => {
     if (!deviceId) return;
-    navigate(RouterPath.PREVIEW_PLAN_SELECT);
+    navigate(RouterPath.PREVIEW_PLAN_SELECT, {
+      state: { speechText: transcript },
+    });
   };
 
   return (
