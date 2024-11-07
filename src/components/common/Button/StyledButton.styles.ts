@@ -31,8 +31,8 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
     };
 
     const longStyle = {
-      width: "170px",
-      height: "40px",
+      width: "160px",
+      height: "45px",
       fontSize: "15px",
     };
 

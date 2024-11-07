@@ -18,6 +18,7 @@ const OAuthRedirectHandler = () => {
       const queryParams = new URLSearchParams(window.location.search);
       const accessToken = queryParams.get("access");
       const refreshToken = queryParams.get("refresh");
+      // const deviceId = queryParams.get("deviceId");
 
       if (!accessToken || !refreshToken) {
         navigate(RouterPath.LOGIN);

@@ -14,6 +14,7 @@ import {
   useFriendRequest,
   useAcceptFriendRequest,
   useRejectFriendRequest,
+  useCancelFriendRequest,
 } from "@/api/hooks/useFriendRequest";
 import useDeleteFriend from "@/api/hooks/useDeleteFriend";
 import breakpoints from "@/variants/breakpoints";
@@ -24,6 +25,7 @@ import {
   SearchResult,
 } from "@/types/types";
 import Button from "@/components/common/Button/Button";
+import useUserData from "@/api/hooks/useUserData";
 
 // Styles
 const pageStyles = css`
@@ -156,10 +158,10 @@ const SearchResultItem = ({ friend }: { friend: SearchResult }) => {
 const FriendItem = ({ friend }: { friend: Friend }) => {
   const navigate = useNavigate();
   const deleteFriendMutation = useDeleteFriend(friend.userId);
-
+  const { userData } = useUserData();
   const handleVisitClick = () => {
     navigate(`/friend/${friend.userId}`, {
-      state: { friendName: friend.nickname },
+      state: { friendName: friend.nickname, userId: userData.id },
     });
   };
 
@@ -199,6 +201,7 @@ const RequestItem = ({
 }) => {
   const acceptFriendRequestMutation = useAcceptFriendRequest(request.id);
   const rejectFriendRequestMutation = useRejectFriendRequest(request.id);
+  const cancelFriendRequestMutation = useCancelFriendRequest(request.id);
 
   const handleAcceptClick = () => {
     if (window.confirm("이 친구 요청을 수락하시겠습니까?")) {
@@ -209,6 +212,12 @@ const RequestItem = ({
   const handleRejectClick = () => {
     if (window.confirm("이 친구 요청을 거절하시겠습니까?")) {
       rejectFriendRequestMutation.mutate();
+    }
+  };
+
+  const handleCancelClick = () => {
+    if (window.confirm("이 친구 요청을 취소하시겠습니까?")) {
+      cancelFriendRequestMutation.mutate();
     }
   };
 
@@ -226,26 +235,16 @@ const RequestItem = ({
             style={{ marginRight: "10px" }}
             size="small"
             theme="primary"
-            onClick={() => console.log("취소 clicked")}
+            onClick={handleCancelClick}
           >
             취소
           </Button>
         ) : (
           <>
-            <Button
-              style={{ paddingRight: "10px" }}
-              size="small"
-              theme="primary"
-              onClick={handleAcceptClick}
-            >
+            <Button size="small" theme="primary" onClick={handleAcceptClick}>
               수락
             </Button>
-            <Button
-              style={{ margin: "10px" }}
-              size="small"
-              theme="secondary"
-              onClick={handleRejectClick}
-            >
+            <Button size="small" theme="secondary" onClick={handleRejectClick}>
               거절
             </Button>
           </>
