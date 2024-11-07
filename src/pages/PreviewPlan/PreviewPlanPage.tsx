@@ -7,6 +7,7 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useVoiceHook from "@/hooks/useVoiceHook";
+import { useDeviceId } from "@/contexts/DeviceIdContext";
 
 const PlanPageContainer = styled.div`
   width: 60%
@@ -68,6 +69,7 @@ function MessageSilderWithAnimation() {
 }
 
 const PreviewPlanPage: React.FC = () => {
+  const { deviceId, isLoading } = useDeviceId();
   const {
     transcript,
     setTranscript,
@@ -76,6 +78,17 @@ const PreviewPlanPage: React.FC = () => {
     handleStopRecording,
   } = useVoiceHook();
   const navigate = useNavigate();
+
+  // deviceId 로딩 중일 때 처리
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // 다음 버튼 클릭시 단순히 deviceId 값이 있는지 확인하기
+  const handleNext = () => {
+    if (!deviceId) return;
+    navigate(RouterPath.PREVIEW_PLAN_SELECT);
+  };
 
   return (
     <PlanPageContainer>
@@ -92,10 +105,7 @@ const PreviewPlanPage: React.FC = () => {
           isRecording={isRecording}
         />
         <ButtonContainer>
-          <Button
-            size="responsive"
-            onClick={() => navigate(RouterPath.PREVIEW_PLAN_SELECT)}
-          >
+          <Button size="responsive" onClick={handleNext}>
             다음
           </Button>
           <Button
