@@ -1,7 +1,6 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { apiClient } from "@/api/instance";
-import { CalendarEvent } from "@/components/features/CustomCalendar/CustomCalendar";
 
 interface SavePlanParams {
   teamId: number;

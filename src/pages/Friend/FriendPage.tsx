@@ -370,6 +370,7 @@ export default function FriendListPage() {
                 css={searchButtonStyles}
                 onClick={handleSearch}
                 role="button"
+                tabIndex={0}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") handleSearch();
                 }}

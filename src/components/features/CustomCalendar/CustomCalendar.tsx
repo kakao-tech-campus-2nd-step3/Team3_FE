@@ -45,7 +45,7 @@ interface CustomCalendarProps {
   onDeletePlan?: (planId: string) => void;
   isPreviewMode?: boolean;
   previewDeviceId?: string; // Preview mode deviceId
-  previewGroupId?: string;  // Preview mode groupId
+  previewGroupId?: string; // Preview mode groupId
 }
 
 const VIEW_MODES = {
@@ -67,7 +67,7 @@ const renderEventContent = (
   eventInfo: EventContentArg,
   handleDelete: (id: string) => void,
   handleEdit: (event: CalendarEvent) => void,
-  isReadOnly: boolean
+  isReadOnly: boolean,
 ) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
@@ -172,7 +172,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                   exact: true,
                 });
               },
-            }
+            },
           );
         } else {
           // Regular delete
@@ -188,7 +188,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       previewGroupId,
       queryClient,
       onDeletePlan,
-    ]
+    ],
   );
 
   // Handle edit (open modal)
@@ -219,19 +219,19 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         const updatedPlans = plans.map((plan) =>
           plan.id === id
             ? { ...plan, title: title!, description: description! }
-            : plan
+            : plan,
         );
         onPlanChange(updatedPlans);
       } else {
         // Regular update
-          updatePlan({
+        updatePlan({
           planId: Number(id),
           planData: {
             title: title!,
             description: description!,
-            startDate: start!.toISOString(), 
+            startDate: start!.toISOString(),
             endDate: end!.toISOString(),
-            accessibility: currentEditPlan.accessibility ?? false, 
+            accessibility: currentEditPlan.accessibility ?? false,
             isCompleted: currentEditPlan.complete ?? false,
           },
         });
@@ -248,7 +248,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
       calendarApi.changeView(
-        currentMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK
+        currentMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK,
       );
     }
   }, []);
@@ -274,7 +274,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           complete: plan.complete,
         },
       })),
-    [plans]
+    [plans],
   );
 
   // Handle event change (drag and drop)
@@ -287,11 +287,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               start: info.event.start,
               end: info.event.end,
             }
-          : plan
+          : plan,
       );
       onPlanChange?.(updatedPlans);
     },
-    [onPlanChange, plans]
+    [onPlanChange, plans],
   );
 
   return (
@@ -335,12 +335,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           eventDrop={isReadOnly ? undefined : handleEventChange}
           eventResize={handleEventChange}
           eventContent={(eventInfo) =>
-            renderEventContent(
-              eventInfo,
-              handleDelete,
-              handleEdit,
-              isReadOnly
-            )
+            renderEventContent(eventInfo, handleDelete, handleEdit, isReadOnly)
           }
           selectable={false}
           selectMirror={false}
@@ -366,7 +361,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               value={currentEditPlan.title || ""}
               onChange={(e) =>
                 setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, title: e.target.value } : prev
+                  prev ? { ...prev, title: e.target.value } : prev,
                 )
               }
             />
@@ -375,7 +370,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               value={currentEditPlan.description || ""}
               onChange={(e) =>
                 setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, description: e.target.value } : prev
+                  prev ? { ...prev, description: e.target.value } : prev,
                 )
               }
             />

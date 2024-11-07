@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import circleSVG from "@/assets/circle (1).svg"; // 원형 이미지
 import mockSVG from "@/assets/mock2.svg"; // 목업 이미지
 import effectSVG from "@/assets/effect.svg";
-import kakao from "@/assets/Login.svg";
 import Button from "@/components/common/Button/Button";
-import breakpoints from "@/variants/breakpoints"
-import kakao_symbol from "@/assets/kakao_symbol.svg"
+import breakpoints from "@/variants/breakpoints";
+import kakao_symbol from "@/assets/kakao_symbol.svg";
 
 const LandingContainer = styled.div`
   max-width: 1280px;
@@ -103,15 +102,6 @@ const ButtonContainer = styled.div`
   }
 `;
 
-const KakaoLoginButton = styled.img`
-  cursor: pointer;
-  width: 200px;
-
-  ${breakpoints.tablet} {
-    width: 160px;
-  }
-`;
-
 const MockupImageWrapper = styled.div`
   width: 50%;
   display: flex;
@@ -134,7 +124,7 @@ const SymbolImage = styled.img`
   width: 20px;
   height: 20px;
   padding-right: 3px;
-`
+`;
 
 const Introduce = () => {
   const navigate = useNavigate();
@@ -160,10 +150,12 @@ const Introduce = () => {
         </AdditionalText>
         <ButtonContainer>
           <Button theme="kakao" size="long" onClick={handleLoginClick}>
-            <SymbolImage src={kakao_symbol} alt="Login"/>
+            <SymbolImage src={kakao_symbol} alt="Login" />
             카카오 로그인
           </Button>
-          <Button onClick={handleStartClick} size="long">시작하기</Button>
+          <Button onClick={handleStartClick} size="long">
+            시작하기
+          </Button>
         </ButtonContainer>
       </TextWrapper>
       <MockupImageWrapper>

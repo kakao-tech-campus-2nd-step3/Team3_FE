@@ -55,21 +55,6 @@ const ModalContent = styled.div`
   gap: 10px;
 `;
 
-const ModalButton = styled.button`
-  padding: 10px;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 20px;
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
 const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
   return (
     <Overlay onClick={onClose}>
