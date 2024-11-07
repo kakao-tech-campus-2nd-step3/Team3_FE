@@ -5,12 +5,15 @@ import { useGetPlans } from "@/api/hooks/useGetPlans";
 import useCreatePlan from "@/api/hooks/useCreatePlans";
 import CircleButton from "@/components/common/CircleButton/CircleButton";
 import breakpoints from "@/variants/breakpoints";
+import { requestForToken, setupOnMessageListener } from "@/api/firebaseConfig";
+import { apiClient } from "@/api/instance";
+import useAuth from "@/hooks/useAuth"; // auth 상태 가져오기 위한 훅
 
 // 캘린더와 버튼을 포함하는 반응형 컨테이너
 const CalendarContainer = styled.div`
   position: relative;
   width: 100%;
-  max-width: 1200px; // 최대 너비를 설정해 버튼이 중앙을 유지하도록 합니다.
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 `;
@@ -52,14 +55,14 @@ const ModalOverlay = styled.div`
 
 const ModalContent = styled.div`
   background: white;
-  padding: 20px 30px 20;
-  width: 500px; // 가로폭 설정
+  padding: 20px 30px;
+  width: 500px;
   max-width: 95%;
   border-radius: 8px;
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 15px; /* 각 입력 필드 사이에 간격 추가 */
+  gap: 15px;
 `;
 
 const Input = styled.input`
@@ -135,6 +138,7 @@ const ToggleLabel = styled.span`
 
 const MainPage: React.FC = () => {
   const { data: plans, isLoading, error } = useGetPlans();
+  const { authState } = useAuth(); // auth 상태를 가져오기 위한 훅
   const [modalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -166,23 +170,46 @@ const MainPage: React.FC = () => {
       accessibility: isAccessible,
       isCompleted,
     });
-    setIsModalOpen(false); // 폼 제출 후 모달 닫기
+    setIsModalOpen(false);
   };
 
   useEffect(() => {
-    // 로컬 스토리지 정리 (필요한 경우)
-    const savedPreviewData = localStorage.getItem("previewPlanData");
-    if (savedPreviewData) {
-      localStorage.removeItem("previewPlanData");
+    const registerFcmToken = async () => {
+      // 알림 권한 요청
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        try {
+          // FCM 토큰 요청
+          const fcmToken = await requestForToken();
+          if (fcmToken && authState.isAuthenticated) {
+            // FCM 토큰을 백엔드에 등록
+            await apiClient.post(
+              '/api/fcm/register',
+              { token: fcmToken }
+            );
+            console.log('FCM 토큰이 성공적으로 등록되었습니다.');
+          }
+        } catch (error) {
+          console.error('FCM 토큰 등록 중 오류 발생:', error);
+        }
+      } else {
+        console.log('알림 권한이 거부되었습니다.');
+      }
+    };
+
+    // authState.isAuthenticated가 true일 때만 FCM 토큰을 등록
+    if (authState.isAuthenticated) {
+      registerFcmToken();
+      setupOnMessageListener(); // 포그라운드 메시지 수신 리스너 설정
     }
-  }, []);
+  }, [authState.isAuthenticated]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // 로딩 상태 처리
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>; // 에러 처리
+    return <div>Error: {error.message}</div>;
   }
 
   return (
@@ -245,7 +272,6 @@ const MainPage: React.FC = () => {
                 />
               </ToggleWrapper>
 
-              {/* 완료 여부 토글 */}
               <ToggleWrapper>
                 <ToggleLabel>완료 여부</ToggleLabel>
                 <ToggleInput
@@ -263,4 +289,5 @@ const MainPage: React.FC = () => {
     </CalendarContainer>
   );
 };
+
 export default MainPage;
