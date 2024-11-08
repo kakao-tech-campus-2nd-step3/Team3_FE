@@ -1,6 +1,6 @@
+import { useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
@@ -14,6 +14,13 @@ const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
 `;
 
 export default function TeamPlanChangePage() {
@@ -74,6 +81,14 @@ export default function TeamPlanChangePage() {
             },
           ]);
           setIsAddModalOpen(false);
+          setNewPlanData({
+            title: "",
+            description: "",
+            startDate: "",
+            endDate: "",
+            accessibility: true,
+            isCompleted: false,
+          });
         },
         onError: (error) => {
           alert(`추가 중 오류 발생: ${error.message}`);
@@ -129,7 +144,6 @@ export default function TeamPlanChangePage() {
 
   return (
     <PageContainer>
-      <Button onClick={handleAddPlan}>플랜 추가</Button>
       <CustomCalendar
         calendarOwner={`${teamName} 수정`}
         plans={modifiedPlans}
@@ -137,7 +151,12 @@ export default function TeamPlanChangePage() {
         onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
       />
-      <Button onClick={handleSaveAll}>저장</Button>
+      <ButtonGroup>
+        <Button onClick={handleAddPlan} theme="secondary">
+          플랜 추가
+        </Button>
+        <Button onClick={handleSaveAll}>저장</Button>
+      </ButtonGroup>
 
       {isAddModalOpen && (
         <Modal onClose={() => setIsAddModalOpen(false)}>

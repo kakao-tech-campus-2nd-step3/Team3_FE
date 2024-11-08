@@ -7,12 +7,11 @@ import React, {
   useMemo,
 } from "react";
 import FullCalendar from "@fullcalendar/react";
-import { EventContentArg } from "@fullcalendar/core/index.js";
+import { EventContentArg } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
-import { useQueryClient } from "@tanstack/react-query";
 import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
@@ -21,9 +20,6 @@ import {
   eventItemStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlans";
-import useUpdatePlans from "@/api/hooks/useUpdatePlans";
-import useDeletePlanCard from "@/api/hooks/useDeletePlanCard";
-import useUpdatePlanCard from "@/api/hooks/useUpdatePlanCard";
 import Modal from "./PlanModal";
 import Button from "@/components/common/Button/Button";
 
@@ -43,9 +39,7 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
-  isPreviewMode?: boolean;
-  previewDeviceId?: string; // Preview mode deviceId
-  previewGroupId?: string; // Preview mode groupId
+  // onUpdatePlan?: (planId: string, planData: any) => void;
 }
 
 const VIEW_MODES = {
@@ -53,7 +47,6 @@ const VIEW_MODES = {
   WEEK: "timeGridWeek",
 };
 
-// Calculate event status
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
   if (event.complete) return "completed";
@@ -62,15 +55,22 @@ const calculateEventStatus = (event: CalendarEvent) => {
   return "incomplete";
 };
 
-// Render event content
 const renderEventContent = (
   eventInfo: EventContentArg,
   handleDelete: (id: string) => void,
-  handleEdit: (event: CalendarEvent) => void,
+  handleEdit: (
+    id: string,
+    title: string,
+    description: string,
+    accessibility: boolean | null,
+    isCompleted: boolean | null,
+  ) => void,
   isReadOnly: boolean,
 ) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
+  const accessibility = event.extendedProps?.accessibility || false;
+  const isCompleted = event.extendedProps?.isCompleted || false;
 
   return (
     <div css={eventItemStyles("", false)}>
@@ -87,7 +87,6 @@ const renderEventContent = (
               color: "red",
               backgroundColor: "transparent",
               cursor: "pointer",
-              marginRight: "8px",
             }}
           >
             삭제
@@ -95,18 +94,15 @@ const renderEventContent = (
           <button
             type="button"
             onClick={() =>
-              handleEdit({
-                id: event.id,
-                title: event.title,
+              handleEdit(
+                event.id,
+                event.title,
                 description,
-                start: event.start!,
-                end: event.end!,
-                accessibility: event.extendedProps?.accessibility || null,
-                complete: event.extendedProps?.complete || false,
-              })
+                accessibility,
+                isCompleted,
+              )
             }
             style={{
-              marginTop: "4px",
               color: "blue",
               backgroundColor: "transparent",
               cursor: "pointer",
@@ -120,7 +116,6 @@ const renderEventContent = (
   );
 };
 
-// Parse date utility
 const parseDate = (date: any) => {
   return typeof date === "string" || typeof date === "number"
     ? new Date(date)
@@ -133,124 +128,71 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   isReadOnly = false,
   onPlanChange,
   onDeletePlan,
-  isPreviewMode = false,
-  previewDeviceId,
-  previewGroupId,
 }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const calendarRef = useRef<FullCalendar>(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
-  const queryClient = useQueryClient();
-
   const { mutate: deletePlan } = useDeletePlan();
-  const { mutate: updatePlan } = useUpdatePlans();
-  const { mutate: deletePlanCard } = useDeletePlanCard();
-  const { mutate: updatePlanCard } = useUpdatePlanCard();
-
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentEditPlan, setCurrentEditPlan] =
     useState<Partial<CalendarEvent> | null>(null);
 
-  // Handle delete
   const handleDelete = useCallback(
     (id: string) => {
-      if (window.confirm("정말로 삭제하시겠습니까?")) {
+      if (window.confirm("정말로 삭제하시겠습니까? ")) {
         if (onDeletePlan) {
           onDeletePlan(id);
-        } else if (isPreviewMode && previewDeviceId && previewGroupId) {
-          // Preview mode delete
-          deletePlanCard(
-            {
-              deviceId: previewDeviceId,
-              groupId: previewGroupId,
-              cardId: id,
-            },
-            {
-              onSuccess: () => {
-                queryClient.invalidateQueries({
-                  queryKey: ["planCards"],
-                  exact: true,
-                });
-              },
-            },
-          );
         } else {
-          // Regular delete
           deletePlan(Number(id));
         }
       }
     },
-    [
-      deletePlan,
-      deletePlanCard,
-      isPreviewMode,
-      previewDeviceId,
-      previewGroupId,
-      queryClient,
-      onDeletePlan,
-    ],
+    [deletePlan, onDeletePlan],
   );
 
-  // Handle edit (open modal)
-  const handleEdit = useCallback((event: CalendarEvent) => {
-    setCurrentEditPlan(event);
+  const handleEdit = (
+    id: string,
+    title: string,
+    description: string,
+    accessibility: boolean | null,
+    isCompleted: boolean | null,
+  ) => {
+    setCurrentEditPlan({
+      id,
+      title,
+      description,
+      accessibility,
+      complete: isCompleted ?? undefined,
+    });
     setIsEditModalOpen(true);
-  }, []);
+  };
 
-  // Handle edit submit (modal form submission)
   const handleEditSubmit = () => {
     if (currentEditPlan && currentEditPlan.id) {
-      const { id, title, description, start, end } = currentEditPlan;
-      if (isPreviewMode && previewDeviceId && previewGroupId) {
-        // Preview mode update
-        updatePlanCard({
-          deviceId: previewDeviceId,
-          groupId: previewGroupId,
-          cardId: id,
-          planData: {
-            title: title!,
-            description: description!,
-            startDate: start!.toISOString(),
-            endDate: end!.toISOString(),
-          },
-        });
-      } else if (onPlanChange) {
-        // Local state update
-        const updatedPlans = plans.map((plan) =>
-          plan.id === id
-            ? { ...plan, title: title!, description: description! }
-            : plan,
-        );
-        onPlanChange(updatedPlans);
-      } else {
-        // Regular update
-        updatePlan({
-          planId: Number(id),
-          planData: {
-            title: title!,
-            description: description!,
-            startDate: start!.toISOString(),
-            endDate: end!.toISOString(),
-            accessibility: currentEditPlan.accessibility ?? false,
-            isCompleted: currentEditPlan.complete ?? false,
-          },
-        });
-      }
+      const updatedPlan = {
+        title: currentEditPlan.title || "",
+        description: currentEditPlan.description || "",
+        accessibility: Boolean(currentEditPlan.accessibility),
+        isCompleted: Boolean(currentEditPlan.complete),
+      };
+
+      // 수정된 플랜 리스트 업데이트
+      const updatedPlans = plans.map((plan) =>
+        plan.id === currentEditPlan.id ? { ...plan, ...updatedPlan } : plan,
+      );
+      onPlanChange?.(updatedPlans);
       setIsEditModalOpen(false);
       setCurrentEditPlan(null);
     }
   };
 
-  // Handle window resize
   const handleResize = useCallback(() => {
     const currentMobile = window.innerWidth <= breakpoints.sm;
     setIsMobile(currentMobile);
     const calendarApi = calendarRef.current?.getApi();
-    if (calendarApi) {
-      calendarApi.changeView(
-        currentMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK,
-      );
-    }
+    calendarApi?.changeView(
+      currentMobile ? "timeGridThreeDay" : "timeGridWeek",
+    );
   }, []);
 
   useEffect(() => {
@@ -259,7 +201,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [handleResize]);
 
-  // Prepare events for the calendar
   const parsedEvents = useMemo(
     () =>
       (plans || []).map((plan) => ({
@@ -271,22 +212,17 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         extendedProps: {
           description: plan.description,
           accessibility: plan.accessibility,
-          complete: plan.complete,
+          isCompleted: plan.complete,
         },
       })),
     [plans],
   );
 
-  // Handle event change (drag and drop)
   const handleEventChange = useCallback(
     (info: { event: any }) => {
       const updatedPlans = plans.map((plan) =>
         plan.id === info.event.id
-          ? {
-              ...plan,
-              start: info.event.start,
-              end: info.event.end,
-            }
+          ? { ...plan, start: info.event.start, end: info.event.end }
           : plan,
       );
       onPlanChange?.(updatedPlans);
@@ -315,7 +251,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
             right: "prev,next,today",
           }}
           locale={koLocale}
-          slotDuration="00:30:00"
+          slotDuration="00:10:00"
           slotLabelInterval="01:00:00"
           slotLabelFormat={{
             hour: "2-digit",
@@ -352,7 +288,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           }}
           height={isMobile ? "85%" : "100%"}
         />
-        {/* Edit Modal */}
         {isEditModalOpen && currentEditPlan && (
           <Modal onClose={() => setIsEditModalOpen(false)}>
             <h2>플랜 수정</h2>
@@ -371,6 +306,26 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               onChange={(e) =>
                 setCurrentEditPlan((prev) =>
                   prev ? { ...prev, description: e.target.value } : prev,
+                )
+              }
+            />
+            공개 여부:
+            <input
+              type="checkbox"
+              checked={currentEditPlan.accessibility || false}
+              onChange={(e) =>
+                setCurrentEditPlan((prev) =>
+                  prev ? { ...prev, accessibility: e.target.checked } : prev,
+                )
+              }
+            />
+            완료 여부:
+            <input
+              type="checkbox"
+              checked={currentEditPlan.complete || false}
+              onChange={(e) =>
+                setCurrentEditPlan((prev) =>
+                  prev ? { ...prev, complete: e.target.checked } : prev,
                 )
               }
             />

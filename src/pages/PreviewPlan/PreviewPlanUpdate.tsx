@@ -18,7 +18,6 @@ const slideDown = keyframes`
     transform: translateY(0);
   }
 `;
-
 // 전체 컨테이너
 const PlanUpdateContainer = styled.div`
   display: grid;
@@ -26,14 +25,12 @@ const PlanUpdateContainer = styled.div`
   margin: 0 auto;
   margin-top: 20px;
 `;
-
 // 내용 래퍼
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
 `;
-
 // 캘린더 컨테이너
 const CalendarContainer = styled.div`
   margin-bottom: 40px;
@@ -41,13 +38,11 @@ const CalendarContainer = styled.div`
     margin-bottom: -50px;
   }
 `;
-
 // 텍스트 스타일
 const StyledText = styled.p`
   font-size: 30px; /* 기본 폰트 크기 */
   font-weight: bold;
   text-align: center;
-
   &.animate {
     animation: ${slideDown} 1s ease-in-out;
   }
@@ -56,7 +51,6 @@ const StyledText = styled.p`
     white-space: pre-line;
   }
 `;
-
 const StyledTextContainer = styled.div`
   height: 70px;
   margin-bottom: 20px;
@@ -72,17 +66,14 @@ const ButtonContainer = styled.div`
     gap: 30px;
   }
 `;
-
 const PreviewPlanUpdate = () => {
   const TitleMessages = [
     "플랜을 수정하거나, 바로 저장하세요.",
     "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
   ];
-
   // 메시지 애니메이션과 인덱스 상태
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
-
   // 메시지와 애니메이션 설정
   useEffect(() => {
     const interval = setInterval(() => {
@@ -96,7 +87,6 @@ const PreviewPlanUpdate = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
-
   const navigate = useNavigate();
   const location = useLocation();
   const selectedPlan = location.state?.selectedPlan || [];
@@ -144,12 +134,7 @@ const PreviewPlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar
-            plans={selectedPlan}
-            isPreviewMode
-            previewDeviceId={previewDeviceId}
-            previewGroupId={previewGroupId}
-          />
+          <CustomCalendar plans={selectedPlan} />
         </CalendarContainer>
         <ButtonContainer>
           <Button onClick={handleSave}>저장</Button>
@@ -161,5 +146,4 @@ const PreviewPlanUpdate = () => {
     </PlanUpdateContainer>
   );
 };
-
 export default PreviewPlanUpdate;

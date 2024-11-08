@@ -16,6 +16,8 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>(
     "&:focus": {
       outline: "none",
     },
+    fontFamily: "Inter",
+    fontWeight: 550,
   },
   ({ size = "responsive" }) => {
     const smallStyle = {

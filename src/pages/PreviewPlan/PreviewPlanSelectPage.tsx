@@ -9,7 +9,6 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useGetPlanCard from "@/api/hooks/useGetPlanCard";
-import useGenerateDeviceId from "@/api/hooks/useGenerateDeviceId";
 
 const PreviewPlanSelectPageContainer = styled.div`
   display: grid;
@@ -32,11 +31,9 @@ const SidebarSection = styled.div`
     font-size: 18px;
   }
 `;
-
 const StyledText = styled.p`
   text-align: center;
 `;
-
 const NumberButtonContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -55,12 +52,22 @@ const ButtonContainer = styled.div`
   }
 `;
 
+// 쿠키에서 deviceId를 가져오는 함수
+const getDeviceIdFromCookie = (): string | null => {
+  const match = document.cookie.match(/device_id=([^;]+)/);
+  return match ? match[1] : null;
+};
+
 const PreviewPlanSelectPage = () => {
-  const { data: deviceId } = useGenerateDeviceId();
-  const { data: plans } = useGetPlanCard(deviceId);
+  const deviceId = getDeviceIdFromCookie();
+  const navigate = useNavigate();
+
+  // useGetPlanCard를 항상 호출하되, deviceId가 없을 때는 호출을 건너뛰도록 enabled 옵션 설정
+  const { data: plans } = useGetPlanCard(deviceId || "", {
+    enabled: !!deviceId,
+  });
 
   const [clickedNumber, setClickedNumber] = useState<number | null>(null);
-  const navigate = useNavigate();
 
   const handleNumberButtonClick = (number: number) => {
     setClickedNumber(number);
@@ -107,12 +114,7 @@ const PreviewPlanSelectPage = () => {
       </SidebarSection>
 
       <CalendarSection>
-        <CustomCalendar
-          plans={calendarEvents}
-          isPreviewMode
-          previewDeviceId={deviceId}
-          previewGroupId={selectedPlanGroup?.groupId}
-        />
+        <CustomCalendar plans={calendarEvents} />
       </CalendarSection>
 
       <ButtonContainer>
@@ -122,8 +124,8 @@ const PreviewPlanSelectPage = () => {
             navigate(RouterPath.PREVIEW_PLAN_UPDATE, {
               state: {
                 selectedPlan: calendarEvents,
-                deviceId, // 실제 deviceId 값
-                groupId: selectedPlanGroup?.groupId, // 선택된 그룹의 groupId },
+                deviceId,
+                groupId: clickedNumber,
               },
             })
           }

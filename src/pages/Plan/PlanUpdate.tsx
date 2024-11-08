@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
-import RouterPath from "@/router/RouterPath";
+import useSavePreviewPlan from "@/api/hooks/useSavePreviewPlan";
 
 // 슬라이드 애니메이션
 const slideDown = keyframes`
@@ -18,32 +18,27 @@ const slideDown = keyframes`
     transform: translateY(0);
   }
 `;
-
 const PlanUpdateContainer = styled.div`
   display: grid;
   align-items: center;
   margin: 0 auto;
   margin-top: 20px;
 `;
-
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
 `;
-
 const CalendarContainer = styled.div`
   margin-bottom: 40px;
   ${breakpoints.mobile} {
     margin-bottom: -50px;
   }
 `;
-
 const StyledText = styled.p`
   font-size: 30px;
   font-weight: bold;
   text-align: center;
-
   &.animate {
     animation: ${slideDown} 1s ease-in-out;
   }
@@ -52,12 +47,10 @@ const StyledText = styled.p`
     white-space: pre-line;
   }
 `;
-
 const StyledTextContainer = styled.div`
   height: 70px;
   margin-bottom: 20px;
 `;
-
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -68,7 +61,6 @@ const ButtonContainer = styled.div`
     gap: 30px;
   }
 `;
-
 const PlanUpdate = () => {
   const TitleMessages = [
     "플랜을 수정하거나, 바로 저장하세요.",
@@ -97,6 +89,8 @@ const PlanUpdate = () => {
   const previewDeviceId = location.state?.deviceId;
   const previewGroupId = location.state?.groupId;
 
+  const { mutate: savePreviewPlan } = useSavePreviewPlan();
+
   const handleSave = async () => {
     try {
       if (!selectedPlan || selectedPlan.length === 0) {
@@ -109,18 +103,11 @@ const PlanUpdate = () => {
         return;
       }
 
-      // 플랜 데이터를 로컬 스토리지에 저장
-      localStorage.setItem(
-        "previewPlanData",
-        JSON.stringify({
-          selectedPlan,
-          previewDeviceId,
-          previewGroupId,
-        }),
-      );
-
-      // 카카오 로그인 페이지로 리다이렉트
-      window.location.href = RouterPath.MAIN;
+      savePreviewPlan({
+        deviceId: previewDeviceId,
+        groupId: previewGroupId,
+        planDataList: selectedPlan,
+      });
     } catch (error) {
       console.error("플랜 저장 중 오류 발생:", error);
       alert("플랜 저장에 실패했습니다. 다시 시도해주세요.");
@@ -137,12 +124,7 @@ const PlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar
-            plans={selectedPlan}
-            isPreviewMode
-            previewDeviceId={previewDeviceId}
-            previewGroupId={previewGroupId}
-          />
+          <CustomCalendar plans={selectedPlan} />
         </CalendarContainer>
         <ButtonContainer>
           <Button onClick={handleSave}>저장</Button>
@@ -154,5 +136,4 @@ const PlanUpdate = () => {
     </PlanUpdateContainer>
   );
 };
-
 export default PlanUpdate;
