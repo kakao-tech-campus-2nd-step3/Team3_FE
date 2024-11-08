@@ -65,6 +65,7 @@ const renderEventContent = (
     accessibility: boolean | null,
     isCompleted: boolean | null,
   ) => void,
+  isReadOnly: boolean,
 ) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
@@ -76,6 +77,8 @@ const renderEventContent = (
       <div>{timeText}</div>
       <div>{event.title}</div>
       <div>{description}</div>
+      {!isReadOnly && (
+        <div>
       <button
         type="button"
         onClick={() => handleDelete(event.id)}
@@ -107,6 +110,8 @@ const renderEventContent = (
       >
         수정
       </button>
+      </div>
+    )}
     </div>
   );
 };
@@ -123,7 +128,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   isReadOnly = false,
   onPlanChange,
   onDeletePlan,
-  onUpdatePlan,
 }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const calendarRef = useRef<FullCalendar>(null);
@@ -168,8 +172,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const updatedPlan = {
         title: currentEditPlan.title || "",
         description: currentEditPlan.description || "",
-        accessibility: Boolean(currentEditPlan.accessibility), // undefined를 포함하여 boolean으로 변환
-        isCompleted: Boolean(currentEditPlan.complete), // undefined를 포함하여 boolean으로 변환
+        accessibility: Boolean(currentEditPlan.accessibility), 
+        isCompleted: Boolean(currentEditPlan.complete), 
       };
 
       // 수정된 플랜 리스트 업데이트
@@ -267,7 +271,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           eventDrop={isReadOnly ? undefined : handleEventChange}
           eventResize={handleEventChange}
           eventContent={(eventInfo) =>
-            renderEventContent(eventInfo, handleDelete, handleEdit)
+            renderEventContent(eventInfo, handleDelete, handleEdit, isReadOnly)
           }
           selectable={false}
           selectMirror={false}
