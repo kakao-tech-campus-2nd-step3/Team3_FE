@@ -178,7 +178,7 @@ const MainPage: React.FC = () => {
     error,
     createPlan,
     handleDeletePlan,
-    handleUpdatePlan,
+    // handleUpdatePlan,
   } = usePlanData(location.state?.savedPlan);
 
   const [title, setTitle] = useState("");

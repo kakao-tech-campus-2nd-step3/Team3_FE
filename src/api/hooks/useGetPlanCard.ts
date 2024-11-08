@@ -34,7 +34,7 @@ const useGetPlanCard = (deviceId: string, p0: { enabled: boolean }) => {
   return useQuery({
     queryKey: ["fetchPlans", deviceId],
     queryFn: () => fetchPlans(deviceId),
-    enabled: !!deviceId,
+    enabled: p0.enabled && !!deviceId,
   });
 };
 

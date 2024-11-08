@@ -25,6 +25,8 @@ const useSavePlan = (p0: {
 }) => {
   return useMutation({
     mutationFn: savePlan,
+    onSuccess: p0.onSuccess,
+    onError: p0.onError,
   });
 };
 export default useSavePlan;
