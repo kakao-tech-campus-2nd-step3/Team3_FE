@@ -1,19 +1,14 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
+import { useNavigate } from "react-router-dom";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import {
-  useGptLight,
-  useGptModerate,
-  useGptStrong,
-  GptRequestData,
-} from "@/api/hooks/useGptTrialRequest";
-import { useGetPlans } from "@/api/hooks/useGetPlans";
-import { useDeviceId } from "@/contexts/DeviceIdContext";
+import useGetPlanCard from "@/api/hooks/useGetPlanCard";
 
 const PreviewPlanSelectPageContainer = styled.div`
   display: grid;
@@ -21,12 +16,14 @@ const PreviewPlanSelectPageContainer = styled.div`
   margin: 0 auto;
   margin-top: 20px;
 `;
+
 const CalendarSection = styled.div`
   margin-bottom: 40px;
   ${breakpoints.mobile} {
     margin-bottom: -50px;
   }
 `;
+
 const SidebarSection = styled.div`
   font-size: 30px;
   font-weight: bold;
@@ -34,17 +31,16 @@ const SidebarSection = styled.div`
     font-size: 18px;
   }
 `;
-
 const StyledText = styled.p`
   text-align: center;
 `;
-
 const NumberButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
 `;
+
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -56,81 +52,43 @@ const ButtonContainer = styled.div`
   }
 `;
 
-type GptLevel = "light" | "moderate" | "strong";
+// 쿠키에서 deviceId를 가져오는 함수
+const getDeviceIdFromCookie = (): string | null => {
+  const match = document.cookie.match(/device_id=([^;]+)/);
+  return match ? match[1] : null;
+};
 
 const PreviewPlanSelectPage = () => {
-  const { data: plans } = useGetPlans();
-
-  // 선택된 버튼 번호를 저장할 상태
-  const [clickedNumber, setClickedNumber] = useState<number | null>(null);
+  const deviceId = getDeviceIdFromCookie();
   const navigate = useNavigate();
-  const { deviceId } = useDeviceId();
-  const location = useLocation();
-  const speechText = location.state?.speechText || "";
 
-  // GPT 요청 훅들을 초기화
-  const lightMutation = useGptLight();
-  const moderateMutation = useGptModerate();
-  const strongMutation = useGptStrong();
+  // useGetPlanCard를 항상 호출하되, deviceId가 없을 때는 호출을 건너뛰도록 enabled 옵션 설정
+  const { data: plans } = useGetPlanCard(deviceId || "", {
+    enabled: !!deviceId,
+  });
 
-  // 번호별 GPT 레벨 매핑
-  const levelMap: Record<number, GptLevel> = {
-    1: "light",
-    2: "moderate",
-    3: "strong",
-  };
+  const [clickedNumber, setClickedNumber] = useState<number | null>(null);
 
-  // GPT 요청을 처리하는 함수
-  const handleGptRequest = async (number: number) => {
-    if (!deviceId) {
-      console.error("DeviceId not avaliable");
-      return;
-    }
-
-    const requestData: GptRequestData = {
-      deviceId,
-      text: speechText || "plan generation request",
-    };
-
-    try {
-      const level = levelMap[number];
-      let response;
-      switch (level) {
-        case "light":
-          response = await lightMutation.mutateAsync(requestData);
-          console.log("Light plan response:", response);
-          break;
-        case "moderate":
-          response = await moderateMutation.mutateAsync(requestData);
-          console.log("Moderate plan response:", response);
-          break;
-        case "strong":
-          response = await strongMutation.mutateAsync(requestData);
-          console.log("Strong plan response:", response);
-          break;
-        default:
-      }
-    } catch (error) {
-      console.error("Error in GPT request", error);
-    }
-  };
-
-  const handleNumberButtonClick = async (number: number) => {
+  const handleNumberButtonClick = (number: number) => {
     setClickedNumber(number);
-    await handleGptRequest(number);
   };
 
-  const handleConfirmClick = () => {
-    if (clickedNumber) {
-      navigate(RouterPath.PREVIEW_PLAN_UPDATE);
-    }
-  };
+  // 선택된 플랜 그룹의 이벤트 변환
+  const selectedPlanGroup = plans?.find(
+    (plan) => plan.groupId === String(clickedNumber),
+  );
 
-  // 로딩 상태 확인
-  const isLoading =
-    lightMutation.isPending ||
-    moderateMutation.isPending ||
-    strongMutation.isPending;
+  const calendarEvents: CalendarEvent[] = selectedPlanGroup
+    ? selectedPlanGroup.planCards.map((planCard) => ({
+        id: planCard.cardId,
+        title: planCard.title,
+        description: planCard.description,
+        start: new Date(planCard.startDate),
+        end: new Date(planCard.endDate),
+        accessibility: true, // 기본값 설정
+        complete: false, // 기본값 설정
+      }))
+    : [];
 
   return (
     <PreviewPlanSelectPageContainer>
@@ -154,15 +112,23 @@ const PreviewPlanSelectPage = () => {
           />
         </NumberButtonContainer>
       </SidebarSection>
+
       <CalendarSection>
-        <CustomCalendar plans={plans || []} />
+        <CustomCalendar plans={calendarEvents} />
       </CalendarSection>
 
       <ButtonContainer>
         <Button
           size="responsive"
-          onClick={handleConfirmClick}
-          disabled={!clickedNumber || isLoading}
+          onClick={() =>
+            navigate(RouterPath.PREVIEW_PLAN_UPDATE, {
+              state: {
+                selectedPlan: calendarEvents,
+                deviceId,
+                groupId: clickedNumber,
+              },
+            })
+          }
         >
           확인
         </Button>

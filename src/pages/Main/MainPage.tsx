@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import { useGetPlans } from "@/api/hooks/useGetPlans";
 import useCreatePlan from "@/api/hooks/useCreatePlans";
 import CircleButton from "@/components/common/CircleButton/CircleButton";
 import breakpoints from "@/variants/breakpoints";
-
 // 캘린더와 버튼을 포함하는 반응형 컨테이너
 const CalendarContainer = styled.div`
   position: relative;
@@ -14,7 +14,6 @@ const CalendarContainer = styled.div`
   margin: 0 auto;
   padding: 20px;
 `;
-
 // 버튼을 캘린더 컨테이너 내의 상대적인 위치에 두도록 설정
 const ButtonWrapper = styled.div`
   position: absolute;
@@ -24,18 +23,15 @@ const ButtonWrapper = styled.div`
   margin-top: 20px;
   left: calc(10% + 10px);
   z-index: 1;
-
   ${breakpoints.tablet} {
     top: 10%;
     left: 20px;
   }
-
   ${breakpoints.mobile} {
     top: 10%;
     left: 20px;
   }
 `;
-
 // 모달 스타일
 const ModalOverlay = styled.div`
   position: fixed;
@@ -49,7 +45,6 @@ const ModalOverlay = styled.div`
   justify-content: center;
   z-index: 2;
 `;
-
 const ModalContent = styled.div`
   background: white;
   padding: 20px 30px 20;
@@ -61,7 +56,6 @@ const ModalContent = styled.div`
   flex-direction: column;
   gap: 15px; /* 각 입력 필드 사이에 간격 추가 */
 `;
-
 const Input = styled.input`
   width: 100%;
   padding: 8px;
@@ -70,7 +64,6 @@ const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
 `;
-
 const Textarea = styled.textarea`
   width: 99%;
   padding: 10px;
@@ -79,7 +72,6 @@ const Textarea = styled.textarea`
   border-radius: 4px;
   resize: vertical;
 `;
-
 const CloseButton = styled.button`
   margin-top: 10px;
   background-color: #39a7f7;
@@ -89,14 +81,12 @@ const CloseButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
 `;
-
 const ToggleWrapper = styled.label`
   display: flex;
   flex-direction: column;
   cursor: pointer;
   gap: 10px;
 `;
-
 const ToggleInput = styled.input`
   appearance: none;
   width: 40px;
@@ -106,11 +96,9 @@ const ToggleInput = styled.input`
   position: relative;
   outline: none;
   transition: background 0.3s;
-
   &:checked {
     background: #39a7f7;
   }
-
   &:before {
     content: "";
     position: absolute;
@@ -122,19 +110,18 @@ const ToggleInput = styled.input`
     left: 1px;
     transition: transform 0.3s;
   }
-
   &:checked:before {
     transform: translateX(20px);
   }
 `;
-
 const ToggleLabel = styled.span`
   font-size: 16px;
   color: #333;
 `;
-
 const MainPage: React.FC = () => {
+  const location = useLocation();
   const { data: plans, isLoading, error } = useGetPlans();
+  const [savedPlan, setSavedPlan] = useState(location.state?.savedPlan || []);
   const [modalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -143,9 +130,14 @@ const MainPage: React.FC = () => {
   const [isAccessible, setIsAccessible] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // useCreatePlan 훅 사용
-  const createPlanMutation = useCreatePlan();
+  // Update savedPlan if new data arrives in location.state
+  useEffect(() => {
+    if (location.state?.savedPlan) {
+      setSavedPlan(location.state.savedPlan);
+    }
+  }, [location.state?.savedPlan]);
 
+  const createPlanMutation = useCreatePlan();
   const handleToggleChange =
     (setter: React.Dispatch<React.SetStateAction<boolean>>) => () => {
       setter((prev) => !prev);
@@ -155,34 +147,42 @@ const MainPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // 폼 제출 핸들러
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createPlanMutation.mutate({
       title,
       description,
-      startDate: new Date(startDate).toISOString(),
-      endDate: new Date(endDate).toISOString(),
+      startDate,
+      endDate,
       accessibility: isAccessible,
       isCompleted,
     });
-    setIsModalOpen(false); // 폼 제출 후 모달 닫기
+    setIsModalOpen(false);
   };
 
+  useEffect(() => {
+    const savedPreviewData = localStorage.getItem("previewPlanData");
+    if (savedPreviewData) {
+      localStorage.removeItem("previewPlanData");
+    }
+  }, []);
+
   if (isLoading) {
-    return <div>Loading...</div>; // 로딩 상태 처리
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>; // 에러 처리
-  }
+  // Combine savedPlan data with fetched plans
+  const combinedPlans = [...(plans || []), ...savedPlan];
 
   return (
     <CalendarContainer>
       <ButtonWrapper>
         <CircleButton onClick={handleButtonClick}>+</CircleButton>
       </ButtonWrapper>
-      <CustomCalendar plans={plans || []} />
+      <CustomCalendar isPreviewMode={false} plans={combinedPlans} />
 
       {modalOpen && (
         <ModalOverlay>
@@ -198,7 +198,6 @@ const MainPage: React.FC = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
-
               <span>설명</span>
               <Textarea
                 name="description"
@@ -207,7 +206,6 @@ const MainPage: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-
               <span>시작 날짜</span>
               <Input
                 type="datetime-local"
@@ -217,7 +215,6 @@ const MainPage: React.FC = () => {
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
-
               <span>종료 날짜</span>
               <Input
                 type="datetime-local"
@@ -227,7 +224,6 @@ const MainPage: React.FC = () => {
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
               />
-
               <ToggleWrapper>
                 <ToggleLabel>공개 여부</ToggleLabel>
                 <ToggleInput
@@ -236,8 +232,6 @@ const MainPage: React.FC = () => {
                   onChange={handleToggleChange(setIsAccessible)}
                 />
               </ToggleWrapper>
-
-              {/* 완료 여부 토글 */}
               <ToggleWrapper>
                 <ToggleLabel>완료 여부</ToggleLabel>
                 <ToggleInput
@@ -246,7 +240,6 @@ const MainPage: React.FC = () => {
                   onChange={handleToggleChange(setIsCompleted)}
                 />
               </ToggleWrapper>
-
               <CloseButton type="submit">저장</CloseButton>
             </form>
           </ModalContent>
@@ -255,4 +248,5 @@ const MainPage: React.FC = () => {
     </CalendarContainer>
   );
 };
+
 export default MainPage;

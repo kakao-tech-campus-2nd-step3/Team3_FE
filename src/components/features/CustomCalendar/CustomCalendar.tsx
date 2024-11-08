@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import styled from "@emotion/styled";
 import React, {
   useState,
   useCallback,
@@ -7,7 +8,7 @@ import React, {
   useMemo,
 } from "react";
 import FullCalendar from "@fullcalendar/react";
-import { EventContentArg } from "@fullcalendar/core/index.js";
+import { EventContentArg } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -37,6 +38,9 @@ interface CustomCalendarProps {
   calendarOwner?: string;
   plans?: CalendarEvent[];
   isReadOnly?: boolean;
+  isPreviewMode?: boolean;
+  previewDeviceId?: string;
+  previewGroupId?: string;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
 }
@@ -94,7 +98,6 @@ const renderEventContent = (
   );
 };
 
-// date인 경우 new date실행, 타임스탬프인 경우 그대로 저장
 const parseDate = (date: any) => {
   return typeof date === "string" || typeof date === "number"
     ? new Date(date)
@@ -105,6 +108,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   calendarOwner,
   plans = [],
   isReadOnly = false,
+  isPreviewMode = false,
+  previewDeviceId,
+  previewGroupId,
   onPlanChange,
   onDeletePlan,
 }) => {
@@ -120,22 +126,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     (id: string) => {
       if (window.confirm("정말로 삭제하시겠습니까? ")) {
         if (onDeletePlan) {
-          onDeletePlan(id); // 만약 주어진 delete함수가 있다면 그것을 사용함
+          onDeletePlan(id);
         } else {
-          deletePlan(Number(id)); 
+          deletePlan(Number(id));
         }
       }
     },
-    [deletePlan],
+    [deletePlan, onDeletePlan],
   );
 
-  // currentEditPlan state에 해당 플랜을 넣고 모달창을 염 
   const handleEdit = (id: string, title: string, description: string) => {
     setCurrentEditPlan({ id, title, description });
     setIsEditModalOpen(true);
   };
 
-  // currentDeitPlan state를 제출함
   const handleEditSubmit = () => {
     if (currentEditPlan && currentEditPlan.id) {
       const updatedPlans = plans.map((plan) =>
@@ -147,13 +151,12 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
             }
           : plan,
       );
-      onPlanChange?.(updatedPlans); // 업데이트된 플랜 반영
-      setIsEditModalOpen(false); // 모달 닫기
+      onPlanChange?.(updatedPlans);
+      setIsEditModalOpen(false);
       setCurrentEditPlan(null);
     }
   };
 
-  // 데스크탑, 모바일 간 화면전환
   const handleResize = useCallback(() => {
     const currentMobile = window.innerWidth <= breakpoints.sm;
     setIsMobile(currentMobile);
@@ -169,7 +172,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     return () => window.removeEventListener("resize", handleResize);
   }, [handleResize]);
 
-  // plans 배열로 전달된 데이터를 캘린더 형식으로 변환함
   const parsedEvents = useMemo(
     () =>
       (plans || []).map((plan) => ({
@@ -185,19 +187,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     [plans],
   );
 
-  // 이벤트의 위치나 시간을 drag and drop할 때 해당 변경 사항을 업데이트
   const handleEventChange = useCallback(
     (info: { event: any }) => {
       const updatedPlans = plans.map((plan) =>
         plan.id === info.event.id
-          ? {
-              ...plan,
-              start: info.event.start,
-              end: info.event.end,
-            }
+          ? { ...plan, start: info.event.start, end: info.event.end }
           : plan,
       );
-      onPlanChange?.(updatedPlans); // 외부에 변경된 plans 전달
+      onPlanChange?.(updatedPlans);
     },
     [onPlanChange, plans],
   );
@@ -260,7 +257,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           }}
           height={isMobile ? "85%" : "100%"}
         />
-        {/* Edit Modal */}
         {isEditModalOpen && currentEditPlan && (
           <Modal onClose={() => setIsEditModalOpen(false)}>
             <h2>플랜 수정</h2>

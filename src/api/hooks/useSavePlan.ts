@@ -19,7 +19,10 @@ const savePlan = async (data: SavePlanData) => {
   return response.data;
 };
 
-const useSavePlan = () => {
+const useSavePlan = (p0: {
+  onSuccess: (data: any) => void;
+  onError: (error: any) => void;
+}) => {
   return useMutation({
     mutationFn: savePlan,
   });
