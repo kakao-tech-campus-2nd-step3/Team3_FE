@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
-import RouterPath from "@/router/RouterPath";
 import useSavePreviewPlan from "@/api/hooks/useSavePreviewPlan";
 
 // 슬라이드 애니메이션
