@@ -1,9 +1,6 @@
 import styled from "@emotion/styled";
 import { useState, useEffect } from "react";
-<<<<<<< HEAD
-=======
 import { useLocation } from "react-router-dom";
->>>>>>> origin/57-feature-modify
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import { useGetPlans } from "@/api/hooks/useGetPlans";
 import useCreatePlan from "@/api/hooks/useCreatePlans";
@@ -210,41 +207,19 @@ const MainPage: React.FC = () => {
     closeModal();
   };
 
-<<<<<<< HEAD
-  useEffect(() => {
-    // 로컬 스토리지 정리 (필요한 경우)
-    const savedPreviewData = localStorage.getItem("previewPlanData");
-    if (savedPreviewData) {
-      localStorage.removeItem("previewPlanData");
-    }
-  }, []);
-
-  if (isLoading) {
-    return <div>Loading...</div>; // 로딩 상태 처리
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>; // 에러 처리
-  }
-=======
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
->>>>>>> origin/57-feature-modify
 
   return (
     <CalendarContainer>
       <ButtonWrapper>
         <CircleButton onClick={openModal}>+</CircleButton>
       </ButtonWrapper>
-<<<<<<< HEAD
-      <CustomCalendar isPreviewMode={false} plans={plans || []} />
-=======
       <CustomCalendar
         plans={plans}
         onDeletePlan={handleDeletePlan}
         onUpdatePlan={handleUpdatePlan}
       />
->>>>>>> origin/57-feature-modify
 
       {modalOpen && (
         <ModalOverlay>

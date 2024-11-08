@@ -126,9 +126,6 @@ const PlanUpdate = () => {
         <CalendarContainer>
           <CustomCalendar
             plans={selectedPlan}
-            isPreviewMode
-            previewDeviceId={previewDeviceId}
-            previewGroupId={previewGroupId}
           />
         </CalendarContainer>
         <ButtonContainer>
