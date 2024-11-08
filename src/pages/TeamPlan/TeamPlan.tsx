@@ -22,7 +22,7 @@ const PageContainer = styled.div`
   flex-direction: column;
   font-family: "Inter", sans-serif;
   box-sizing: border-box;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   @media (max-width: ${breakpoints.sm}px) {
     padding-top: 80px;
   }
@@ -53,14 +53,14 @@ const PlanCard = styled.div`
   justify-content: space-between;
   border-radius: 16px;
   align-items: center;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   box-sizing: border-box;
 `;
 
 const PlanTitleContainer = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1; 
+  flex: 1;
   min-width: 200px;
 `;
 
@@ -76,7 +76,7 @@ const Participants = styled.div`
   color: #aab2c8;
   font-size: 15px;
   font-weight: 700;
-  word-break: break-word; 
+  word-break: break-word;
 `;
 
 const TabsContainer = styled.div`
@@ -86,7 +86,7 @@ const TabsContainer = styled.div`
   width: 100%;
   margin-bottom: 20px;
   box-sizing: border-box;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 `;
 
 const Tab = styled.div<{ active: boolean }>`
@@ -220,119 +220,125 @@ export default function TeamPlanPage() {
   };
 
   // 팀 목록 렌더링
-  const renderedTeamList = teams.length > 0 ? (
-    teams.map((team) => {
-      const members = teamMembers[team.id] || [];
-      const isAdmin = members.some(
-        (member) => member.role === "ADMIN" && member.userId === userData.id,
-      );
-
-      return (
-        <PlanCard key={team.id}>
-          <PlanTitleContainer>
-            <PlanTitle>
-              {team.teamName}
-              <RoleBadge isAdmin={isAdmin}>
-                {isAdmin ? "관리자" : "멤버"}
-              </RoleBadge>
-            </PlanTitle>
-
-            <Participants>
-              참여자: {members.map((member) => member.nickname).join(", ")}
-            </Participants>
-          </PlanTitleContainer>
-          <ButtonWrapper>
-            <Button
-              size="small"
-              theme="primary"
-              onClick={() => handleVisitClick(team.id, team.teamName)}
-            >
-              방문
-            </Button>
-            {isAdmin ? (
-              <Button
-                size="small"
-                theme="secondary"
-                onClick={() => deleteTeamMutation.mutate(team.id)}
-              >
-                삭제
-              </Button>
-            ) : (
-              <Button
-                size="small"
-                theme="secondary"
-                onClick={() => leaveTeamMutation.mutate(team.id)}
-              >
-                나가기
-              </Button>
-            )}
-          </ButtonWrapper>
-        </PlanCard>
-      );
-    })
-  ) : (
-    <EmptyMessage>팀이 없습니다.</EmptyMessage>
-  );
-
-  // 받은 요청 렌더링
-  const renderedInvitations = invitations.length > 0 ? (
-    invitations.map((invite) => (
-      <PlanCard key={invite.invitationId}>
-        <PlanTitleContainer>
-          <PlanTitle>{invite.teamName}</PlanTitle>
-        </PlanTitleContainer>
-        <ButtonWrapper>
-          <Button
-            size="small"
-            onClick={() => handleAcceptInvitation(invite.invitationId)}
-          >
-            수락
-          </Button>
-          <Button
-            size="small"
-            theme="secondary"
-            onClick={() => handleRejectInvitation(invite.invitationId)}
-          >
-            거절
-          </Button>
-        </ButtonWrapper>
-      </PlanCard>
-    ))
-  ) : (
-    <EmptyMessage>받은 요청이 없습니다.</EmptyMessage>
-  );
-
-  // 보낸 요청 렌더링
-  const renderedSentInvitations = teams.length > 0 ? (
-    teams
-      .filter((team) => {
+  const renderedTeamList =
+    teams.length > 0 ? (
+      teams.map((team) => {
         const members = teamMembers[team.id] || [];
         const isAdmin = members.some(
           (member) => member.role === "ADMIN" && member.userId === userData.id,
         );
-        return isAdmin;
-      })
-      .map((team) => {
-        const teamInvitations = sentInvitations[team.id] || [];
-        if (teamInvitations.length === 0) return null;
 
         return (
-          <div key={team.id} style={{ marginBottom: "20px" }}>
-            <PlanTitle>{team.teamName}</PlanTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {teamInvitations.map((invite) => (
-                <InviteeItem key={invite.invitationId}>
-                  <NicknameText>{invite.nickname}</NicknameText>
-                </InviteeItem>
-              ))}
-            </div>
-          </div>
+          <PlanCard key={team.id}>
+            <PlanTitleContainer>
+              <PlanTitle>
+                {team.teamName}
+                <RoleBadge isAdmin={isAdmin}>
+                  {isAdmin ? "관리자" : "멤버"}
+                </RoleBadge>
+              </PlanTitle>
+
+              <Participants>
+                참여자: {members.map((member) => member.nickname).join(", ")}
+              </Participants>
+            </PlanTitleContainer>
+            <ButtonWrapper>
+              <Button
+                size="small"
+                theme="primary"
+                onClick={() => handleVisitClick(team.id, team.teamName)}
+              >
+                방문
+              </Button>
+              {isAdmin ? (
+                <Button
+                  size="small"
+                  theme="secondary"
+                  onClick={() => deleteTeamMutation.mutate(team.id)}
+                >
+                  삭제
+                </Button>
+              ) : (
+                <Button
+                  size="small"
+                  theme="secondary"
+                  onClick={() => leaveTeamMutation.mutate(team.id)}
+                >
+                  나가기
+                </Button>
+              )}
+            </ButtonWrapper>
+          </PlanCard>
         );
       })
-      .filter(Boolean)
-  ) : (
-    <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>
-  );
+    ) : (
+      <EmptyMessage>팀이 없습니다.</EmptyMessage>
+    );
+
+  // 받은 요청 렌더링
+  const renderedInvitations =
+    invitations.length > 0 ? (
+      invitations.map((invite) => (
+        <PlanCard key={invite.invitationId}>
+          <PlanTitleContainer>
+            <PlanTitle>{invite.teamName}</PlanTitle>
+          </PlanTitleContainer>
+          <ButtonWrapper>
+            <Button
+              size="small"
+              onClick={() => handleAcceptInvitation(invite.invitationId)}
+            >
+              수락
+            </Button>
+            <Button
+              size="small"
+              theme="secondary"
+              onClick={() => handleRejectInvitation(invite.invitationId)}
+            >
+              거절
+            </Button>
+          </ButtonWrapper>
+        </PlanCard>
+      ))
+    ) : (
+      <EmptyMessage>받은 요청이 없습니다.</EmptyMessage>
+    );
+
+  // 보낸 요청 렌더링
+  const renderedSentInvitations =
+    teams.length > 0 ? (
+      teams
+        .filter((team) => {
+          const members = teamMembers[team.id] || [];
+          const isAdmin = members.some(
+            (member) =>
+              member.role === "ADMIN" && member.userId === userData.id,
+          );
+          return isAdmin;
+        })
+        .map((team) => {
+          const teamInvitations = sentInvitations[team.id] || [];
+          if (teamInvitations.length === 0) return null;
+
+          return (
+            <div key={team.id} style={{ marginBottom: "20px" }}>
+              <PlanTitle>{team.teamName}</PlanTitle>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
+                {teamInvitations.map((invite) => (
+                  <InviteeItem key={invite.invitationId}>
+                    <NicknameText>{invite.nickname}</NicknameText>
+                  </InviteeItem>
+                ))}
+              </div>
+            </div>
+          );
+        })
+        .filter(Boolean)
+    ) : (
+      <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>
+    );
 
   if (isLoadingTeams || isLoadingInvitations) return <div>Loading...</div>;
 

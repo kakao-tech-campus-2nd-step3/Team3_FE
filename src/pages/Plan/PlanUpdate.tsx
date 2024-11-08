@@ -124,9 +124,7 @@ const PlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar
-            plans={selectedPlan}
-          />
+          <CustomCalendar plans={selectedPlan} />
         </CalendarContainer>
         <ButtonContainer>
           <Button onClick={handleSave}>저장</Button>

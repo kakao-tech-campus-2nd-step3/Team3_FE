@@ -78,7 +78,7 @@ export default function TeamPlanDetailPage() {
       <CustomCalendar
         calendarOwner={teamName ? `${teamName} 계획표` : "팀 플랜"}
         plans={teamPlans}
-        isReadOnly={true}
+        isReadOnly
       />
 
       <SectionTitle>참여자</SectionTitle>

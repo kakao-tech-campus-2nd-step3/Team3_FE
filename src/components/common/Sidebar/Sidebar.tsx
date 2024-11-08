@@ -43,9 +43,7 @@ const TimeComponent = () => {
 
   useEffect(() => {
     const now = new Date();
-    const delay =
-      60000 -
-      (now.getSeconds() * 1000 + now.getMilliseconds());
+    const delay = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
 
     const timeoutId = setTimeout(() => {
       setTime(new Date());

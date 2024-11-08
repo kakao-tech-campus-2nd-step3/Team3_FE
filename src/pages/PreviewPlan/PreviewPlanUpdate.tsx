@@ -134,12 +134,7 @@ const PreviewPlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar
-            plans={selectedPlan}
-            isPreviewMode
-            previewDeviceId={previewDeviceId}
-            previewGroupId={previewGroupId}
-          />
+          <CustomCalendar plans={selectedPlan} />
         </CalendarContainer>
         <ButtonContainer>
           <Button onClick={handleSave}>저장</Button>

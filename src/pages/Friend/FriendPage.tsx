@@ -87,7 +87,7 @@ const tabsStyles = css`
   width: 100%;
   margin-bottom: 20px;
   box-sizing: border-box;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 `;
 
 const tabStyles = css`
@@ -322,7 +322,8 @@ export default function FriendListPage() {
     refetch: refetchSentRequests,
   } = useGetSentRequests();
 
-  const { refetch: fetchFriendByNickname } = useGetFriendByNickname(searchQuery);
+  const { refetch: fetchFriendByNickname } =
+    useGetFriendByNickname(searchQuery);
 
   const handleSearch = async () => {
     setSearched(true);

@@ -218,7 +218,7 @@ const MainPage: React.FC = () => {
       <CustomCalendar
         plans={plans}
         onDeletePlan={handleDeletePlan}
-        onUpdatePlan={handleUpdatePlan}
+        // onUpdatePlan={handleUpdatePlan}
       />
 
       {modalOpen && (

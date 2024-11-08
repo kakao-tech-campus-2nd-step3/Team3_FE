@@ -39,9 +39,9 @@ const ButtonContainer = styled.div`
 
 const CalendarContainer = styled.div`
   width: 100%;
-  max-width: 800px; 
+  max-width: 800px;
   @media (max-width: ${breakpoints.sm}px) {
-    padding: 0 20px; 
+    padding: 0 20px;
   }
 `;
 

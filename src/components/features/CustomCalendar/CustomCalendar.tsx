@@ -39,7 +39,7 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
-  onUpdatePlan?: (planId: string, planData: any) => void;
+  // onUpdatePlan?: (planId: string, planData: any) => void;
 }
 
 const VIEW_MODES = {
@@ -79,39 +79,39 @@ const renderEventContent = (
       <div>{description}</div>
       {!isReadOnly && (
         <div>
-      <button
-        type="button"
-        onClick={() => handleDelete(event.id)}
-        style={{
-          marginTop: "4px",
-          color: "red",
-          backgroundColor: "transparent",
-          cursor: "pointer",
-        }}
-      >
-        삭제
-      </button>
-      <button
-        type="button"
-        onClick={() =>
-          handleEdit(
-            event.id,
-            event.title,
-            description,
-            accessibility,
-            isCompleted,
-          )
-        }
-        style={{
-          color: "blue",
-          backgroundColor: "transparent",
-          cursor: "pointer",
-        }}
-      >
-        수정
-      </button>
-      </div>
-    )}
+          <button
+            type="button"
+            onClick={() => handleDelete(event.id)}
+            style={{
+              marginTop: "4px",
+              color: "red",
+              backgroundColor: "transparent",
+              cursor: "pointer",
+            }}
+          >
+            삭제
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              handleEdit(
+                event.id,
+                event.title,
+                description,
+                accessibility,
+                isCompleted,
+              )
+            }
+            style={{
+              color: "blue",
+              backgroundColor: "transparent",
+              cursor: "pointer",
+            }}
+          >
+            수정
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -172,8 +172,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const updatedPlan = {
         title: currentEditPlan.title || "",
         description: currentEditPlan.description || "",
-        accessibility: Boolean(currentEditPlan.accessibility), 
-        isCompleted: Boolean(currentEditPlan.complete), 
+        accessibility: Boolean(currentEditPlan.accessibility),
+        isCompleted: Boolean(currentEditPlan.complete),
       };
 
       // 수정된 플랜 리스트 업데이트

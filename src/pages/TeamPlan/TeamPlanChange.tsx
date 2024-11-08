@@ -18,9 +18,9 @@ const PageContainer = styled.div`
 
 const ButtonGroup = styled.div`
   display: flex;
-  justify-content: center; 
-  gap: 20px; 
-  margin-top: 20px; 
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
 `;
 
 export default function TeamPlanChangePage() {
@@ -152,7 +152,9 @@ export default function TeamPlanChangePage() {
         onDeletePlan={handleDeletePlan}
       />
       <ButtonGroup>
-        <Button onClick={handleAddPlan} theme="secondary">플랜 추가</Button>
+        <Button onClick={handleAddPlan} theme="secondary">
+          플랜 추가
+        </Button>
         <Button onClick={handleSaveAll}>저장</Button>
       </ButtonGroup>
 
