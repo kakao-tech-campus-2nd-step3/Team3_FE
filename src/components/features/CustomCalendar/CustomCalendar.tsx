@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import styled from "@emotion/styled";
 import React, {
   useState,
   useCallback,
@@ -38,11 +37,9 @@ interface CustomCalendarProps {
   calendarOwner?: string;
   plans?: CalendarEvent[];
   isReadOnly?: boolean;
-  isPreviewMode?: boolean;
-  previewDeviceId?: string;
-  previewGroupId?: string;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
+  onUpdatePlan?: (planId: string, planData: any) => void;
 }
 
 const VIEW_MODES = {
@@ -61,10 +58,18 @@ const calculateEventStatus = (event: CalendarEvent) => {
 const renderEventContent = (
   eventInfo: EventContentArg,
   handleDelete: (id: string) => void,
-  handleEdit: (id: string, title: string, description: string) => void,
+  handleEdit: (
+    id: string,
+    title: string,
+    description: string,
+    accessibility: boolean | null,
+    isCompleted: boolean | null,
+  ) => void,
 ) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
+  const accessibility = event.extendedProps?.accessibility || false;
+  const isCompleted = event.extendedProps?.isCompleted || false;
 
   return (
     <div css={eventItemStyles("", false)}>
@@ -85,7 +90,15 @@ const renderEventContent = (
       </button>
       <button
         type="button"
-        onClick={() => handleEdit(event.id, event.title, description)}
+        onClick={() =>
+          handleEdit(
+            event.id,
+            event.title,
+            description,
+            accessibility,
+            isCompleted,
+          )
+        }
         style={{
           color: "blue",
           backgroundColor: "transparent",
@@ -108,11 +121,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   calendarOwner,
   plans = [],
   isReadOnly = false,
-  isPreviewMode = false,
-  previewDeviceId,
-  previewGroupId,
   onPlanChange,
   onDeletePlan,
+  onUpdatePlan,
 }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const calendarRef = useRef<FullCalendar>(null);
@@ -135,21 +146,35 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     [deletePlan, onDeletePlan],
   );
 
-  const handleEdit = (id: string, title: string, description: string) => {
-    setCurrentEditPlan({ id, title, description });
+  const handleEdit = (
+    id: string,
+    title: string,
+    description: string,
+    accessibility: boolean | null,
+    isCompleted: boolean | null,
+  ) => {
+    setCurrentEditPlan({
+      id,
+      title,
+      description,
+      accessibility,
+      complete: isCompleted ?? undefined,
+    });
     setIsEditModalOpen(true);
   };
 
   const handleEditSubmit = () => {
     if (currentEditPlan && currentEditPlan.id) {
+      const updatedPlan = {
+        title: currentEditPlan.title || "",
+        description: currentEditPlan.description || "",
+        accessibility: Boolean(currentEditPlan.accessibility), // undefined를 포함하여 boolean으로 변환
+        isCompleted: Boolean(currentEditPlan.complete), // undefined를 포함하여 boolean으로 변환
+      };
+
+      // 수정된 플랜 리스트 업데이트
       const updatedPlans = plans.map((plan) =>
-        plan.id === currentEditPlan.id
-          ? {
-              ...plan,
-              title: currentEditPlan.title || "",
-              description: currentEditPlan.description || "",
-            }
-          : plan,
+        plan.id === currentEditPlan.id ? { ...plan, ...updatedPlan } : plan,
       );
       onPlanChange?.(updatedPlans);
       setIsEditModalOpen(false);
@@ -182,6 +207,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         className: `fc-event-${calculateEventStatus(plan)}`,
         extendedProps: {
           description: plan.description,
+          accessibility: plan.accessibility,
+          isCompleted: plan.complete,
         },
       })),
     [plans],
@@ -275,6 +302,26 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               onChange={(e) =>
                 setCurrentEditPlan((prev) =>
                   prev ? { ...prev, description: e.target.value } : prev,
+                )
+              }
+            />
+            공개 여부:
+            <input
+              type="checkbox"
+              checked={currentEditPlan.accessibility || false}
+              onChange={(e) =>
+                setCurrentEditPlan((prev) =>
+                  prev ? { ...prev, accessibility: e.target.checked } : prev,
+                )
+              }
+            />
+            완료 여부:
+            <input
+              type="checkbox"
+              checked={currentEditPlan.complete || false}
+              onChange={(e) =>
+                setCurrentEditPlan((prev) =>
+                  prev ? { ...prev, complete: e.target.checked } : prev,
                 )
               }
             />

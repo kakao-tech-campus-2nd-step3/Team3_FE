@@ -4,17 +4,20 @@ import { useLocation } from "react-router-dom";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import { useGetPlans } from "@/api/hooks/useGetPlans";
 import useCreatePlan from "@/api/hooks/useCreatePlans";
+import useDeletePlan from "@/api/hooks/useDeletePlans";
 import CircleButton from "@/components/common/CircleButton/CircleButton";
 import breakpoints from "@/variants/breakpoints";
-// 캘린더와 버튼을 포함하는 반응형 컨테이너
+import useUpdatePlan from "@/api/hooks/useUpdatePlan";
+
+// 스타일드 컴포넌트 정의
 const CalendarContainer = styled.div`
   position: relative;
   width: 100%;
-  max-width: 1200px; // 최대 너비를 설정해 버튼이 중앙을 유지하도록 합니다.
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 `;
-// 버튼을 캘린더 컨테이너 내의 상대적인 위치에 두도록 설정
+
 const ButtonWrapper = styled.div`
   position: absolute;
   top: 10%;
@@ -32,7 +35,7 @@ const ButtonWrapper = styled.div`
     left: 20px;
   }
 `;
-// 모달 스타일
+
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -45,17 +48,19 @@ const ModalOverlay = styled.div`
   justify-content: center;
   z-index: 2;
 `;
+
 const ModalContent = styled.div`
   background: white;
-  padding: 20px 30px 20;
-  width: 500px; // 가로폭 설정
+  padding: 20px 30px;
+  width: 500px;
   max-width: 95%;
   border-radius: 8px;
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 15px; /* 각 입력 필드 사이에 간격 추가 */
+  gap: 15px;
 `;
+
 const Input = styled.input`
   width: 100%;
   padding: 8px;
@@ -64,6 +69,7 @@ const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
 `;
+
 const Textarea = styled.textarea`
   width: 99%;
   padding: 10px;
@@ -72,6 +78,7 @@ const Textarea = styled.textarea`
   border-radius: 4px;
   resize: vertical;
 `;
+
 const CloseButton = styled.button`
   margin-top: 10px;
   background-color: #39a7f7;
@@ -81,12 +88,14 @@ const CloseButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
 `;
+
 const ToggleWrapper = styled.label`
   display: flex;
   flex-direction: column;
   cursor: pointer;
   gap: 10px;
 `;
+
 const ToggleInput = styled.input`
   appearance: none;
   width: 40px;
@@ -114,15 +123,64 @@ const ToggleInput = styled.input`
     transform: translateX(20px);
   }
 `;
+
 const ToggleLabel = styled.span`
   font-size: 16px;
   color: #333;
 `;
+
+const usePlanData = (initialSavedPlan: any) => {
+  const { data: plans, isLoading, error } = useGetPlans();
+  const createPlanMutation = useCreatePlan();
+  const deletePlanMutation = useDeletePlan();
+  const updatePlanMutation = useUpdatePlan();
+  const [savedPlan, setSavedPlan] = useState(initialSavedPlan || []);
+
+  useEffect(() => {
+    if (Array.isArray(initialSavedPlan)) {
+      setSavedPlan(initialSavedPlan);
+    }
+  }, [initialSavedPlan]);
+
+  const combinedPlans = [...(plans || []), ...savedPlan];
+
+  const createPlan = (newPlan: any) => {
+    createPlanMutation.mutate(newPlan);
+  };
+
+  const handleDeletePlan = (planId: string) => {
+    deletePlanMutation.mutate(Number(planId));
+  };
+
+  const handleUpdatePlan = (planId: string, updatedPlanData: any) => {
+    updatePlanMutation.mutate({
+      planId: Number(planId),
+      planData: updatedPlanData,
+    });
+  };
+
+  return {
+    plans: combinedPlans,
+    isLoading,
+    error,
+    createPlan,
+    handleDeletePlan,
+    handleUpdatePlan,
+  };
+};
+
+// MainPage 컴포넌트
 const MainPage: React.FC = () => {
   const location = useLocation();
-  const { data: plans, isLoading, error } = useGetPlans();
-  const [savedPlan, setSavedPlan] = useState(location.state?.savedPlan || []);
-  const [modalOpen, setIsModalOpen] = useState(false);
+  const {
+    plans,
+    isLoading,
+    error,
+    createPlan,
+    handleDeletePlan,
+    handleUpdatePlan,
+  } = usePlanData(location.state?.savedPlan);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -130,26 +188,15 @@ const MainPage: React.FC = () => {
   const [isAccessible, setIsAccessible] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // Update savedPlan if new data arrives in location.state
-  useEffect(() => {
-    if (location.state?.savedPlan) {
-      setSavedPlan(location.state.savedPlan);
-    }
-  }, [location.state?.savedPlan]);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const createPlanMutation = useCreatePlan();
-  const handleToggleChange =
-    (setter: React.Dispatch<React.SetStateAction<boolean>>) => () => {
-      setter((prev) => !prev);
-    };
-
-  const handleButtonClick = () => {
-    setIsModalOpen(true);
-  };
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createPlanMutation.mutate({
+    createPlan({
+      id: Date.now().toString(),
       title,
       description,
       startDate,
@@ -157,32 +204,22 @@ const MainPage: React.FC = () => {
       accessibility: isAccessible,
       isCompleted,
     });
-    setIsModalOpen(false);
+    closeModal();
   };
 
-  useEffect(() => {
-    const savedPreviewData = localStorage.getItem("previewPlanData");
-    if (savedPreviewData) {
-      localStorage.removeItem("previewPlanData");
-    }
-  }, []);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  // Combine savedPlan data with fetched plans
-  const combinedPlans = [...(plans || []), ...savedPlan];
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <CalendarContainer>
       <ButtonWrapper>
-        <CircleButton onClick={handleButtonClick}>+</CircleButton>
+        <CircleButton onClick={openModal}>+</CircleButton>
       </ButtonWrapper>
-      <CustomCalendar isPreviewMode={false} plans={combinedPlans} />
+      <CustomCalendar
+        plans={plans}
+        onDeletePlan={handleDeletePlan}
+        onUpdatePlan={handleUpdatePlan}
+      />
 
       {modalOpen && (
         <ModalOverlay>
@@ -229,7 +266,7 @@ const MainPage: React.FC = () => {
                 <ToggleInput
                   type="checkbox"
                   checked={isAccessible}
-                  onChange={handleToggleChange(setIsAccessible)}
+                  onChange={() => setIsAccessible(!isAccessible)}
                 />
               </ToggleWrapper>
               <ToggleWrapper>
@@ -237,7 +274,7 @@ const MainPage: React.FC = () => {
                 <ToggleInput
                   type="checkbox"
                   checked={isCompleted}
-                  onChange={handleToggleChange(setIsCompleted)}
+                  onChange={() => setIsCompleted(!isCompleted)}
                 />
               </ToggleWrapper>
               <CloseButton type="submit">저장</CloseButton>
