@@ -6,6 +6,7 @@ import effectSVG from "@/assets/effect.svg";
 import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
 import kakao_symbol from "@/assets/kakao_symbol.svg";
+import RouterPath from "@/router/RouterPath";
 
 const LandingContainer = styled.div`
   max-width: 1280px;
@@ -130,11 +131,11 @@ const Introduce = () => {
   const navigate = useNavigate();
 
   const handleStartClick = () => {
-    navigate("/plan/preview");
+    navigate(RouterPath.PREVIEW_PLAN);
   };
 
   const handleLoginClick = () => {
-    navigate("/login");
+    navigate(RouterPath.LOGIN);
   };
   return (
     <LandingContainer>

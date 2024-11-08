@@ -30,7 +30,7 @@ const fetchPlans = async (deviceId: string): Promise<planGroupResponse[]> => {
   return response.data;
 };
 
-const useGetPlanCard = (deviceId: string) => {
+const useGetPlanCard = (deviceId: string, p0: { enabled: boolean }) => {
   return useQuery({
     queryKey: ["fetchPlans", deviceId],
     queryFn: () => fetchPlans(deviceId),
