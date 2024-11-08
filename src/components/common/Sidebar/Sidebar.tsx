@@ -7,7 +7,7 @@ import {
   People,
   Menu,
 } from "@mui/icons-material";
-import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
+import { useNavigate, useLocation } from "react-router-dom";
 import breakpoints from "@/variants/breakpoints";
 import {
   SidebarContainer,
@@ -22,6 +22,7 @@ import {
   DateDisplay,
 } from "./Sidebar.styles";
 import logo from "@/assets/logo.svg";
+
 // 고정된 메뉴 항목 타입 정의
 interface MenuItemType {
   name: string;
@@ -41,18 +42,29 @@ const TimeComponent = () => {
   const [time, setTime] = useState(() => new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
+    const now = new Date();
+    const delay =
+      60000 -
+      (now.getSeconds() * 1000 + now.getMilliseconds());
 
-    return () => clearInterval(timer);
+    const timeoutId = setTimeout(() => {
+      setTime(new Date());
+
+      const intervalId = setInterval(() => {
+        setTime(new Date());
+      }, 60000);
+
+      return () => clearInterval(intervalId);
+    }, delay);
+
+    // 컴포넌트 언마운트 시 타임아웃 정리
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const getFormattedTime = (date: Date) => {
     return date.toLocaleTimeString("ko-KR", {
       hour: "2-digit",
       minute: "2-digit",
-      second: "2-digit",
       hour12: false,
     });
   };
