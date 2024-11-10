@@ -190,3 +190,54 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
     border-left-color: #ef4444;
   `}
 `;
+
+export const dropdownMenuStyles = css`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  list-style: none;
+  padding: 8px 0;
+  margin: 4px 0 0 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 100px;
+  animation: fadeIn 0.2s ease-in-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+export const dropdownItemStyles = css`
+  padding: 10px 12px;
+  color: blue;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+  display: block;
+  white-space: nowrap;
+
+  &:hover {
+    padding: 7px 11px; /* hover 시 패딩을 줄여 크기 감소 */
+  }
+`;
+
+export const dropdownItemRedStyles = css`
+  ${dropdownItemStyles}
+  color: red;
+  &:hover {
+    padding: 7px 11px; /* hover 시 패딩을 줄여 크기 감소 */
+  }
+`;

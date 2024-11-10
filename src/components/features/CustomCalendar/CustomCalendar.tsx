@@ -18,6 +18,9 @@ import {
   appTitleStyles,
   calendarStyles,
   eventItemStyles,
+  dropdownItemStyles,
+  dropdownItemRedStyles,
+  dropdownMenuStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Modal from "./PlanModal";
@@ -77,19 +80,16 @@ const EventContent = ({
   const isCompleted = event.extendedProps?.isCompleted || false;
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   const handleEventClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
     setIsDropdownOpen(!isDropdownOpen);
   };
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       setIsDropdownOpen(!isDropdownOpen);
     }
   };
-
   const handleOptionClick = (option: string) => {
     if (option === "edit") {
       handleEdit(
@@ -104,7 +104,6 @@ const EventContent = ({
     }
     setIsDropdownOpen(false);
   };
-
   // 드롭다운 외부 클릭 시 닫힘 처리
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -118,7 +117,6 @@ const EventContent = ({
       document.removeEventListener("click", handleClickOutside);
     };
   }, [isDropdownOpen]);
-
   return (
     <div
       css={eventItemStyles("", false)}
@@ -134,57 +132,24 @@ const EventContent = ({
       <div>{event.title}</div>
       <div>{description}</div>
       {!isReadOnly && isDropdownOpen && (
-        <ul
-          style={{
-            position: "absolute",
-            top: "100%",
-            right: 0,
-            backgroundColor: "white",
-            listStyle: "none",
-            padding: "8px",
-            margin: 0,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-            zIndex: 1000,
-          }}
-        >
-          <li>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOptionClick("edit");
-              }}
-              style={{
-                backgroundColor: "transparent",
-                cursor: "pointer",
-                border: "none",
-                padding: "4px 0",
-                width: "100%",
-                textAlign: "left",
-              }}
-            >
-              수정
-            </button>
+        <ul css={dropdownMenuStyles}>
+          <li
+            css={dropdownItemStyles}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOptionClick("edit");
+            }}
+          >
+            수정
           </li>
-          <li>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOptionClick("delete");
-              }}
-              style={{
-                backgroundColor: "transparent",
-                cursor: "pointer",
-                border: "none",
-                padding: "4px 0",
-                width: "100%",
-                textAlign: "left",
-                color: "red",
-              }}
-            >
-              삭제
-            </button>
+          <li
+            css={dropdownItemRedStyles}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOptionClick("delete");
+            }}
+          >
+            삭제
           </li>
         </ul>
       )}
@@ -214,7 +179,6 @@ const renderEventContent = (
     />
   );
 };
-
 const parseDate = (date: any) => {
   return typeof date === "string" || typeof date === "number"
     ? new Date(date)
@@ -336,7 +300,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       renderEventContent(eventInfo, handleDelete, handleEdit, isReadOnly),
     [handleDelete, handleEdit, isReadOnly],
   );
-
   return (
     <div css={appContainerStyles}>
       {calendarOwner && <h1 css={appTitleStyles}>{calendarOwner}</h1>}
