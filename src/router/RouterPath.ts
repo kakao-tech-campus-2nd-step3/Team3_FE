@@ -1,6 +1,7 @@
 const RouterPath = {
   HOME: "/",
   MAIN: "/main",
+  MAIN_MODIFY: "/main/modify",
   LOGIN: "/login",
   KAKAO_LOGIN: "/oauth2/redirect",
   PREVIEW_PLAN: "/plan/preview",
@@ -12,7 +13,7 @@ const RouterPath = {
   TEAM_PLAN_UPDATE: "/team-plan/update",
   TEAM_PLAN_SELECT: "/team-plan/select",
   TEAM_PLAN_INVITE: "/team-plan/invite",
-  TEAM_PLAN_CHANGE: "/team-plan/change",
+  TEAM_PLAN_MODIFY: "/team-plan/modify",
   PLAN: "/plan",
   PLAN_SELECT: "/plan/select",
   PLAN_UPDATE: "/plan/update",

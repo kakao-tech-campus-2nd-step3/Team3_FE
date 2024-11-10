@@ -26,7 +26,8 @@ import TeamPlanUpdate from "@/pages/TeamPlan/TeamPlanUpdate";
 import OAuthRedirectHandler from "@/pages/LoginModal/RedirectPage";
 import TeamPlanSelectPage from "@/pages/TeamPlan/TeamPlanSelectPage";
 import TeamInvitePage from "@/pages/TeamPlan/TeamPlanInvite";
-import TeamPlanChangePage from "@/pages/TeamPlan/TeamPlanChange";
+import TeamPlanModifyPage from "@/pages/TeamPlan/TeamPlanModify";
+import PlanModifyPage from "@/pages/Main/MainPageModify";
 
 function Router() {
   const { authState } = useAuth();
@@ -87,7 +88,8 @@ function Router() {
         { path: RouterPath.TEAM_PLAN_SELECT, element: <TeamPlanSelectPage /> },
         { path: RouterPath.TEAM_PLAN_UPDATE, element: <TeamPlanUpdate /> },
         { path: RouterPath.TEAM_PLAN_INVITE, element: <TeamInvitePage /> },
-        { path: RouterPath.TEAM_PLAN_CHANGE, element: <TeamPlanChangePage /> },
+        { path: RouterPath.TEAM_PLAN_MODIFY, element: <TeamPlanModifyPage /> },
+        { path: RouterPath.MAIN_MODIFY, element: <PlanModifyPage /> },
       ],
     },
   ]);
