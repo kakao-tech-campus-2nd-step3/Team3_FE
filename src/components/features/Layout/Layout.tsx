@@ -4,10 +4,9 @@ import Sidebar from "@/components/common/Sidebar/Sidebar";
 import breakpoints from "@/variants/breakpoints";
 
 const Wrapper = styled.div`
-  flex-direction: row; /* 모바일 이상에서는 가로 정렬 */
+  flex-direction: row;
 
   ${breakpoints.mobile} {
-    /* 기본값은 세로 정렬 (모바일) */
     flex-direction: column;
     display: flex;
     width: 100%;
