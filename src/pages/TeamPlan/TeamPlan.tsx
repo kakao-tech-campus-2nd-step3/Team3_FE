@@ -1,3 +1,4 @@
+// src/pages/TeamPlan/TeamPlanPage.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
@@ -13,119 +14,102 @@ import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
 import { apiClient } from "@/api/instance";
 
-// Styles
 const PageContainer = styled.div`
-  width: 100%;
-  max-width: 1200px;
-  padding: 10px 45px;
   display: flex;
-  flex-direction: column;
-  font-family: "Inter", sans-serif;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  @media (max-width: ${breakpoints.sm}px) {
-    padding-top: 80px;
-  }
-  gap: 10px;
+  min-height: 100vh;
+  background-color: #ffffff;
 `;
 
-const PageTitle = styled.div`
-  margin-right: auto;
-  color: black;
-  font-size: 23px;
+const ContentWrapper = styled.main`
+  flex-grow: 1;
+  padding: 32px;
+  overflow: auto;
+  box-sizing: border-box;
+`;
+
+const Heading = styled.h1`
+  font-size: 24px;
   font-weight: 600;
+  margin-bottom: 24px;
+  color: #2d3748;
 `;
 
 const ButtonWrapper = styled.div`
-  margin-left: auto;
-  padding: 8px;
+  display: flex;
   justify-content: flex-end;
-  display: flex;
+  margin-bottom: 24px;
   gap: 8px;
-`;
-
-const PlanCard = styled.div`
-  width: 100%;
-  min-height: 99px;
-  padding: 12.8px;
-  background: #f5f5f5;
-  display: flex;
-  justify-content: space-between;
-  border-radius: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-  box-sizing: border-box;
-`;
-
-const PlanTitleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 200px;
-`;
-
-const PlanTitle = styled.div`
-  color: black;
-  font-size: 20px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-`;
-
-const Participants = styled.div`
-  color: #aab2c8;
-  font-size: 15px;
-  font-weight: 700;
-  word-break: break-word;
 `;
 
 const TabsContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
   gap: 28px;
-  width: 100%;
-  margin-bottom: 20px;
-  box-sizing: border-box;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 `;
 
 const Tab = styled.div<{ active: boolean }>`
   font-size: 15px;
   font-weight: ${(props) => (props.active ? 600 : 400)};
-  color: ${(props) => (props.active ? "black" : "#9b9b9b")};
+  color: ${(props) => (props.active ? "#39a7f7" : "#9b9b9b")};
   cursor: pointer;
   transition: color 0.3s ease;
 `;
 
+const CardGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+
+  @media (min-width: ${breakpoints.lg}px) {
+    grid-template-columns: 1fr 1fr;
+  }
+`;
+
+const PlanCard = styled.div`
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: box-shadow 0.2s;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  &:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  }
+`;
+
+const PlanTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+`;
+
 const RoleBadge = styled.div<{ isAdmin: boolean }>`
-  width: 55px;
-  height: 20px;
   background-color: ${(props) => (props.isAdmin ? "#a6caec" : "#ffc002")};
   color: white;
   font-size: 13px;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 3px;
+  padding: 4px 8px;
+  border-radius: 4px;
   margin-left: 8px;
 `;
 
-const InviteeItem = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  background: #f4f4f4;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  font-size: 14px;
-  width: 100%;
-  box-sizing: border-box;
+const Participants = styled.div`
+  color: #4a5568;
+  font-size: 15px;
+  margin-bottom: 16px;
 `;
 
-const NicknameText = styled.span`
-  font-weight: bold;
-  color: #333;
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
 const EmptyMessage = styled.div`
@@ -151,7 +135,6 @@ export default function TeamPlanPage() {
     [key: number]: any[];
   }>({});
 
-  // 팀 멤버 정보 가져오기
   useEffect(() => {
     const fetchAllMembers = async () => {
       const memberData: { [key: number]: any[] } = {};
@@ -175,7 +158,6 @@ export default function TeamPlanPage() {
     if (teams.length > 0) fetchAllMembers();
   }, [teams]);
 
-  // 보낸 초대 정보 가져오기
   useEffect(() => {
     const fetchSentInvitations = async () => {
       const invitationsData: { [key: number]: any[] } = {};
@@ -202,9 +184,15 @@ export default function TeamPlanPage() {
     if (teams.length > 0) fetchSentInvitations();
   }, [teams]);
 
-  const handleVisitClick = (teamId: number, teamName: string) => {
+  const handleVisitClick = (
+    teamId: number,
+    teamName: string,
+    isAdmin: boolean,
+  ) => {
     const members = teamMembers[teamId] || [];
-    navigate(`/team-plan/${teamId}`, { state: { teamName, teamId, members } });
+    navigate(`/team-plan/${teamId}`, {
+      state: { teamName, teamId, members, isAdmin },
+    });
   };
 
   const handleVisitMaking = () => {
@@ -222,55 +210,56 @@ export default function TeamPlanPage() {
   // 팀 목록 렌더링
   const renderedTeamList =
     teams.length > 0 ? (
-      teams.map((team) => {
-        const members = teamMembers[team.id] || [];
-        const isAdmin = members.some(
-          (member) => member.role === "ADMIN" && member.userId === userData.id,
-        );
+      <CardGrid>
+        {teams.map((team) => {
+          const members = teamMembers[team.id] || [];
+          const isAdmin = members.some(
+            (member) =>
+              member.role === "ADMIN" && member.userId === userData.id,
+          );
 
-        return (
-          <PlanCard key={team.id}>
-            <PlanTitleContainer>
-              <PlanTitle>
-                {team.teamName}
-                <RoleBadge isAdmin={isAdmin}>
-                  {isAdmin ? "관리자" : "멤버"}
-                </RoleBadge>
-              </PlanTitle>
-
-              <Participants>
-                참여자: {members.map((member) => member.nickname).join(", ")}
-              </Participants>
-            </PlanTitleContainer>
-            <ButtonWrapper>
-              <Button
-                size="small"
-                theme="primary"
-                onClick={() => handleVisitClick(team.id, team.teamName)}
-              >
-                방문
-              </Button>
-              {isAdmin ? (
+          return (
+            <PlanCard key={team.id}>
+              <div>
+                <PlanTitle>
+                  {team.teamName}
+                  <RoleBadge isAdmin={isAdmin}>
+                    {isAdmin ? "관리자" : "멤버"}
+                  </RoleBadge>
+                </PlanTitle>
+                <Participants>
+                  참여자: {members.map((member) => member.nickname).join(", ")}
+                </Participants>
+              </div>
+              <ButtonGroup>
                 <Button
-                  size="small"
-                  theme="secondary"
-                  onClick={() => deleteTeamMutation.mutate(team.id)}
+                  theme="primary"
+                  onClick={() =>
+                    handleVisitClick(team.id, team.teamName, isAdmin)
+                  }
                 >
-                  삭제
+                  방문
                 </Button>
-              ) : (
-                <Button
-                  size="small"
-                  theme="secondary"
-                  onClick={() => leaveTeamMutation.mutate(team.id)}
-                >
-                  나가기
-                </Button>
-              )}
-            </ButtonWrapper>
-          </PlanCard>
-        );
-      })
+                {isAdmin ? (
+                  <Button
+                    theme="secondary"
+                    onClick={() => deleteTeamMutation.mutate(team.id)}
+                  >
+                    삭제
+                  </Button>
+                ) : (
+                  <Button
+                    theme="secondary"
+                    onClick={() => leaveTeamMutation.mutate(team.id)}
+                  >
+                    나가기
+                  </Button>
+                )}
+              </ButtonGroup>
+            </PlanCard>
+          );
+        })}
+      </CardGrid>
     ) : (
       <EmptyMessage>팀이 없습니다.</EmptyMessage>
     );
@@ -278,28 +267,27 @@ export default function TeamPlanPage() {
   // 받은 요청 렌더링
   const renderedInvitations =
     invitations.length > 0 ? (
-      invitations.map((invite) => (
-        <PlanCard key={invite.invitationId}>
-          <PlanTitleContainer>
+      <CardGrid>
+        {invitations.map((invite) => (
+          <PlanCard key={invite.invitationId}>
             <PlanTitle>{invite.teamName}</PlanTitle>
-          </PlanTitleContainer>
-          <ButtonWrapper>
-            <Button
-              size="small"
-              onClick={() => handleAcceptInvitation(invite.invitationId)}
-            >
-              수락
-            </Button>
-            <Button
-              size="small"
-              theme="secondary"
-              onClick={() => handleRejectInvitation(invite.invitationId)}
-            >
-              거절
-            </Button>
-          </ButtonWrapper>
-        </PlanCard>
-      ))
+            <ButtonGroup>
+              <Button
+                theme="primary"
+                onClick={() => handleAcceptInvitation(invite.invitationId)}
+              >
+                수락
+              </Button>
+              <Button
+                theme="secondary"
+                onClick={() => handleRejectInvitation(invite.invitationId)}
+              >
+                거절
+              </Button>
+            </ButtonGroup>
+          </PlanCard>
+        ))}
+      </CardGrid>
     ) : (
       <EmptyMessage>받은 요청이 없습니다.</EmptyMessage>
     );
@@ -307,35 +295,36 @@ export default function TeamPlanPage() {
   // 보낸 요청 렌더링
   const renderedSentInvitations =
     teams.length > 0 ? (
-      teams
-        .filter((team) => {
-          const members = teamMembers[team.id] || [];
-          const isAdmin = members.some(
-            (member) =>
-              member.role === "ADMIN" && member.userId === userData.id,
-          );
-          return isAdmin;
-        })
-        .map((team) => {
-          const teamInvitations = sentInvitations[team.id] || [];
-          if (teamInvitations.length === 0) return null;
+      <CardGrid>
+        {teams
+          .filter((team) => {
+            const members = teamMembers[team.id] || [];
+            const isAdmin = members.some(
+              (member) =>
+                member.role === "ADMIN" && member.userId === userData.id,
+            );
+            return isAdmin;
+          })
+          .map((team) => {
+            const teamInvitations = sentInvitations[team.id] || [];
+            if (teamInvitations.length === 0) return null;
 
-          return (
-            <div key={team.id} style={{ marginBottom: "20px" }}>
-              <PlanTitle>{team.teamName}</PlanTitle>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              >
-                {teamInvitations.map((invite) => (
-                  <InviteeItem key={invite.invitationId}>
-                    <NicknameText>{invite.nickname}</NicknameText>
-                  </InviteeItem>
-                ))}
-              </div>
-            </div>
-          );
-        })
-        .filter(Boolean)
+            return (
+              <PlanCard key={team.id}>
+                <div>
+                  <PlanTitle>{team.teamName}</PlanTitle>
+                  <Participants>
+                    초대한 멤버:{" "}
+                    {teamInvitations
+                      .map((invite) => invite.nickname)
+                      .join(", ")}
+                  </Participants>
+                </div>
+              </PlanCard>
+            );
+          })
+          .filter(Boolean)}
+      </CardGrid>
     ) : (
       <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>
     );
@@ -344,37 +333,39 @@ export default function TeamPlanPage() {
 
   return (
     <PageContainer>
-      <PageTitle>팀 플랜</PageTitle>
-      <ButtonWrapper>
-        <Button theme="primary" size="long" onClick={handleVisitMaking}>
-          팀 플랜 추가하기
-        </Button>
-      </ButtonWrapper>
+      <ContentWrapper>
+        <Heading>팀 플랜</Heading>
+        <ButtonWrapper>
+          <Button theme="primary" onClick={handleVisitMaking}>
+            팀 플랜 추가하기
+          </Button>
+        </ButtonWrapper>
 
-      <TabsContainer>
-        <Tab
-          active={activeTab === "teamList"}
-          onClick={() => setActiveTab("teamList")}
-        >
-          팀 목록
-        </Tab>
-        <Tab
-          active={activeTab === "invitations"}
-          onClick={() => setActiveTab("invitations")}
-        >
-          받은 요청
-        </Tab>
-        <Tab
-          active={activeTab === "sentInvitations"}
-          onClick={() => setActiveTab("sentInvitations")}
-        >
-          보낸 요청
-        </Tab>
-      </TabsContainer>
+        <TabsContainer>
+          <Tab
+            active={activeTab === "teamList"}
+            onClick={() => setActiveTab("teamList")}
+          >
+            팀 목록
+          </Tab>
+          <Tab
+            active={activeTab === "invitations"}
+            onClick={() => setActiveTab("invitations")}
+          >
+            받은 요청
+          </Tab>
+          <Tab
+            active={activeTab === "sentInvitations"}
+            onClick={() => setActiveTab("sentInvitations")}
+          >
+            보낸 요청
+          </Tab>
+        </TabsContainer>
 
-      {activeTab === "teamList" && renderedTeamList}
-      {activeTab === "invitations" && renderedInvitations}
-      {activeTab === "sentInvitations" && renderedSentInvitations}
+        {activeTab === "teamList" && renderedTeamList}
+        {activeTab === "invitations" && renderedInvitations}
+        {activeTab === "sentInvitations" && renderedSentInvitations}
+      </ContentWrapper>
     </PageContainer>
   );
 }
