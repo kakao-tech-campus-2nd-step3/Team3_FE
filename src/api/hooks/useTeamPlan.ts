@@ -1,8 +1,8 @@
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { apiClient } from "@/api/instance";
 import { transformPlanData } from "./useGetPlans";
 import { CalendarEvent } from "@/components/features/CustomCalendar/CustomCalendar";
-
 // 요청 파라미터 타입 정의
 interface GptRequestParams {
   deviceId: string;
@@ -34,25 +34,49 @@ const fetchGptData = async (
 
 // 레벨별 훅
 export const useGptLight = (
-  options?: UseMutationOptions<GptResponse, Error, GptRequestParams>,
+  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, Error, GptRequestParams>({
+  useMutation<GptResponse, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/light", params),
     ...options,
   });
 
 export const useGptModerate = (
-  options?: UseMutationOptions<GptResponse, Error, GptRequestParams>,
+  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, Error, GptRequestParams>({
+  useMutation<GptResponse, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/moderate", params),
     ...options,
   });
 
 export const useGptStrong = (
-  options?: UseMutationOptions<GptResponse, Error, GptRequestParams>,
+  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, Error, GptRequestParams>({
+  useMutation<GptResponse, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/strong", params),
+    ...options,
+  });
+
+export const useGptTrialLight = (
+  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+) =>
+  useMutation<GptResponse, AxiosError, GptRequestParams>({
+    mutationFn: (params) => fetchGptData("/api/gpt/trial/light", params),
+    ...options,
+  });
+
+export const useGptTrialModerate = (
+  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+) =>
+  useMutation<GptResponse, AxiosError, GptRequestParams>({
+    mutationFn: (params) => fetchGptData("/api/gpt/trial/moderate", params),
+    ...options,
+  });
+
+export const useGptTrialStrong = (
+  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+) =>
+  useMutation<GptResponse, AxiosError, GptRequestParams>({
+    mutationFn: (params) => fetchGptData("/api/gpt/trial/strong", params),
     ...options,
   });
