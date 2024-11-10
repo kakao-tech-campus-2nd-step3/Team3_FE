@@ -26,5 +26,6 @@ html, body {
   top: 0;
   left: 0;
   box-sizing: border-box; 
+  font-family: 'Noto Sans KR', 'Roboto', sans-serif;
+  
 }
-
