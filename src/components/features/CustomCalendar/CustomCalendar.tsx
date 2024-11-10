@@ -19,7 +19,7 @@ import {
   calendarStyles,
   eventItemStyles,
 } from "./CustomCalendar.styles";
-import useDeletePlan from "@/api/hooks/useDeletePlans";
+import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Modal from "./PlanModal";
 import Button from "@/components/common/Button/Button";
 
@@ -139,7 +139,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   const handleDelete = useCallback(
     (id: string) => {
-      if (window.confirm("정말로 삭제하시겠습니까? ")) {
+      {
         if (onDeletePlan) {
           onDeletePlan(id);
         } else {
@@ -232,7 +232,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   return (
     <div css={appContainerStyles}>
-      <h1 css={appTitleStyles}>{calendarOwner || "My Calendar"}</h1>
+      {calendarOwner && <h1 css={appTitleStyles}>{calendarOwner}</h1>}
       <div css={calendarStyles}>
         <FullCalendar
           ref={calendarRef}
