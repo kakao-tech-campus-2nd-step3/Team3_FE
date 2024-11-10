@@ -1,7 +1,7 @@
 // mainPage.tsx
 import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
@@ -16,12 +16,18 @@ const PageContainer = styled.div`
 `;
 
 export default function MainlPage() {
+  const location = useLocation();
   const { data: Plans, isLoading, error, refetch } = useGetPlans();
-
   const savePlanMutation = useCreatePlan();
   const isPlanSaved = useRef(false);
   const hasMounted = useRef(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.refetchNeeded) {
+      refetch();
+    }
+  }, [location, refetch]);
 
   useEffect(() => {
     if (hasMounted.current) return; // strict모드로 인한 두 번 실행을 막기위해

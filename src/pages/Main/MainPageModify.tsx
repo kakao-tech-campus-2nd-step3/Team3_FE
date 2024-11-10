@@ -135,7 +135,7 @@ export default function PlanModifyPage() {
       }
     });
     alert("수정사항이 저장되었습니다.");
-    navigate(RouterPath.MAIN);
+    navigate(RouterPath.MAIN, { state: { refetchNeeded: true } });
   };
 
   return (
