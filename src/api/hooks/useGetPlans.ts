@@ -30,7 +30,19 @@ export const fetchPlans = async (): Promise<CalendarEvent[]> => {
 export const useGetPlans = () => {
   return useQuery<CalendarEvent[], Error>({
     queryKey: ["plans"],
-    queryFn: fetchPlans,
+    queryFn: async () => {
+      const data = await fetchPlans(); // 변환된 데이터를 가져옴
+
+      // KST로 변환하는 로직 추가
+      const KSTOffset = 9 * 60 * 60 * 1000;
+      const dataInKST = data.map((plan) => ({
+        ...plan,
+        start: new Date(plan.start.getTime() + KSTOffset),
+        end: new Date(plan.end.getTime() + KSTOffset),
+      }));
+
+      return dataInKST;
+    },
   });
 };
 
