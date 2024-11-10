@@ -17,7 +17,7 @@ export const useFriendRequest = () => {
     } catch (err) {
       const axiosError = err as AxiosError;
       if (axiosError.response?.status === 400) {
-        alert("이미 친구 요청을 보냈습니다.");
+        alert("이미 친구이거나 요청을 보낸 상태입니다.");
       } else {
         setError("친구 요청 전송 중 오류가 발생했습니다.");
         console.error("친구 요청 오류:", axiosError);
