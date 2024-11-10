@@ -16,7 +16,7 @@ const createPlan = async (planData: CreatePlanData) => {
   return response.data;
 };
 
-const useCreatePlan = () => {
+const useCreatePlan_old = () => {
   return useMutation({
     mutationFn: createPlan,
     onSuccess: (data) => {
@@ -28,4 +28,4 @@ const useCreatePlan = () => {
   });
 };
 
-export default useCreatePlan;
+export default useCreatePlan_old;
