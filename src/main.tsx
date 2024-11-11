@@ -19,13 +19,14 @@ import "./index.css";
 
 // });
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    registrations.forEach((registration) => {
-      if (registration.active && registration.scope.includes("mock")) {
-        registration.unregister(); // 서비스 워커 해제
-      }
+  navigator.serviceWorker
+    .register("/firebase-messaging-sw.js")
+    .then((registration) => {
+      console.log("Service Worker 등록 성공:", registration);
+    })
+    .catch((error) => {
+      console.error("Service Worker 등록 실패:", error);
     });
-  });
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
