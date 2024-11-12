@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Switch from "@mui/material/Switch";
+import { useNavigate } from "react-router-dom";
 import List from "@/components/common/List/List";
 import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
+import useAuth from "@/hooks/useAuth";
+import RouterPath from "@/router/RouterPath";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -51,6 +54,21 @@ const Card = styled(motion.div)`
   }
 `;
 
+const ProfileCard = styled(motion.div)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff; /* bg-white */
+  border-radius: 8px; /* rounded-lg */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow-md */
+  padding: 24px; /* p-6 */
+  transition: box-shadow 0.2s; /* transition-shadow duration-200 */
+  margin-bottom: 18px;
+  &:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
+  }
+`;
+
 const CardHeader = styled.div`
   display: flex;
   align-items: center;
@@ -74,11 +92,20 @@ const DeleteButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: 24px; /* mt-6 */
+  gap: 10px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
 `;
 
 export default function MyPage() {
   const [isNotificationEnabled, setNotificationEnabled] = useState(false);
   const { userData, handleDeleteAccount, handleSubscription } = useUserData();
+  const { setAuthState } = useAuth();
+  const navigate = useNavigate();
 
   const handleNotificationToggle = () => {
     setNotificationEnabled(!isNotificationEnabled);
@@ -92,13 +119,28 @@ export default function MyPage() {
     }
   };
 
+  const handleLogout = () => {
+    // 로그아웃 시 상태와 로컬 스토리지 초기화
+    setAuthState({ isAuthenticated: false });
+    localStorage.removeItem("authState");
+
+    // 헤더의 인증 토큰 제거
+    navigate(RouterPath.HOME);
+  };
+
+  const handleVisitClick = () => {
+    navigate(`/friend/${userData.id}`, {
+      state: { friendName: userData.nickname, userId: userData.id },
+    });
+  };
+
   return (
     <PageWrapper>
       <ContentWrapper>
         <Heading>마이페이지</Heading>
 
         {/* 프로필 카드 */}
-        <Card
+        <ProfileCard
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -107,7 +149,10 @@ export default function MyPage() {
             name={userData.nickname}
             date={userData.isPremium ? "프리미엄 회원" : "일반 회원"}
           />
-        </Card>
+          <Button size="small" theme="secondary" onClick={handleVisitClick}>
+            방문
+          </Button>
+        </ProfileCard>
 
         {/* 정보 카드 그리드 */}
         <GridLayout>
@@ -156,6 +201,9 @@ export default function MyPage() {
 
         {/* 회원 탈퇴 버튼 */}
         <DeleteButtonWrapper>
+          <Button onClick={handleLogout} size="small" theme="primary">
+            로그아웃
+          </Button>
           <Button onClick={handleDeleteAccount} size="small" theme="secondary">
             회원 탈퇴
           </Button>
