@@ -346,6 +346,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           dayMaxEvents
           weekends
           firstDay={1}
+          timeZone="UTC"
           events={parsedEvents}
           datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
           dayHeaderFormat={{
