@@ -3,7 +3,8 @@ import {
   RouterProvider,
   Navigate,
 } from "react-router-dom";
-
+import { useEffect } from "react";
+import { useModal, ModalProvider } from "@/context/LoginModalContext";
 import LandingPage from "@/pages/Landing/LandingPage";
 import RouterPath from "./RouterPath";
 import LoginModal from "@/pages/LoginModal/LoginModal";
@@ -28,9 +29,22 @@ import TeamPlanSelectPage from "@/pages/TeamPlan/TeamPlanSelectPage";
 import TeamInvitePage from "@/pages/TeamPlan/TeamPlanInvite";
 import TeamPlanModifyPage from "@/pages/TeamPlan/TeamPlanModify";
 import PlanModifyPage from "@/pages/Main/MainPageModify";
+import ProtectedRoute from "@/components/features/ProtectedRoute/ProtectedRoute";
 
 function Router() {
   const { authState } = useAuth();
+  const { openLoginModal, closeLoginModal, isLoginModalOpen } = useModal();
+
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+
+    if (!authState.isAuthenticated && currentPath !== RouterPath.HOME) {
+      openLoginModal();
+    } else {
+      closeLoginModal();
+    }
+  }, [authState, openLoginModal, closeLoginModal]);
+
   const router = createBrowserRouter([
     {
       path: RouterPath.HOME, // 랜딩 페이지는 사이드바 없는 레이아웃
@@ -58,43 +72,57 @@ function Router() {
     },
     {
       path: "/",
-      element: authState.isAuthenticated ? (
-        <Layout />
-      ) : (
-        <Navigate to={RouterPath.LOGIN} />
-      ),
-
+      element: <Layout />,
       children: [
-        { path: RouterPath.MAIN, element: <MainPage /> },
-        { path: RouterPath.TEAM_PLAN, element: <TeamPlan /> },
         {
-          path: `${RouterPath.TEAM_PLAN_DETAIL}`,
-          element: <TeamPlanDetailPage />,
+          element: <ProtectedRoute />,
+          children: [
+            { path: RouterPath.MAIN, element: <MainPage /> },
+            { path: RouterPath.TEAM_PLAN, element: <TeamPlan /> },
+            {
+              path: `${RouterPath.TEAM_PLAN_DETAIL}`,
+              element: <TeamPlanDetailPage />,
+            },
+            { path: RouterPath.MY_PAGE, element: <MyPage /> },
+            { path: RouterPath.PLAN, element: <PlanPage /> },
+            {
+              path: RouterPath.FRIEND,
+              element: <FriendPage />,
+            },
+            {
+              path: `${RouterPath.FRIEND}/:friendId`,
+              element: <FriendDetailPage />,
+            },
+            { path: RouterPath.MY_PAGE, element: <MyPage /> },
+            { path: RouterPath.PLAN_SELECT, element: <PlanSelectPage /> },
+            { path: RouterPath.PLAN_UPDATE, element: <PlanUpdate /> },
+            {
+              path: RouterPath.TEAM_PLAN_MAKING,
+              element: <TeamPlanMakingPage />,
+            },
+            {
+              path: RouterPath.TEAM_PLAN_SELECT,
+              element: <TeamPlanSelectPage />,
+            },
+            { path: RouterPath.TEAM_PLAN_UPDATE, element: <TeamPlanUpdate /> },
+            { path: RouterPath.TEAM_PLAN_INVITE, element: <TeamInvitePage /> },
+            {
+              path: RouterPath.TEAM_PLAN_MODIFY,
+              element: <TeamPlanModifyPage />,
+            },
+            { path: RouterPath.MAIN_MODIFY, element: <PlanModifyPage /> },
+          ],
         },
-        { path: RouterPath.MY_PAGE, element: <MyPage /> },
-        { path: RouterPath.PLAN, element: <PlanPage /> },
-        {
-          path: RouterPath.FRIEND,
-          element: <FriendPage />,
-        },
-        {
-          path: `${RouterPath.FRIEND}/:friendId`,
-          element: <FriendDetailPage />,
-        },
-        { path: RouterPath.MY_PAGE, element: <MyPage /> },
-        { path: RouterPath.PLAN_SELECT, element: <PlanSelectPage /> },
-        { path: RouterPath.PLAN_UPDATE, element: <PlanUpdate /> },
-        { path: RouterPath.TEAM_PLAN_MAKING, element: <TeamPlanMakingPage /> },
-        { path: RouterPath.TEAM_PLAN_SELECT, element: <TeamPlanSelectPage /> },
-        { path: RouterPath.TEAM_PLAN_UPDATE, element: <TeamPlanUpdate /> },
-        { path: RouterPath.TEAM_PLAN_INVITE, element: <TeamInvitePage /> },
-        { path: RouterPath.TEAM_PLAN_MODIFY, element: <TeamPlanModifyPage /> },
-        { path: RouterPath.MAIN_MODIFY, element: <PlanModifyPage /> },
       ],
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      {!authState.isAuthenticated && isLoginModalOpen && <LoginModal />}
+    </>
+  );
 }
 
 export default Router;
