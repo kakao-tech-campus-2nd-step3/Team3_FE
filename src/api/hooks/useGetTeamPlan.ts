@@ -22,8 +22,6 @@ const useGetTeamPlans = (teamId: number) => {
     enabled: !!teamId, // teamId가 있을 때만 요청 실행
   });
 
-  console.log("useGetTeamPlans hook result:", result); // 훅의 반환 데이터 로그
-  console.log("team number:", teamId);
   return result;
 };
 

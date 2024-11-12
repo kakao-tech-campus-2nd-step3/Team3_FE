@@ -5,7 +5,8 @@ import breakpoints from "@/variants/breakpoints";
 
 const Wrapper = styled.div`
   flex-direction: row;
-
+  display: flex;
+  width: 100%;
   ${breakpoints.mobile} {
     flex-direction: column;
     display: flex;
@@ -16,8 +17,9 @@ const Wrapper = styled.div`
 
 const ContentWrapper = styled.div`
   padding-left: 225px;
-  padding-top: 60px;
-
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
   ${breakpoints.mobile} {
     flex-grow: 1;
     padding: 60px 20px;
