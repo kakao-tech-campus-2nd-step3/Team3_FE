@@ -116,6 +116,9 @@ const Sidebar = () => {
     (menuName: string, path: string) => {
       setSelectedMenu(menuName);
       navigate(path);
+      if (window.innerWidth < breakpoints.sm) {
+        setIsOpen(false);
+      }
     },
     [navigate],
   );
