@@ -81,7 +81,7 @@ const IconButton = styled.button`
   display: flex;
   align-items: center;
   padding: 4px;
-  margin-left: 8px;
+  margin-left: 2px;
   &:disabled {
     cursor: not-allowed;
     opacity: 0.6;
@@ -106,6 +106,9 @@ const CommentItem = styled.div`
 
 const CommentContent = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const CommentAuthor = styled.div`
@@ -123,13 +126,19 @@ const CommentText = styled.div`
 const CommentDate = styled.div`
   font-size: 14px;
   color: #718096;
+`;
+
+const CommentDateWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 8px;
 `;
 
 const ActionButtons = styled.div`
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  margin-right: auto;
+  font-size: 9px;
 `;
 
 export default function FriendDetailPage() {
@@ -258,33 +267,37 @@ export default function FriendDetailPage() {
                   ) : (
                     <>
                       <CommentText>{comment.content}</CommentText>
-                      <CommentDate>{formatDate(comment.createdAt)}</CommentDate>
+                      <CommentDateWrapper>
+                        <CommentDate>
+                          {formatDate(comment.createdAt)}
+                        </CommentDate>
+                        {comment.writerId === userId && (
+                          <ActionButtons>
+                            <IconButton
+                              onClick={() => {
+                                setEditingCommentId(comment.id);
+                                setEditContent(comment.content);
+                              }}
+                              disabled={
+                                updateCommentMutation.isPending ||
+                                deleteCommentMutation.isPending
+                              }
+                            >
+                              <Edit />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => handleDeleteComment(comment.id)}
+                              disabled={
+                                updateCommentMutation.isPending ||
+                                deleteCommentMutation.isPending
+                              }
+                            >
+                              <Delete />
+                            </IconButton>
+                          </ActionButtons>
+                        )}
+                      </CommentDateWrapper>
                     </>
-                  )}
-                  {comment.writerId === userId && (
-                    <ActionButtons>
-                      <IconButton
-                        onClick={() => {
-                          setEditingCommentId(comment.id);
-                          setEditContent(comment.content);
-                        }}
-                        disabled={
-                          updateCommentMutation.isPending ||
-                          deleteCommentMutation.isPending
-                        }
-                      >
-                        <Edit />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteComment(comment.id)}
-                        disabled={
-                          updateCommentMutation.isPending ||
-                          deleteCommentMutation.isPending
-                        }
-                      >
-                        <Delete />
-                      </IconButton>
-                    </ActionButtons>
                   )}
                 </CommentContent>
               </CommentItem>
