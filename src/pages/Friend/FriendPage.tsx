@@ -1,6 +1,5 @@
-/** @jsxImportSource @emotion/react */
 import { useState, useMemo } from "react";
-import { css } from "@emotion/react";
+import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 import { Search } from "@mui/icons-material";
 import ProfileImage from "@/components/common/ProfileImage/ProfileImage";
@@ -26,31 +25,53 @@ import {
 } from "@/types/types";
 import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
+import breakpoints from "@/variants/breakpoints";
 
-// Styles
-const pageStyles = css`
+// Styled Components
+const PageContainer = styled.div`
   width: 100%;
   max-width: 1200px;
-  padding: 32px; /* Adjusted padding */
+  padding: 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: "Inter", sans-serif;
   box-sizing: border-box;
   overflow-x: hidden;
   background-color: #ffffff;
 `;
 
-const headingStyles = css`
-  font-size: 24px; /* text-3xl */
-  font-weight: 600; /* font-semibold */
-  margin-bottom: 24px; /* mb-6 */
-  color: #2d3748; /* text-gray-800 */
+const Heading = styled.h1`
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #2d3748;
   margin-right: auto;
 `;
 
-const searchBarStyles = css`
+const TabsContainer = styled.div`
   display: flex;
+  justify-content: flex-end;
+  gap: 28px;
+  width: 100%;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+`;
+
+const Tab = styled.div<{ active: boolean }>`
+  font-size: 15px;
+  font-weight: ${(props) => (props.active ? 600 : 400)};
+  color: ${(props) => (props.active ? "#39a7f7" : "#9b9b9b")};
+  cursor: pointer;
+  transition: color 0.3s ease;
+`;
+
+const SearchBarWrapper = styled.div`
+  width: 100%;
+`;
+const SearchBar = styled.div`
+  display: flex;
+  flex: 1;
   align-items: center;
   padding: 10px;
   border-radius: 8px;
@@ -61,13 +82,13 @@ const searchBarStyles = css`
   background-color: #ffffff;
 `;
 
-const searchIconStyles = css`
+const SearchIconStyled = styled(Search)`
   color: #aab2c8;
   font-size: 20px;
   margin-right: 10px;
 `;
 
-const searchInputStyles = css`
+const SearchInput = styled.input`
   flex: 1;
   border: none;
   background: transparent;
@@ -80,68 +101,51 @@ const searchInputStyles = css`
   }
 `;
 
-const searchButtonStyles = css`
+const SearchButton = styled.span`
   color: #39a7f7;
   cursor: pointer;
   font-weight: bold;
   margin-left: 10px;
 `;
 
-const tabsStyles = css`
-  display: flex;
-  justify-content: flex-end;
-  gap: 28px;
+const FriendListContainer = styled.div`
   width: 100%;
-  margin-bottom: 20px;
+  display: grid;
+  gap: 16px;
   box-sizing: border-box;
-  flex-wrap: wrap;
-`;
+  grid-template-columns: 1fr;
 
-const tabStyles = css`
-  font-size: 15px;
-  font-weight: 400;
-  color: #9b9b9b;
-  cursor: pointer;
-  transition: color 0.3s ease;
-
-  &.active {
-    color: #39a7f7;
-    font-weight: 600;
+  @media (min-width: ${breakpoints.lg}px) {
+    grid-template-columns: 1fr 1fr;
   }
 `;
 
-const friendListStyles = css`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px; /* Adjusted gap */
-  box-sizing: border-box;
-`;
-
-const friendItemStyles = css`
+const FriendItemContainer = styled.div`
   display: flex;
   align-items: center;
   background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
   padding: 16px;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.2s;
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
 `;
 
-const profileImageWrapperStyles = css`
+const ProfileImageWrapper = styled.div`
   margin-right: 16px;
 `;
 
-const buttonContainerStyles = css`
+const ButtonContainer = styled.div`
   display: flex;
   gap: 10px;
   margin-left: auto;
 `;
 
-const emptyMessageStyles = css`
+const EmptyMessage = styled.p`
   text-align: center;
   color: #999;
   font-size: 16px;
@@ -201,7 +205,7 @@ const FriendPage = () => {
 
   const renderedFriendList = useMemo(() => {
     if (friendList.length === 0) {
-      return <p css={emptyMessageStyles}>친구가 없습니다.</p>;
+      return <EmptyMessage>친구가 없습니다.</EmptyMessage>;
     }
     return friendList.map((friend) => (
       <FriendItem
@@ -214,7 +218,7 @@ const FriendPage = () => {
 
   const renderedSentRequests = useMemo(() => {
     if (sentRequests.length === 0) {
-      return <p css={emptyMessageStyles}>보낸 요청이 없습니다.</p>;
+      return <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>;
     }
     return sentRequests.map((request) => (
       <RequestItem
@@ -235,7 +239,7 @@ const FriendPage = () => {
 
   const renderedReceivedRequests = useMemo(() => {
     if (receivedRequests.length === 0) {
-      return <p css={emptyMessageStyles}>받은 요청이 없습니다.</p>;
+      return <EmptyMessage>받은 요청이 없습니다.</EmptyMessage>;
     }
     return receivedRequests.map((request) => (
       <RequestItem
@@ -255,93 +259,86 @@ const FriendPage = () => {
   ]);
 
   return (
-    <div css={pageStyles}>
-      <h1 css={headingStyles}>친구</h1>
-      <div css={tabsStyles}>
-        <div
-          css={tabStyles}
-          className={activeTab === "friendSearch" ? "active" : ""}
+    <PageContainer>
+      <Heading>친구</Heading>
+      <TabsContainer>
+        <Tab
+          active={activeTab === "friendSearch"}
           onClick={() => setActiveTab("friendSearch")}
-          role="button"
-          tabIndex={0}
         >
           친구 검색
-        </div>
-        <div
-          css={tabStyles}
-          className={activeTab === "friendList" ? "active" : ""}
+        </Tab>
+        <Tab
+          active={activeTab === "friendList"}
           onClick={() => setActiveTab("friendList")}
-          role="button"
-          tabIndex={0}
         >
           친구 목록
-        </div>
-        <div
-          css={tabStyles}
-          className={activeTab === "receivedRequests" ? "active" : ""}
+        </Tab>
+        <Tab
+          active={activeTab === "receivedRequests"}
           onClick={() => setActiveTab("receivedRequests")}
-          role="button"
-          tabIndex={0}
         >
           받은 요청
-        </div>
-        <div
-          css={tabStyles}
-          className={activeTab === "sentRequests" ? "active" : ""}
+        </Tab>
+        <Tab
+          active={activeTab === "sentRequests"}
           onClick={() => setActiveTab("sentRequests")}
-          role="button"
-          tabIndex={0}
         >
           보낸 요청
-        </div>
-      </div>
-      <div css={friendListStyles}>
-        {activeTab === "friendSearch" && (
-          <div>
-            <div css={searchBarStyles}>
-              <Search css={searchIconStyles} />
-              <input
-                css={searchInputStyles}
-                placeholder="검색"
-                value={searchQuery}
-                onChange={handleSearchInputChange}
-              />
-              <span
-                css={searchButtonStyles}
-                onClick={handleSearch}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") handleSearch();
-                }}
-              >
-                검색
-              </span>
-            </div>
-            {searched && !searchResults && (
-              <p css={emptyMessageStyles}>검색 결과가 없습니다.</p>
-            )}
-            {searchResults && (
-              <SearchResultItem
-                friend={searchResults}
-                refetchSentRequests={refetchSentRequests}
-              />
-            )}
-          </div>
-        )}
-        {activeTab === "friendList" && !isLoadingFriends && renderedFriendList}
-        {activeTab === "sentRequests" && !isLoadingSent && renderedSentRequests}
-        {activeTab === "receivedRequests" &&
-          !isLoadingReceived &&
-          renderedReceivedRequests}
-      </div>
-    </div>
+        </Tab>
+      </TabsContainer>
+
+      {activeTab === "friendSearch" && (
+        <SearchBarWrapper>
+          <SearchBar>
+            <SearchIconStyled />
+            <SearchInput
+              placeholder="검색"
+              value={searchQuery}
+              onChange={handleSearchInputChange}
+            />
+            <SearchButton
+              onClick={handleSearch}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
+            >
+              검색
+            </SearchButton>
+          </SearchBar>
+          {searched && !searchResults && (
+            <EmptyMessage>검색 결과가 없습니다.</EmptyMessage>
+          )}
+          {searchResults && (
+            <SearchResultItem
+              friend={searchResults}
+              refetchSentRequests={refetchSentRequests}
+            />
+          )}
+        </SearchBarWrapper>
+      )}
+
+      {activeTab !== "friendSearch" && (
+        <FriendListContainer>
+          {activeTab === "friendList" &&
+            !isLoadingFriends &&
+            renderedFriendList}
+          {activeTab === "sentRequests" &&
+            !isLoadingSent &&
+            renderedSentRequests}
+          {activeTab === "receivedRequests" &&
+            !isLoadingReceived &&
+            renderedReceivedRequests}
+        </FriendListContainer>
+      )}
+    </PageContainer>
   );
 };
 
 // Components
 
-// 검색 결과 아이템 컴포넌트
 const SearchResultItem = ({
   friend,
   refetchSentRequests,
@@ -357,12 +354,12 @@ const SearchResultItem = ({
   };
 
   return (
-    <div css={friendItemStyles}>
-      <div css={profileImageWrapperStyles}>
+    <FriendItemContainer>
+      <ProfileImageWrapper>
         <ProfileImage src={friend.profileImage} alt={friend.nickname} />
-      </div>
+      </ProfileImageWrapper>
       <UserInfo name={friend.nickname} />
-      <div css={buttonContainerStyles}>
+      <ButtonContainer>
         <Button
           size="small"
           theme="primary"
@@ -371,12 +368,11 @@ const SearchResultItem = ({
         >
           친구 요청
         </Button>
-      </div>
-    </div>
+      </ButtonContainer>
+    </FriendItemContainer>
   );
 };
 
-// 친구 아이템 컴포넌트
 const FriendItem = ({
   friend,
   refetchFriends,
@@ -406,24 +402,23 @@ const FriendItem = ({
   };
 
   return (
-    <div css={friendItemStyles}>
-      <div css={profileImageWrapperStyles}>
+    <FriendItemContainer>
+      <ProfileImageWrapper>
         <ProfileImage src={friend.profileImage} alt={friend.nickname} />
-      </div>
+      </ProfileImageWrapper>
       <UserInfo name={friend.nickname} />
-      <div css={buttonContainerStyles}>
+      <ButtonContainer>
         <Button size="small" theme="primary" onClick={handleVisitClick}>
           방문
         </Button>
         <Button size="small" theme="secondary" onClick={handleDeleteClick}>
           삭제
         </Button>
-      </div>
-    </div>
+      </ButtonContainer>
+    </FriendItemContainer>
   );
 };
 
-// 요청 아이템 컴포넌트
 function isSentRequest(
   request: SentRequest | ReceivedRequest,
 ): request is SentRequest {
@@ -475,15 +470,14 @@ const RequestItem = ({
       cancelFriendRequestMutation.mutate(undefined, {
         onSuccess: () => {
           refetchSentRequests();
-          alert("친구 요청을 취소했습니다.");
         },
       });
     }
   };
 
   return (
-    <div css={friendItemStyles}>
-      <div css={profileImageWrapperStyles}>
+    <FriendItemContainer>
+      <ProfileImageWrapper>
         <ProfileImage
           src={request.profileImage}
           alt={
@@ -492,13 +486,13 @@ const RequestItem = ({
               : request.requesterName
           }
         />
-      </div>
+      </ProfileImageWrapper>
       <UserInfo
         name={
           isSentRequest(request) ? request.receiverName : request.requesterName
         }
       />
-      <div css={buttonContainerStyles}>
+      <ButtonContainer>
         {type === "sent" ? (
           <Button size="small" theme="primary" onClick={handleCancelClick}>
             취소
@@ -513,8 +507,8 @@ const RequestItem = ({
             </Button>
           </>
         )}
-      </div>
-    </div>
+      </ButtonContainer>
+    </FriendItemContainer>
   );
 };
 
