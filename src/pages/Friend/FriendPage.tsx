@@ -14,6 +14,7 @@ import {
   useFriendRequest,
   useAcceptFriendRequest,
   useRejectFriendRequest,
+  useCancelFriendRequest,
 } from "@/api/hooks/useFriendRequest";
 import useDeleteFriend from "@/api/hooks/useDeleteFriend";
 import breakpoints from "@/variants/breakpoints";
@@ -24,18 +25,19 @@ import {
   SearchResult,
 } from "@/types/types";
 import Button from "@/components/common/Button/Button";
+import useUserData from "@/api/hooks/useUserData";
 
 // Styles
 const pageStyles = css`
   width: 100%;
   max-width: 1200px;
-  height: 100vh;
   padding: 10px 45px;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-family: "Inter", sans-serif;
   box-sizing: border-box;
+  overflow-x: hidden;
   @media (max-width: ${breakpoints.sm}px) {
     padding-top: 80px;
   }
@@ -85,6 +87,7 @@ const tabsStyles = css`
   width: 100%;
   margin-bottom: 20px;
   box-sizing: border-box;
+  flex-wrap: wrap;
 `;
 
 const tabStyles = css`
@@ -116,8 +119,7 @@ const friendItemStyles = css`
   border-radius: 16px;
   box-sizing: border-box;
   width: 100%;
-  flex-wrap: nowrap;
-  min-width: 394px;
+  flex-wrap: wrap;
 `;
 
 const buttonContainerStyles = css`
@@ -127,12 +129,26 @@ const buttonContainerStyles = css`
   margin-right: 20px;
 `;
 
+const emptyMessageStyles = css`
+  text-align: center;
+  color: #999;
+  font-size: 16px;
+  margin-top: 20px;
+`;
+
 // 검색 결과 아이템 컴포넌트
-const SearchResultItem = ({ friend }: { friend: SearchResult }) => {
+const SearchResultItem = ({
+  friend,
+  refetchSentRequests,
+}: {
+  friend: SearchResult;
+  refetchSentRequests: () => void;
+}) => {
   const { sendFriendRequest, isLoading } = useFriendRequest();
 
-  const handleFriendRequest = () => {
-    sendFriendRequest(friend.id);
+  const handleFriendRequest = async () => {
+    await sendFriendRequest(friend.id);
+    refetchSentRequests();
   };
 
   return (
@@ -153,24 +169,36 @@ const SearchResultItem = ({ friend }: { friend: SearchResult }) => {
 };
 
 // List 아이템을 렌더링하는 컴포넌트
-const FriendItem = ({ friend }: { friend: Friend }) => {
+const FriendItem = ({
+  friend,
+  refetchFriends,
+}: {
+  friend: Friend;
+  refetchFriends: () => void;
+}) => {
   const navigate = useNavigate();
   const deleteFriendMutation = useDeleteFriend(friend.userId);
+  const { userData } = useUserData();
 
   const handleVisitClick = () => {
     navigate(`/friend/${friend.userId}`, {
-      state: { friendName: friend.nickname },
+      state: { friendName: friend.nickname, userId: userData.id },
     });
   };
 
   const handleDeleteClick = () => {
     if (window.confirm("정말로 삭제하시겠습니까?")) {
-      deleteFriendMutation.mutate();
+      deleteFriendMutation.mutate(undefined, {
+        onSuccess: () => {
+          refetchFriends();
+          alert("친구를 삭제했습니다.");
+        },
+      });
     }
   };
 
   return (
-    <div key={friend.userId} css={friendItemStyles}>
+    <div css={friendItemStyles}>
       <List profileSrc={friend.profileImage} name={friend.nickname} />
       <div css={buttonContainerStyles}>
         <Button size="small" theme="primary" onClick={handleVisitClick}>
@@ -188,32 +216,61 @@ function isSentRequest(
   request: SentRequest | ReceivedRequest,
 ): request is SentRequest {
   return (request as SentRequest).receiverName !== undefined;
-} // 타입가드
+} // 타입 가드
 
 const RequestItem = ({
   request,
   type,
+  refetchFriends,
+  refetchReceivedRequests,
+  refetchSentRequests,
 }: {
   request: SentRequest | ReceivedRequest;
   type: "sent" | "received";
+  refetchFriends: () => void;
+  refetchReceivedRequests: () => void;
+  refetchSentRequests: () => void;
 }) => {
   const acceptFriendRequestMutation = useAcceptFriendRequest(request.id);
   const rejectFriendRequestMutation = useRejectFriendRequest(request.id);
+  const cancelFriendRequestMutation = useCancelFriendRequest(request.id);
 
   const handleAcceptClick = () => {
     if (window.confirm("이 친구 요청을 수락하시겠습니까?")) {
-      acceptFriendRequestMutation.mutate();
+      acceptFriendRequestMutation.mutate(undefined, {
+        onSuccess: () => {
+          refetchFriends();
+          refetchReceivedRequests();
+          alert("친구 요청을 수락했습니다.");
+        },
+      });
     }
   };
 
   const handleRejectClick = () => {
     if (window.confirm("이 친구 요청을 거절하시겠습니까?")) {
-      rejectFriendRequestMutation.mutate();
+      rejectFriendRequestMutation.mutate(undefined, {
+        onSuccess: () => {
+          refetchReceivedRequests();
+          alert("친구 요청을 거절했습니다.");
+        },
+      });
+    }
+  };
+
+  const handleCancelClick = () => {
+    if (window.confirm("이 친구 요청을 취소하시겠습니까?")) {
+      cancelFriendRequestMutation.mutate(undefined, {
+        onSuccess: () => {
+          refetchSentRequests();
+          alert("친구 요청을 취소했습니다.");
+        },
+      });
     }
   };
 
   return (
-    <div key={request.id} css={friendItemStyles}>
+    <div css={friendItemStyles}>
       <List
         profileSrc={request.profileImage}
         name={
@@ -222,30 +279,15 @@ const RequestItem = ({
       />
       <div css={buttonContainerStyles}>
         {type === "sent" ? (
-          <Button
-            style={{ marginRight: "10px" }}
-            size="small"
-            theme="primary"
-            onClick={() => console.log("취소 clicked")}
-          >
+          <Button size="small" theme="primary" onClick={handleCancelClick}>
             취소
           </Button>
         ) : (
           <>
-            <Button
-              style={{ paddingRight: "10px" }}
-              size="small"
-              theme="primary"
-              onClick={handleAcceptClick}
-            >
+            <Button size="small" theme="primary" onClick={handleAcceptClick}>
               수락
             </Button>
-            <Button
-              style={{ margin: "10px" }}
-              size="small"
-              theme="secondary"
-              onClick={handleRejectClick}
-            >
+            <Button size="small" theme="secondary" onClick={handleRejectClick}>
               거절
             </Button>
           </>
@@ -262,12 +304,24 @@ export default function FriendListPage() {
   const [searched, setSearched] = useState(false);
 
   // React Query 훅 사용
-  const { data: friendList = [], isLoading: isLoadingFriends } =
-    useGetFriends();
-  const { data: receivedRequests = [], isLoading: isLoadingReceived } =
-    useGetReceivedRequests();
-  const { data: sentRequests = [], isLoading: isLoadingSent } =
-    useGetSentRequests();
+  const {
+    data: friendList = [],
+    isLoading: isLoadingFriends,
+    refetch: refetchFriends,
+  } = useGetFriends();
+
+  const {
+    data: receivedRequests = [],
+    isLoading: isLoadingReceived,
+    refetch: refetchReceivedRequests,
+  } = useGetReceivedRequests();
+
+  const {
+    data: sentRequests = [],
+    isLoading: isLoadingSent,
+    refetch: refetchSentRequests,
+  } = useGetSentRequests();
+
   const { refetch: fetchFriendByNickname } =
     useGetFriendByNickname(searchQuery);
 
@@ -294,27 +348,60 @@ export default function FriendListPage() {
     setSearched(false);
   };
 
-  const renderedFriendList = useMemo(
-    () =>
-      friendList.map((friend) => (
-        <FriendItem key={friend.userId} friend={friend} />
-      )),
-    [friendList],
-  );
-  const renderedSentRequests = useMemo(
-    () =>
-      sentRequests.map((request) => (
-        <RequestItem key={request.id} request={request} type="sent" />
-      )),
-    [sentRequests],
-  );
-  const renderedReceivedRequests = useMemo(
-    () =>
-      receivedRequests.map((request) => (
-        <RequestItem key={request.id} request={request} type="received" />
-      )),
-    [receivedRequests],
-  );
+  const renderedFriendList = useMemo(() => {
+    if (friendList.length === 0) {
+      return <p css={emptyMessageStyles}>친구가 없습니다.</p>;
+    }
+    return friendList.map((friend) => (
+      <FriendItem
+        key={friend.userId}
+        friend={friend}
+        refetchFriends={refetchFriends}
+      />
+    ));
+  }, [friendList, refetchFriends]);
+
+  const renderedSentRequests = useMemo(() => {
+    if (sentRequests.length === 0) {
+      return <p css={emptyMessageStyles}>보낸 요청이 없습니다.</p>;
+    }
+    return sentRequests.map((request) => (
+      <RequestItem
+        key={request.id}
+        request={request}
+        type="sent"
+        refetchFriends={refetchFriends}
+        refetchReceivedRequests={refetchReceivedRequests}
+        refetchSentRequests={refetchSentRequests}
+      />
+    ));
+  }, [
+    sentRequests,
+    refetchFriends,
+    refetchReceivedRequests,
+    refetchSentRequests,
+  ]);
+
+  const renderedReceivedRequests = useMemo(() => {
+    if (receivedRequests.length === 0) {
+      return <p css={emptyMessageStyles}>받은 요청이 없습니다.</p>;
+    }
+    return receivedRequests.map((request) => (
+      <RequestItem
+        key={request.id}
+        request={request}
+        type="received"
+        refetchFriends={refetchFriends}
+        refetchReceivedRequests={refetchReceivedRequests}
+        refetchSentRequests={refetchSentRequests}
+      />
+    ));
+  }, [
+    receivedRequests,
+    refetchFriends,
+    refetchReceivedRequests,
+    refetchSentRequests,
+  ]);
 
   return (
     <div css={pageStyles}>
@@ -371,6 +458,7 @@ export default function FriendListPage() {
                 css={searchButtonStyles}
                 onClick={handleSearch}
                 role="button"
+                tabIndex={0}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") handleSearch();
                 }}
@@ -378,8 +466,15 @@ export default function FriendListPage() {
                 검색
               </span>
             </div>
-            {searched && !searchResults && <p>검색 결과가 없습니다.</p>}
-            {searchResults && <SearchResultItem friend={searchResults} />}
+            {searched && !searchResults && (
+              <p css={emptyMessageStyles}>검색 결과가 없습니다.</p>
+            )}
+            {searchResults && (
+              <SearchResultItem
+                friend={searchResults}
+                refetchSentRequests={refetchSentRequests}
+              />
+            )}
           </div>
         )}
         {activeTab === "friendList" && !isLoadingFriends && renderedFriendList}

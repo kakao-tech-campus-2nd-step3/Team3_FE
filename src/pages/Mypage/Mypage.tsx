@@ -8,7 +8,6 @@ import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
 
 const PageWrapper = styled.div`
-  min-height: 100vh;
   padding: 2rem;
 `;
 
@@ -23,7 +22,6 @@ const ContentWrapper = styled.div`
 const Card = styled.div`
   background-color: #f4f4f4;
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
 `;
 
@@ -56,7 +54,6 @@ const GridLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
   }

@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
 import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
-import RouterPath from "@/router/RouterPath";
+
 import breakpoints from "@/variants/breakpoints";
 
 // 슬라이드 애니메이션
@@ -18,7 +18,6 @@ const slideDown = keyframes`
     transform: translateY(0);
   }
 `;
-
 // 전체 컨테이너
 const PlanUpdateContainer = styled.div`
   display: grid;
@@ -26,14 +25,12 @@ const PlanUpdateContainer = styled.div`
   margin: 0 auto;
   margin-top: 20px;
 `;
-
 // 내용 래퍼
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
 `;
-
 // 캘린더 컨테이너
 const CalendarContainer = styled.div`
   margin-bottom: 40px;
@@ -41,13 +38,11 @@ const CalendarContainer = styled.div`
     margin-bottom: -50px;
   }
 `;
-
 // 텍스트 스타일
 const StyledText = styled.p`
   font-size: 30px; /* 기본 폰트 크기 */
   font-weight: bold;
   text-align: center;
-
   &.animate {
     animation: ${slideDown} 1s ease-in-out;
   }
@@ -56,7 +51,6 @@ const StyledText = styled.p`
     white-space: pre-line;
   }
 `;
-
 const StyledTextContainer = styled.div`
   height: 70px;
   margin-bottom: 20px;
@@ -72,17 +66,14 @@ const ButtonContainer = styled.div`
     gap: 30px;
   }
 `;
-
 const PreviewPlanUpdate = () => {
   const TitleMessages = [
     "플랜을 수정하거나, 바로 저장하세요.",
     "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
   ];
-
   // 메시지 애니메이션과 인덱스 상태
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
-
   // 메시지와 애니메이션 설정
   useEffect(() => {
     const interval = setInterval(() => {
@@ -96,8 +87,42 @@ const PreviewPlanUpdate = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
-
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedPlan = location.state?.selectedPlan || [];
+  const previewDeviceId = location.state?.deviceId;
+  const previewGroupId = location.state?.groupId;
+
+  const handleSave = async () => {
+    try {
+      if (!selectedPlan || selectedPlan.length === 0) {
+        alert("저장할 플랜이 없습니다.");
+        return;
+      }
+
+      if (!previewDeviceId || !previewGroupId) {
+        alert("디바이스 ID 또는 그룹 ID가 없습니다.");
+        return;
+      }
+
+      // 플랜 데이터를 로컬 스토리지에 저장
+      localStorage.setItem(
+        "previewPlanData",
+        JSON.stringify({
+          selectedPlan,
+          previewDeviceId,
+          previewGroupId,
+        }),
+      );
+
+      // 카카오 로그인 페이지로 리다이렉트
+      window.location.href =
+        "https://api.splanet.co.kr/oauth2/authorization/kakao";
+    } catch (error) {
+      console.error("플랜 저장 중 오류 발생:", error);
+      alert("플랜 저장에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
 
   return (
     <PlanUpdateContainer>
@@ -109,10 +134,10 @@ const PreviewPlanUpdate = () => {
         </StyledTextContainer>
 
         <CalendarContainer>
-          <CustomCalendar />
+          <CustomCalendar plans={selectedPlan} />
         </CalendarContainer>
         <ButtonContainer>
-          <Button onClick={() => navigate(RouterPath.MAIN)}>저장</Button>
+          <Button onClick={handleSave}>저장</Button>
           <Button theme="secondary" onClick={() => navigate(-1)}>
             취소
           </Button>
@@ -121,5 +146,4 @@ const PreviewPlanUpdate = () => {
     </PlanUpdateContainer>
   );
 };
-
 export default PreviewPlanUpdate;

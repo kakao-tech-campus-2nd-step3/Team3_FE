@@ -7,14 +7,15 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useVoiceHook from "@/hooks/useVoiceHook";
-import useCreatePlan from "@/api/hooks/useCreatePlans";
+import useGptTrial from "@/api/hooks/useGptTrial";
+import useGenerateDeviceId from "@/api/hooks/useGenerateDeviceId";
+import useSavePlan from "@/api/hooks/useSavePlan";
 
 const PlanPageContainer = styled.div`
   width: 60%
   display: grid;
   justify-content: center;
   align-items: center;
- 
 `;
 const InputWrapper = styled.div`
   display: flex;
@@ -49,7 +50,6 @@ const ButtonContainer = styled.div`
   gap: 130px;
   margin-bottom: 40px;
 `;
-
 function MessageSilderWithAnimation() {
   const messages = [
     "일정의 예상 소요 시간을 말해주시면 더 정확해요.",
@@ -59,13 +59,13 @@ function MessageSilderWithAnimation() {
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
-  // 타이머 실행
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
   return <SubTitle>{messages[currentMessageIndex]}</SubTitle>;
 }
 
@@ -78,35 +78,122 @@ const PlanPage: React.FC = () => {
     handleStopRecording,
   } = useVoiceHook();
   const navigate = useNavigate();
-  const createPlanMutation = useCreatePlan();
+  const { data: deviceId, isLoading: isDeviceIdLoading } =
+    useGenerateDeviceId();
+  const gptRequestMutation = useGptTrial();
+  const savePlanMutation = useSavePlan({
+    onSuccess: (data) => {
+      console.log("플랜 저장 성공:", data);
+    },
+    onError: (error) => {
+      console.error("플랜 저장 실패:", error);
+      alert("플랜 저장에 실패했습니다. 다시 시도해주세요.");
+    },
+  });
 
-  const handleNextClick = async () => {
+  const handleSaveClick = async () => {
+    if (!deviceId) {
+      alert("Device ID를 생성하는 중입니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
+    if (!transcript.trim()) {
+      alert("플랜 내용을 입력해주세요.");
+      return;
+    }
+
     try {
-      await createPlanMutation.mutateAsync({
-        title: transcript,
-        description: transcript,
-        startDate: new Date().toISOString(), // 적절한 날짜로 수정 필요
-        endDate: new Date(new Date().getTime() + 3600 * 1000).toISOString(), // 적절한 날짜로 수정 필요
-        accessibility: true,
-        isCompleted: false,
+      // GPT 요청 보내기
+      const gptResponses = await gptRequestMutation.mutateAsync({
+        deviceId,
+        text: transcript,
       });
 
-      // 플랜 생성 성공 후 다음 페이지로 이동
-      navigate(RouterPath.PLAN_SELECT);
+      if (!gptResponses || !Array.isArray(gptResponses)) {
+        console.error("GPT 응답이 비어있거나 잘못된 형식입니다:", gptResponses);
+        return;
+      }
+
+      console.log("GPT 응답 데이터:", gptResponses);
+
+      // save API 호출 및 각 요청 결과 처리
+      const saveResults = await Promise.allSettled(
+        gptResponses.map(async (response) => {
+          try {
+            const { groupId, planCards } = response;
+
+            // planCards가 배열인지 확인
+            if (!Array.isArray(planCards)) {
+              throw new Error(
+                `Invalid planCards format for groupId: ${groupId}`,
+              );
+            }
+
+            const savedResponse = await savePlanMutation.mutateAsync({
+              deviceId,
+              groupId,
+              planCards: planCards.map((card) => ({
+                ...card,
+                accessibility: true,
+                isCompleted: false,
+              })),
+            });
+
+            // 저장 성공시 groupId를 포함하여 반환
+            return { success: true, groupId, response: savedResponse };
+          } catch (error) {
+            console.error("Plan save error:", error);
+            return { success: false, error };
+          }
+        }),
+      );
+
+      // 결과 분석
+      const successfulSaves = saveResults.filter(
+        (result) =>
+          result.status === "fulfilled" && result.value && result.value.success,
+      );
+
+      console.log("Save results:", saveResults);
+      console.log("Successful saves:", successfulSaves);
+
+      if (successfulSaves.length > 0) {
+        // 저장된 플랜이 하나 이상 있으면 다음 페이지로 이동
+        navigate(RouterPath.PREVIEW_PLAN_SELECT, {
+          state: {
+            speechText: transcript,
+            // 필요한 경우 성공적으로 저장된 groupId들을 전달
+            savedGroupIds: successfulSaves
+              .map(
+                (result) =>
+                  result.status === "fulfilled" && result.value.groupId,
+              )
+              .filter(Boolean),
+          },
+        });
+      } else {
+        alert("플랜 저장에 실패했습니다. 다시 시도해주세요.");
+        console.error("모든 플랜 저장 실패:", saveResults);
+      }
     } catch (error) {
-      // 에러 처리
-      console.error("플랜 생성 실패:", error);
+      console.error("GPT 요청 또는 플랜 저장 실패:", error);
+      alert("플랜 생성에 실패했습니다. 다시 시도해주세요.");
     }
   };
+
+  if (isDeviceIdLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <PlanPageContainer>
       <InputWrapper>
-        <Title />
+        <Title>플랜을 생성하세요</Title>
         <MessageSilderWithAnimation />
         <Input
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
+          placeholder="플랜 내용을 입력하거나 음성으로 말씀해주세요"
         />
         <MicrophoneButton
           onStartClick={handleStartRecording}
@@ -114,8 +201,18 @@ const PlanPage: React.FC = () => {
           isRecording={isRecording}
         />
         <ButtonContainer>
-          <Button onClick={handleNextClick}>다음</Button>
-          <Button onClick={() => navigate(-1)} theme="secondary">
+          <Button
+            size="responsive"
+            onClick={handleSaveClick}
+            disabled={isDeviceIdLoading || !transcript.trim()}
+          >
+            다음
+          </Button>
+          <Button
+            theme="secondary"
+            size="responsive"
+            onClick={() => navigate(-1)}
+          >
             취소
           </Button>
         </ButtonContainer>
