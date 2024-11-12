@@ -23,6 +23,14 @@ const Title = styled.h1`
   text-align: center;
 `;
 
+const TeamName = styled.h2`
+  font-size: 24px;
+  font-weight: normal;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #4a5568;
+`;
+
 const SearchBar = styled.div`
   display: flex;
   align-items: center;
@@ -74,7 +82,7 @@ const FinishButton = styled(Button)`
 
 export default function TeamInvitePage() {
   const { state } = useLocation();
-  const { teamId } = state || {};
+  const { teamId, teamName } = state || {};
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -97,7 +105,9 @@ export default function TeamInvitePage() {
       if (error.response) {
         switch (error.response.status) {
           case 400:
-            setErrorMessage("해당 유저는 이미 팀에 속해 있습니다.");
+            setErrorMessage(
+              "해당 유저는 이미 초대하였거나 팀에 속해 있습니다.",
+            );
             break;
           case 403:
             setErrorMessage("권한이 없습니다.");
@@ -122,6 +132,7 @@ export default function TeamInvitePage() {
   return (
     <PageContainer>
       <Title>초대할 팀원을 검색해주세요</Title>
+      {teamName && <TeamName>팀 이름: {teamName}</TeamName>}
       <SearchBar>
         <SearchInput
           placeholder="닉네임 입력"
