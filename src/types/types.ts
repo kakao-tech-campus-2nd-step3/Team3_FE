@@ -69,3 +69,13 @@ export interface SentInvitation {
   profileImage: string | null;
   status: "PENDING";
 }
+
+export interface TeamInvitation {
+  invitationId: number;
+  teamId: number;
+  teamName: string;
+  userId: number;
+  nickname: string;
+  profileImage: string;
+  status: string;
+}
