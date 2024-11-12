@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
-import { apiClient } from "@/api/instance";
 import RouterPath from "@/router/RouterPath";
 
 const OAuthRedirectHandler = () => {
@@ -24,20 +23,20 @@ const OAuthRedirectHandler = () => {
         document.cookie = `device_id=${deviceId}; ${cookieOptions}`;
 
         // 상태 업데이트
-        setAuthState({
+        const newAuthState = {
           isAuthenticated: true,
-          accessToken,
-        });
-
+        };
+        setAuthState(newAuthState);
+        localStorage.setItem("authState", JSON.stringify(newAuthState));
         // axios 인스턴스 헤더에 토큰 추가
-        apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+        // apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
       } else {
-        // 토큰이 없으면 로그인 페이지로 리다이렉트
-        navigate(RouterPath.LOGIN);
+        // 토큰이 없으면 메인 페이지로 리다이렉트
+        navigate(RouterPath.HOME);
       }
     } catch (error) {
       console.error("OAuth 리다이렉트 처리 중 오류 발생:", error);
-      navigate(RouterPath.LOGIN);
+      navigate(RouterPath.HOME);
     }
   }, [navigate, setAuthState]);
 
