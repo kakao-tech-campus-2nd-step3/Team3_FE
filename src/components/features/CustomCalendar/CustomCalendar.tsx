@@ -57,6 +57,7 @@ const calculateEventStatus = (event: CalendarEvent) => {
 
 const renderEventContent = (
   eventInfo: EventContentArg,
+  currentView: string,
   handleDelete: (id: string) => void,
   handleEdit: (
     id: string,
@@ -67,6 +68,10 @@ const renderEventContent = (
   ) => void,
   isReadOnly: boolean,
 ) => {
+  if (currentView === "dayGridMonth") {
+    return <div css={eventItemStyles("", false)} />;
+  }
+
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
   const accessibility = event.extendedProps?.accessibility || false;
@@ -130,6 +135,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   onDeletePlan,
 }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
+  const [currentView, setCurrentView] = useState<string>("timeGridWeek");
   const calendarRef = useRef<FullCalendar>(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const { mutate: deletePlan } = useDeletePlan();
@@ -242,13 +248,18 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               type: "timeGrid",
               duration: { days: 3 },
             },
+            dayGridMonth: {
+              type: "dayGridMonth",
+              dayHeaderFormat: { weekday: "short" },
+            },
           }}
           initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
           initialDate={currentDate}
           headerToolbar={{
             left: "title",
             center: "",
-            right: "prev,next,today",
+            right:
+              "prev,next,today dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
           }}
           locale={koLocale}
           slotDuration="00:10:00"
@@ -271,7 +282,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           eventDrop={isReadOnly ? undefined : handleEventChange}
           eventResize={handleEventChange}
           eventContent={(eventInfo) =>
-            renderEventContent(eventInfo, handleDelete, handleEdit, isReadOnly)
+            renderEventContent(
+              eventInfo,
+              currentView,
+              handleDelete,
+              handleEdit,
+              isReadOnly,
+            )
           }
           selectable={false}
           selectMirror={false}
@@ -279,6 +296,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           weekends
           firstDay={1}
           events={parsedEvents}
+          viewDidMount={({ view }) => setCurrentView(view.type)}
           datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
           dayHeaderFormat={{
             weekday: "short",
