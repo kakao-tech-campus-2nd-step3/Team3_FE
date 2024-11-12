@@ -1,10 +1,9 @@
 import {
   createBrowserRouter,
   RouterProvider,
-  Navigate,
 } from "react-router-dom";
 import { useEffect } from "react";
-import { useModal, ModalProvider } from "@/context/LoginModalContext";
+import { useModal } from "@/context/LoginModalContext";
 import LandingPage from "@/pages/Landing/LandingPage";
 import RouterPath from "./RouterPath";
 import LoginModal from "@/pages/LoginModal/LoginModal";

@@ -95,12 +95,6 @@ const DeleteButtonWrapper = styled.div`
   gap: 10px;
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-`;
-
 export default function MyPage() {
   const [isNotificationEnabled, setNotificationEnabled] = useState(false);
   const { userData, handleDeleteAccount, handleSubscription } = useUserData();
