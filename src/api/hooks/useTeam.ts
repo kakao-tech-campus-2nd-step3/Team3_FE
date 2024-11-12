@@ -1,10 +1,18 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  UseMutationOptions,
+  useQueryClient,
+  UseMutationResult,
+} from "@tanstack/react-query";
+import { AxiosResponse, AxiosError } from "axios";
 import { apiClient } from "@/api/instance";
 import {
   Team,
   Invitation,
   InviteUserParams,
   SentInvitation,
+  TeamMember,
 } from "@/types/types";
 
 // 팀 목록을 가져오는 API 요청 함수
@@ -117,5 +125,88 @@ export const useFetchSentInvitations = (teamId: number) => {
     },
     enabled: !!teamId,
     retry: false,
+  });
+};
+
+// 관리자: 팀에서 유저를 내보내는 훅
+interface RemoveUserParams {
+  teamId: number;
+  userId: number;
+}
+
+export const useRemoveUserFromTeam = (
+  options?: UseMutationOptions<AxiosResponse<any>, Error, RemoveUserParams>,
+) => {
+  return useMutation<AxiosResponse<any>, Error, RemoveUserParams>({
+    mutationFn: ({ teamId, userId }) =>
+      apiClient.delete(`/api/teams/${teamId}/users/${userId}`),
+    ...options,
+  });
+};
+
+// 관리자: 유저 권한 수정
+interface UpdateUserRoleParams {
+  teamId: number;
+  userId: number;
+  role: string; // 예: 'admin', 'member' 등
+}
+
+export const useUpdateUserRole = (
+  options?: UseMutationOptions<AxiosResponse<any>, Error, UpdateUserRoleParams>,
+) => {
+  return useMutation<AxiosResponse<any>, Error, UpdateUserRoleParams>({
+    mutationFn: ({ teamId, userId }) =>
+      apiClient.put(`/api/teams/${teamId}/users/${userId}/role`),
+    ...options,
+  });
+};
+
+export function useGetTeamMembers(teamId: number) {
+  return useQuery<TeamMember[]>({
+    queryKey: ["teamMembers", teamId],
+    queryFn: () =>
+      apiClient.get(`/api/teams/${teamId}/members`).then((res) => res.data),
+  });
+}
+
+interface CancelInvitationParams {
+  invitationId: number;
+  teamId: number;
+}
+
+export const useCancelTeamInvitation = (): UseMutationResult<
+  void,
+  AxiosError,
+  CancelInvitationParams,
+  unknown
+> => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError, CancelInvitationParams, unknown>({
+    mutationFn: async ({ invitationId }: CancelInvitationParams) => {
+      const response = await apiClient.delete(
+        `/api/teams/invitation/${invitationId}/cancel`,
+      );
+
+      // 204 No Content 응답 확인
+      if (response.status !== 204) {
+        throw new Error("초대 취소 중 예상치 못한 응답을 받았습니다.");
+      }
+    },
+    onSuccess: (_, variables) => {
+      // 'sentInvitations' 쿼리를 무효화하여 최신 데이터로 갱신
+      queryClient.invalidateQueries({
+        queryKey: ["sentInvitations", variables.teamId],
+      });
+    },
+    onError: (error: AxiosError) => {
+      if (error.response?.status === 403) {
+        alert("권한이 없습니다.");
+      } else if (error.response?.status === 404) {
+        alert("초대를 찾을 수 없습니다.");
+      } else {
+        alert(`초대 취소 중 오류가 발생했습니다: ${error.message}`);
+      }
+    },
   });
 };
