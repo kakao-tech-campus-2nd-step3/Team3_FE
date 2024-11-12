@@ -120,7 +120,7 @@ export default function PlanModifyPage() {
 
   const handleSaveAll = () => {
     modifiedPlans.forEach((plan) => {
-      if (plan.id && !isNaN(Number(plan.id))) {
+      if (plan.id && !Number.isNaN(Number(plan.id))) {
         modifyPlan({
           planId: Number(plan.id),
           planData: {
