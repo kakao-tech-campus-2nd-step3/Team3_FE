@@ -109,13 +109,17 @@ export default function PlanModifyPage() {
       isCompleted,
     } = newPlanData;
 
+    // UTC로 변환된 시간을 준비합니다.
+    const utcStartDate = new Date(`${startDate}Z`).toISOString();
+    const utcEndDate = new Date(`${endDate}Z`).toISOString();
+
     createPlan(
       {
         plan: {
           title,
           description,
-          startDate,
-          endDate,
+          startDate: utcStartDate, // UTC로 변환된 값을 저장
+          endDate: utcEndDate,
           accessibility,
           isCompleted,
         },
@@ -128,8 +132,8 @@ export default function PlanModifyPage() {
             {
               ...newPlanData,
               id: Date.now().toString(),
-              start: new Date(startDate),
-              end: new Date(endDate),
+              start: new Date(utcStartDate),
+              end: new Date(utcEndDate),
               complete: isCompleted,
             },
           ]);
