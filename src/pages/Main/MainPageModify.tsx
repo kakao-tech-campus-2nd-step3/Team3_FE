@@ -16,7 +16,6 @@ const ModalContainer = styled.div`
   padding: 20px;
   background-color: white;
   border-radius: 12px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -78,6 +77,28 @@ export default function PlanModifyPage() {
 
   const handleAddPlan = () => setIsAddModalOpen(true);
 
+  const handlePlanChange = (
+    date: Date | null,
+    field: "startDate" | "endDate",
+  ) => {
+    if (date) {
+      const localDate = date.toISOString().slice(0, 19); // 'YYYY-MM-DDTHH:mm:ss' 형식으로 저장
+      setNewPlanData((prevData) => ({
+        ...prevData,
+        [field]: localDate,
+      }));
+    }
+  };
+
+  const updateModifiedPlans = (updatedPlans: CalendarEvent[]) => {
+    const localPlans = updatedPlans.map((plan) => ({
+      ...plan,
+      start: new Date(plan.start), // 서버 응답 시간을 로컬 타임존으로 변환
+      end: new Date(plan.end),
+    }));
+    setModifiedPlans(localPlans);
+  };
+
   const handleAddPlanSubmit = () => {
     const {
       title,
@@ -87,16 +108,14 @@ export default function PlanModifyPage() {
       accessibility,
       isCompleted,
     } = newPlanData;
-    const utcStartDate = new Date(startDate).toISOString();
-    const utcEndDate = new Date(endDate).toISOString();
 
     createPlan(
       {
         plan: {
           title,
           description,
-          startDate: utcStartDate,
-          endDate: utcEndDate,
+          startDate,
+          endDate,
           accessibility,
           isCompleted,
         },
@@ -108,7 +127,7 @@ export default function PlanModifyPage() {
             ...modifiedPlans,
             {
               ...newPlanData,
-              id: Date.now().toString(), // 가상의 ID 생성
+              id: Date.now().toString(),
               start: new Date(startDate),
               end: new Date(endDate),
               complete: isCompleted,
@@ -147,10 +166,6 @@ export default function PlanModifyPage() {
     }
   };
 
-  const handlePlanChange = (updatedPlans: CalendarEvent[]) => {
-    setModifiedPlans(updatedPlans);
-  };
-
   const handleSaveAll = () => {
     modifiedPlans.forEach((plan) => {
       // eslint-disable-next-line no-restricted-globals
@@ -160,8 +175,8 @@ export default function PlanModifyPage() {
           planData: {
             title: plan.title,
             description: plan.description,
-            startDate: plan.start.toISOString(),
-            endDate: plan.end.toISOString(),
+            startDate: new Date(plan.start).toISOString(), // 저장할 때 UTC로 변환
+            endDate: new Date(plan.end).toISOString(),
             accessibility: plan.accessibility ?? true,
             isCompleted: plan.complete ?? false,
           },
@@ -178,7 +193,7 @@ export default function PlanModifyPage() {
         calendarOwner={`${teamName} 수정`}
         plans={modifiedPlans}
         isReadOnly={false}
-        onPlanChange={handlePlanChange}
+        onPlanChange={updateModifiedPlans}
         onDeletePlan={handleDeletePlan}
       />
       <ButtonGroup>
@@ -206,8 +221,24 @@ export default function PlanModifyPage() {
                 setNewPlanData({ ...newPlanData, description: e.target.value })
               }
             />
-            <ReactDatePicker placeholder="시작 시간을 선택하세요" />
-            <ReactDatePicker placeholder="종료 시간을 선택하세요" />
+            <ReactDatePicker
+              placeholderText="시작 날짜 선택"
+              selectedDate={
+                newPlanData.startDate ? new Date(newPlanData.startDate) : null
+              }
+              onDateChange={(date: any) => handlePlanChange(date, "startDate")}
+              showTimeSelect
+              dateFormat="yyyy/MM/dd HH:mm"
+            />
+            <ReactDatePicker
+              placeholderText="종료 날짜 선택"
+              selectedDate={
+                newPlanData.endDate ? new Date(newPlanData.endDate) : null
+              }
+              onDateChange={(date: any) => handlePlanChange(date, "endDate")}
+              showTimeSelect
+              dateFormat="yyyy/MM/dd HH:mm"
+            />
             <Button onClick={handleAddPlanSubmit}>추가</Button>
           </ModalContainer>
         </Modal>
