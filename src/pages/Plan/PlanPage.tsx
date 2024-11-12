@@ -16,7 +16,6 @@ const PlanPageContainer = styled.div`
   align-items: center;
   padding: 32px;
   box-sizing: border-box;
-  min-height: 100vh;
 `;
 
 const Title = styled.h1`
@@ -37,7 +36,6 @@ const SubTitle = styled.h2`
   color: #4a5568;
   text-align: center;
   margin-bottom: 32px;
-
   ${breakpoints.tablet} {
     font-size: 20px;
   }

@@ -16,7 +16,6 @@ const PlanPageContainer = styled.div`
   align-items: center;
   padding: 32px;
   box-sizing: border-box;
-  min-height: 100vh;
 `;
 
 const Title = styled.h1`

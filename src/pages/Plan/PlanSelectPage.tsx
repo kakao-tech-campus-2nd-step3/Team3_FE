@@ -11,7 +11,7 @@ import {
   useGptLight,
   useGptModerate,
   useGptStrong,
-} from "@/api/hooks/useTeamPlan";
+} from "@/api/hooks/useGeneratePlans";
 import Button from "@/components/common/Button/Button";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
 import RouterPath from "@/router/RouterPath";
