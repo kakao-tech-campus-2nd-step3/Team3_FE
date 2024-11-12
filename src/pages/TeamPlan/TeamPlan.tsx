@@ -2,22 +2,28 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
+import { Close } from "@mui/icons-material";
+import { useQueries } from "@tanstack/react-query";
 import {
   useFetchTeams,
   useDeleteTeam,
   useLeaveTeam,
   useRespondToInvitation,
   useFetchInvitations,
+  useCancelTeamInvitation,
 } from "@/api/hooks/useTeam";
 import useUserData from "@/api/hooks/useUserData";
 import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
 import { apiClient } from "@/api/instance";
+import { TeamInvitation } from "@/types/types";
 
 const PageContainer = styled.div`
   display: flex;
   min-height: 100vh;
   background-color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const ContentWrapper = styled.main`
@@ -90,7 +96,7 @@ const PlanTitle = styled.h2`
 `;
 
 const RoleBadge = styled.div<{ isAdmin: boolean }>`
-  background-color: ${(props) => (props.isAdmin ? "#a6caec" : "#ffc002")};
+  background-color: ${(props) => (props.isAdmin ? "#ffc002" : "#a6caec")};
   color: white;
   font-size: 13px;
   font-weight: 600;
@@ -119,6 +125,33 @@ const EmptyMessage = styled.div`
   margin-top: 20px;
 `;
 
+const CancelIcon = styled(Close)`
+  cursor: pointer;
+  color: #ff4d4f;
+  &:hover {
+    color: #ff7875;
+  }
+`;
+
+const ParticipantList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+const ParticipantItem = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: #f0f4fa;
+  padding: 8px 12px;
+  border-radius: 8px;
+`;
+
+const ParticipantName = styled.span`
+  margin-right: 4px;
+  color: #2d3748;
+`;
+
 export default function TeamPlanPage() {
   const navigate = useNavigate();
   const { userData } = useUserData();
@@ -128,12 +161,27 @@ export default function TeamPlanPage() {
   const deleteTeamMutation = useDeleteTeam();
   const leaveTeamMutation = useLeaveTeam();
   const respondToInvitationMutation = useRespondToInvitation();
-
+  const cancelInvitationMutation = useCancelTeamInvitation();
   const [activeTab, setActiveTab] = useState("teamList");
   const [teamMembers, setTeamMembers] = useState<{ [key: number]: any[] }>({});
-  const [sentInvitations, setSentInvitations] = useState<{
-    [key: number]: any[];
-  }>({});
+
+  const adminTeams = teams.filter((team) => {
+    const members = teamMembers[team.id] || [];
+    return members.some(
+      (member) => member.role === "ADMIN" && member.userId === userData.id,
+    );
+  });
+
+  const sentInvitationsQueries = useQueries({
+    queries: adminTeams.map((team) => ({
+      queryKey: ["sentInvitations", team.id],
+      queryFn: () =>
+        apiClient
+          .get(`/api/teams/${team.id}/invitations`)
+          .then((res) => res.data),
+      enabled: !!teamMembers[team.id],
+    })),
+  });
 
   useEffect(() => {
     const fetchAllMembers = async () => {
@@ -158,32 +206,6 @@ export default function TeamPlanPage() {
     if (teams.length > 0) fetchAllMembers();
   }, [teams]);
 
-  useEffect(() => {
-    const fetchSentInvitations = async () => {
-      const invitationsData: { [key: number]: any[] } = {};
-
-      await Promise.all(
-        teams.map(async (team) => {
-          try {
-            const response = await apiClient.get(
-              `/api/teams/${team.id}/invitations`,
-            );
-            invitationsData[team.id] = response.data;
-          } catch (error) {
-            console.error(
-              `Error fetching sent invitations for team ${team.id}:`,
-              error,
-            );
-          }
-        }),
-      );
-
-      setSentInvitations(invitationsData);
-    };
-
-    if (teams.length > 0) fetchSentInvitations();
-  }, [teams]);
-
   const handleVisitClick = (
     teamId: number,
     teamName: string,
@@ -191,7 +213,7 @@ export default function TeamPlanPage() {
   ) => {
     const members = teamMembers[teamId] || [];
     navigate(`/team-plan/${teamId}`, {
-      state: { teamName, teamId, members, isAdmin },
+      state: { teamName, teamId, members, isAdmin, myId: userData.id },
     });
   };
 
@@ -294,36 +316,58 @@ export default function TeamPlanPage() {
 
   // 보낸 요청 렌더링
   const renderedSentInvitations =
-    teams.length > 0 ? (
+    adminTeams.length > 0 ? (
       <CardGrid>
-        {teams
-          .filter((team) => {
-            const members = teamMembers[team.id] || [];
-            const isAdmin = members.some(
-              (member) =>
-                member.role === "ADMIN" && member.userId === userData.id,
-            );
-            return isAdmin;
-          })
-          .map((team) => {
-            const teamInvitations = sentInvitations[team.id] || [];
-            if (teamInvitations.length === 0) return null;
+        {adminTeams.map((team, index) => {
+          const { data: teamInvitations = [], isLoading } =
+            sentInvitationsQueries[index];
 
+          if (isLoading) {
             return (
               <PlanCard key={team.id}>
-                <div>
-                  <PlanTitle>{team.teamName}</PlanTitle>
-                  <Participants>
-                    초대한 멤버:{" "}
-                    {teamInvitations
-                      .map((invite) => invite.nickname)
-                      .join(", ")}
-                  </Participants>
-                </div>
+                <div>로딩 중...</div>
               </PlanCard>
             );
-          })
-          .filter(Boolean)}
+          }
+
+          if (teamInvitations.length === 0) return null;
+
+          const handleCancelInvitation = (invitationId: number) => {
+            if (window.confirm("초대를 취소하시겠습니까?")) {
+              cancelInvitationMutation.mutate(
+                { invitationId, teamId: team.id },
+                {
+                  onSuccess: () => {
+                    alert("초대가 취소되었습니다.");
+                  },
+                },
+              );
+            }
+          };
+
+          return (
+            <PlanCard key={team.id}>
+              <div>
+                <PlanTitle>{team.teamName}</PlanTitle>
+                <Participants>
+                  초대한 멤버:
+                  <ParticipantList>
+                    {teamInvitations.map((invite: TeamInvitation) => (
+                      <ParticipantItem key={invite.invitationId}>
+                        <ParticipantName>{invite.nickname}</ParticipantName>
+                        <CancelIcon
+                          onClick={() =>
+                            handleCancelInvitation(invite.invitationId)
+                          }
+                        />
+                      </ParticipantItem>
+                    ))}
+                  </ParticipantList>
+                </Participants>
+              </div>
+            </PlanCard>
+          );
+        })}
       </CardGrid>
     ) : (
       <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>
