@@ -40,7 +40,7 @@ export const calendarStyles = css`
   }
 
   .fc-timegrid-slot {
-    height: 1.6rem;
+    height: 1rem;
   }
 
   .fc-view-harness {
