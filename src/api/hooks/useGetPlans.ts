@@ -2,29 +2,52 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../instance";
 import { CalendarEvent } from "@/components/features/CustomCalendar/CustomCalendar";
 
-// 플랜 목록을 가져오는 API 요청 함수
-export const fetchPlans = async (): Promise<CalendarEvent[]> => {
-  const response = await apiClient.get("/api/plans");
-
-  // 데이터를 CalendarEvent 형식으로 변환
-  const plans = response.data.map((plan: any) => ({
-    id: plan.id.toString(), // id를 string으로 변환
+// CalendarEvent 타입 변환 함수
+export const transformPlanData = (data: any[]): CalendarEvent[] => {
+  return data.map((plan, index) => ({
+    id: plan.id ? plan.id.toString() : `generated-id-${index}`, // id가 없을 때 고유 ID 생성
     title: plan.title,
     description: plan.description,
-    start: new Date(plan.startDate), // 날짜를 Date 객체로 변환
-    end: new Date(plan.endDate),
-    accessibility: plan.accessibility,
-    complete: plan.isCompleted,
-    status: plan.isCompleted ? "completed" : "incomplete", // 상태를 미리 계산
+    start: plan.startDate
+      ? new Date(plan.startDate)
+      : new Date(plan.startTimestamp * 1000), // ISO와 timestamp 대응
+    end: plan.endDate
+      ? new Date(plan.endDate)
+      : new Date(plan.endTimestamp * 1000), // ISO와 timestamp 대응
+    accessibility: plan.accessibility ?? true, // 기본값 설정
+    complete: plan.isCompleted ?? false,
+    status: plan.isCompleted ? "completed" : "incomplete",
   }));
-
-  return plans;
 };
 
-// 플랜을 가져오는 React Query 훅
+// 본인 플랜 목록을 가져오는 API 요청 함수
+export const fetchPlans = async (): Promise<CalendarEvent[]> => {
+  const response = await apiClient.get("/api/plans");
+  return transformPlanData(response.data); // 변환 함수 사용
+};
+
+// 본인 플랜을 가져오는 React Query 훅
 export const useGetPlans = () => {
   return useQuery<CalendarEvent[], Error>({
     queryKey: ["plans"],
     queryFn: fetchPlans,
+  });
+};
+
+// 친구의 플랜을 가져오는 API 요청 함수
+export const fetchFriendPlans = async (
+  friendId: number,
+): Promise<CalendarEvent[]> => {
+  const response = await apiClient.get(`/api/friends/${friendId}/plans`);
+  console.log(response.data);
+  return transformPlanData(response.data); // 변환 함수 사용
+};
+
+// 친구의 플랜을 가져오는 React Query 훅
+export const useGetFriendPlans = (friendId: number) => {
+  return useQuery<CalendarEvent[], Error>({
+    queryKey: ["friendPlans", friendId],
+    queryFn: () => fetchFriendPlans(friendId),
+    enabled: !!friendId, // friendId가 있을 때만 실행
   });
 };
