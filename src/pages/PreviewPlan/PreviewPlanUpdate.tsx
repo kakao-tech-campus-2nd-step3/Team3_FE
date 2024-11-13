@@ -71,8 +71,15 @@ const PreviewPlanUpdate = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // 플랜 수정 시 상태 업데이트
   const handlePlanChange = (plans: CalendarEvent[]) => {
     setModifiedPlans(plans);
+  };
+
+  // 플랜 삭제 시 상태 업데이트
+  const handleDeletePlan = (planId: string) => {
+    const updatedPlans = modifiedPlans.filter((plan) => plan.id !== planId);
+    setModifiedPlans(updatedPlans);
   };
 
   const handleSave = async () => {
@@ -101,6 +108,7 @@ const PreviewPlanUpdate = () => {
         <CustomCalendar
           plans={modifiedPlans}
           onPlanChange={handlePlanChange}
+          onDeletePlan={handleDeletePlan}
           isReadOnly={false}
         />
       </CalendarContainer>
