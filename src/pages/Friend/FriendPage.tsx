@@ -38,6 +38,10 @@ const PageContainer = styled.div`
   box-sizing: border-box;
   overflow-x: hidden;
   background-color: #ffffff;
+
+  ${breakpoints.mobile} {
+    padding: 16px;
+  }
 `;
 
 const Heading = styled.h1`
@@ -46,6 +50,11 @@ const Heading = styled.h1`
   margin-bottom: 24px;
   color: #2d3748;
   margin-right: auto;
+
+  ${breakpoints.mobile} {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
 `;
 
 const TabsContainer = styled.div`
@@ -56,6 +65,11 @@ const TabsContainer = styled.div`
   margin-bottom: 20px;
   box-sizing: border-box;
   flex-wrap: wrap;
+
+  ${breakpoints.mobile} {
+    justify-content: center;
+    gap: 16px;
+  }
 `;
 
 const Tab = styled.div<{ active: boolean }>`
@@ -64,10 +78,18 @@ const Tab = styled.div<{ active: boolean }>`
   color: ${(props) => (props.active ? "#39a7f7" : "#9b9b9b")};
   cursor: pointer;
   transition: color 0.3s ease;
+
+  ${breakpoints.mobile} {
+    font-size: 14px;
+  }
 `;
 
 const SearchBarWrapper = styled.div`
   width: 100%;
+
+  ${breakpoints.mobile} {
+    margin-bottom: 12px;
+  }
 `;
 const SearchBar = styled.div`
   display: flex;
@@ -80,12 +102,20 @@ const SearchBar = styled.div`
   box-sizing: border-box;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+
+  ${breakpoints.mobile} {
+    padding: 8px;
+  }
 `;
 
 const SearchIconStyled = styled(Search)`
   color: #aab2c8;
   font-size: 20px;
   margin-right: 10px;
+
+  ${breakpoints.mobile} {
+    font-size: 18px;
+  }
 `;
 
 const SearchInput = styled.input`
@@ -98,6 +128,10 @@ const SearchInput = styled.input`
   outline: none;
   &::placeholder {
     color: #aab2c8;
+  }
+
+  ${breakpoints.mobile} {
+    font-size: 14px;
   }
 `;
 
@@ -118,6 +152,10 @@ const FriendListContainer = styled.div`
   @media (min-width: ${breakpoints.lg}px) {
     grid-template-columns: 1fr 1fr;
   }
+
+  ${breakpoints.mobile} {
+    gap: 12px;
+  }
 `;
 
 const FriendItemContainer = styled.div`
@@ -133,16 +171,30 @@ const FriendItemContainer = styled.div`
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
+
+  ${breakpoints.mobile} {
+    padding: 12px;
+    gap: 12px;
+  }
 `;
 
 const ProfileImageWrapper = styled.div`
   margin-right: 16px;
+
+  ${breakpoints.mobile} {
+    margin-right: 12px;
+  }
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   gap: 10px;
   margin-left: auto;
+
+  ${breakpoints.mobile} {
+    flex-direction: column;
+    gap: 6px;
+  }
 `;
 
 const EmptyMessage = styled.p`
@@ -150,6 +202,11 @@ const EmptyMessage = styled.p`
   color: #999;
   font-size: 16px;
   margin-top: 20px;
+
+  ${breakpoints.mobile} {
+    font-size: 14px;
+    margin-top: 16px;
+  }
 `;
 
 const FriendPage = () => {

@@ -11,18 +11,27 @@ import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
 import useAuth from "@/hooks/useAuth";
 import RouterPath from "@/router/RouterPath";
+import breakpoints from "@/variants/breakpoints";
 
 const PageWrapper = styled.div`
   display: flex;
   min-height: 100vh;
   background-color: #ffffff;
   overflow: hidden;
+
+  ${breakpoints.mobile} {
+    flex-direction: column;
+  }
 `;
 
 const ContentWrapper = styled.main`
   flex-grow: 1;
   padding: 32px; /* p-8 */
   overflow: auto;
+
+  ${breakpoints.mobile} {
+    padding: 16px;
+  }
 `;
 
 const Heading = styled.h1`
@@ -30,6 +39,11 @@ const Heading = styled.h1`
   font-weight: 600; /* font-semibold */
   margin-bottom: 24px; /* mb-6 */
   color: #2d3748; /* text-gray-800 */
+
+  ${breakpoints.mobile} {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
 `;
 
 const GridLayout = styled.div`
@@ -52,6 +66,11 @@ const Card = styled(motion.div)`
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
   }
+
+  ${breakpoints.mobile} {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
 `;
 
 const ProfileCard = styled(motion.div)`
@@ -67,12 +86,23 @@ const ProfileCard = styled(motion.div)`
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
   }
+
+  ${breakpoints.mobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
 `;
 
 const CardHeader = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 16px; /* mb-4 */
+
+  ${breakpoints.mobile} {
+    margin-bottom: 8px;
+  }
 `;
 
 const CardTitle = styled.h3`
@@ -81,11 +111,19 @@ const CardTitle = styled.h3`
   font-size: 18px; /* text-xl */
   font-weight: 600; /* font-semibold */
   color: #4a5568; /* text-gray-700 */
+
+  ${breakpoints.mobile} {
+    font-size: 16px;
+  }
 `;
 
 const CardContent = styled.div`
   font-size: 14px;
   color: #4a5568; /* text-gray-700 */
+
+  ${breakpoints.mobile} {
+    font-size: 13px;
+  }
 `;
 
 const DeleteButtonWrapper = styled.div`
@@ -93,6 +131,11 @@ const DeleteButtonWrapper = styled.div`
   justify-content: flex-end;
   margin-top: 24px; /* mt-6 */
   gap: 10px;
+
+  ${breakpoints.mobile} {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 export default function MyPage() {
@@ -122,12 +165,6 @@ export default function MyPage() {
     navigate(RouterPath.HOME);
   };
 
-  const handleVisitClick = () => {
-    navigate(`/friend/${userData.id}`, {
-      state: { friendName: userData.nickname, userId: userData.id },
-    });
-  };
-
   return (
     <PageWrapper>
       <ContentWrapper>
@@ -143,9 +180,6 @@ export default function MyPage() {
             name={userData.nickname}
             date={userData.isPremium ? "프리미엄 회원" : "일반 회원"}
           />
-          <Button size="small" theme="secondary" onClick={handleVisitClick}>
-            방문
-          </Button>
         </ProfileCard>
 
         {/* 정보 카드 그리드 */}

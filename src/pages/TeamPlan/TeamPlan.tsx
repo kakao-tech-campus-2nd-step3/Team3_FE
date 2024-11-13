@@ -31,6 +31,10 @@ const ContentWrapper = styled.main`
   padding: 32px;
   overflow: auto;
   box-sizing: border-box;
+
+  ${breakpoints.mobile} {
+    padding: 16px;
+  }
 `;
 
 const Heading = styled.h1`
@@ -38,6 +42,11 @@ const Heading = styled.h1`
   font-weight: 600;
   margin-bottom: 24px;
   color: #2d3748;
+
+  ${breakpoints.mobile} {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -45,6 +54,11 @@ const ButtonWrapper = styled.div`
   justify-content: flex-end;
   margin-bottom: 24px;
   gap: 8px;
+
+  ${breakpoints.mobile} {
+    justify-content: center;
+    gap: 4px;
+  }
 `;
 
 const TabsContainer = styled.div`
@@ -52,6 +66,11 @@ const TabsContainer = styled.div`
   gap: 28px;
   margin-bottom: 24px;
   flex-wrap: wrap;
+
+  ${breakpoints.mobile} {
+    gap: 16px;
+    justify-content: center;
+  }
 `;
 
 const Tab = styled.div<{ active: boolean }>`
@@ -60,6 +79,10 @@ const Tab = styled.div<{ active: boolean }>`
   color: ${(props) => (props.active ? "#39a7f7" : "#9b9b9b")};
   cursor: pointer;
   transition: color 0.3s ease;
+
+  ${breakpoints.mobile} {
+    font-size: 14px;
+  }
 `;
 
 const CardGrid = styled.div`
@@ -69,6 +92,10 @@ const CardGrid = styled.div`
 
   @media (min-width: ${breakpoints.lg}px) {
     grid-template-columns: 1fr 1fr;
+  }
+
+  ${breakpoints.mobile} {
+    gap: 16px;
   }
 `;
 
@@ -84,6 +111,12 @@ const PlanCard = styled.div`
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
+
+  ${breakpoints.mobile} {
+    padding: 16px;
+    flex-direction: row;
+    align-items: flex-start;
+  }
 `;
 
 const PlanTitle = styled.h2`
@@ -93,6 +126,12 @@ const PlanTitle = styled.h2`
   margin-bottom: 12px;
   display: flex;
   align-items: center;
+
+  ${breakpoints.mobile} {
+    font-size: 18px;
+    margin-bottom: 8px;
+    text-align: left;
+  }
 `;
 
 const RoleBadge = styled.div<{ isAdmin: boolean }>`
@@ -103,12 +142,20 @@ const RoleBadge = styled.div<{ isAdmin: boolean }>`
   padding: 4px 8px;
   border-radius: 4px;
   margin-left: 8px;
+
+  ${breakpoints.mobile} {
+    padding: 2px 6px;
+  }
 `;
 
 const Participants = styled.div`
   color: #4a5568;
   font-size: 15px;
   margin-bottom: 16px;
+
+  ${breakpoints.mobile} {
+    font-size: 14px;
+  }
 `;
 
 const ButtonGroup = styled.div`
@@ -116,6 +163,12 @@ const ButtonGroup = styled.div`
   gap: 8px;
   justify-content: flex-end;
   align-items: center;
+
+  ${breakpoints.mobile} {
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 12px;
+  }
 `;
 
 const EmptyMessage = styled.div`
@@ -123,6 +176,10 @@ const EmptyMessage = styled.div`
   color: #999;
   font-size: 16px;
   margin-top: 20px;
+
+  ${breakpoints.mobile} {
+    font-size: 14px;
+  }
 `;
 
 const CancelIcon = styled(Close)`
@@ -145,11 +202,19 @@ const ParticipantItem = styled.div`
   background-color: #f0f4fa;
   padding: 8px 12px;
   border-radius: 8px;
+
+  ${breakpoints.mobile} {
+    padding: 6px 10px;
+  }
 `;
 
 const ParticipantName = styled.span`
   margin-right: 4px;
   color: #2d3748;
+
+  ${breakpoints.mobile} {
+    font-size: 14px;
+  }
 `;
 
 export default function TeamPlanPage() {
@@ -256,6 +321,7 @@ export default function TeamPlanPage() {
               <ButtonGroup>
                 <Button
                   theme="primary"
+                  size="small"
                   onClick={() =>
                     handleVisitClick(team.id, team.teamName, isAdmin)
                   }
@@ -265,6 +331,7 @@ export default function TeamPlanPage() {
                 {isAdmin ? (
                   <Button
                     theme="secondary"
+                    size="small"
                     onClick={() => deleteTeamMutation.mutate(team.id)}
                   >
                     삭제
@@ -272,6 +339,7 @@ export default function TeamPlanPage() {
                 ) : (
                   <Button
                     theme="secondary"
+                    size="small"
                     onClick={() => leaveTeamMutation.mutate(team.id)}
                   >
                     나가기
@@ -380,7 +448,7 @@ export default function TeamPlanPage() {
       <ContentWrapper>
         <Heading>팀 플랜</Heading>
         <ButtonWrapper>
-          <Button theme="primary" onClick={handleVisitMaking}>
+          <Button theme="primary" size="long" onClick={handleVisitMaking}>
             팀 플랜 추가하기
           </Button>
         </ButtonWrapper>
