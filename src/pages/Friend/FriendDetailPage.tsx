@@ -144,7 +144,7 @@ const ActionButtons = styled.div`
 export default function FriendDetailPage() {
   const { friendId } = useParams();
   const location = useLocation();
-  const { friendName, userId } = location.state || {};
+  const { Plans: myPlans, friendName, userId } = location.state || {};
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -213,7 +213,11 @@ export default function FriendDetailPage() {
       <ContentWrapper>
         <Heading>{friendName ? `${friendName}님의 계획표` : "계획표"}</Heading>
         <CalendarWrapper>
-          <CustomCalendar plans={plans} isReadOnly />
+          {myPlans && myPlans.length > 0 ? (
+            <CustomCalendar plans={myPlans} isReadOnly />
+          ) : (
+            <CustomCalendar plans={plans} isReadOnly />
+          )}
         </CalendarWrapper>
         <Heading>댓글</Heading>
         <CommentSection>
