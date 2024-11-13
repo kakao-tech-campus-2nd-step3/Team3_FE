@@ -9,7 +9,7 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>`
   align-items: center;
   border-radius: 10px;
   border: none;
-  font-weight: 550;
+  font-weight: 510;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
