@@ -134,8 +134,10 @@ const Introduce = () => {
     navigate(RouterPath.PREVIEW_PLAN);
   };
 
+  const loginUrl = import.meta.env.VITE_LOGIN_URL;
+
   const handleLoginClick = () => {
-    navigate(RouterPath.LOGIN);
+    window.location.href = loginUrl;
   };
   return (
     <LandingContainer>
