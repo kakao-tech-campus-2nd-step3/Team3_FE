@@ -12,6 +12,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
+import styled from "@emotion/styled";
 import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
@@ -23,8 +24,53 @@ import {
   dropdownMenuStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
-import Modal from "./PlanModal";
+import Modal from "@/components/common/Modal/Modal";
 import Button from "@/components/common/Button/Button";
+
+const ModalContainer = styled.div`
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+`;
+
+const Title = styled.h2`
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  &:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+  }
+`;
+
+const ToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+`;
+
+const ToggleSwitch = styled.input`
+  width: 20px;
+  height: 20px;
+`;
 
 export interface CalendarEvent {
   id: string;
@@ -359,46 +405,54 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         />
         {isEditModalOpen && currentEditPlan && (
           <Modal onClose={() => setIsEditModalOpen(false)}>
-            <h2>플랜 수정</h2>
-            <input
-              placeholder="제목"
-              value={currentEditPlan.title || ""}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, title: e.target.value } : prev,
-                )
-              }
-            />
-            <input
-              placeholder="설명"
-              value={currentEditPlan.description || ""}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, description: e.target.value } : prev,
-                )
-              }
-            />
-            공개 여부:
-            <input
-              type="checkbox"
-              checked={currentEditPlan.accessibility || false}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, accessibility: e.target.checked } : prev,
-                )
-              }
-            />
-            완료 여부:
-            <input
-              type="checkbox"
-              checked={currentEditPlan.complete || false}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, complete: e.target.checked } : prev,
-                )
-              }
-            />
-            <Button onClick={handleEditSubmit}>저장</Button>
+            <ModalContainer>
+              <Title>플랜 수정</Title>
+              <StyledInput
+                placeholder="제목"
+                value={currentEditPlan.title || ""}
+                onChange={(e) =>
+                  setCurrentEditPlan((prev) =>
+                    prev ? { ...prev, title: e.target.value } : prev,
+                  )
+                }
+              />
+              <StyledInput
+                placeholder="설명"
+                value={currentEditPlan.description || ""}
+                onChange={(e) =>
+                  setCurrentEditPlan((prev) =>
+                    prev ? { ...prev, description: e.target.value } : prev,
+                  )
+                }
+              />
+              <ToggleContainer>
+                공개 여부
+                <ToggleSwitch
+                  type="checkbox"
+                  checked={!!currentEditPlan.accessibility} // Converts null to false
+                  onChange={(e) =>
+                    setCurrentEditPlan((prev) => ({
+                      ...prev,
+                      accessibility: e.target.checked,
+                    }))
+                  }
+                />
+              </ToggleContainer>
+              <ToggleContainer>
+                완료 여부
+                <ToggleSwitch
+                  type="checkbox"
+                  checked={currentEditPlan.complete}
+                  onChange={(e) =>
+                    setCurrentEditPlan((prev) => ({
+                      ...prev,
+                      complete: e.target.checked,
+                    }))
+                  }
+                />
+              </ToggleContainer>
+              <Button onClick={handleEditSubmit}>저장</Button>
+            </ModalContainer>
           </Modal>
         )}
       </div>
