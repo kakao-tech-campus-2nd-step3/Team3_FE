@@ -4,7 +4,7 @@ import type { AxiosInstance, AxiosRequestConfig } from "axios";
 import { QueryClient } from "@tanstack/react-query";
 import EventEmitter from "events";
 // BASE URL 설정
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5173";
+const API_URL = import.meta.env.VITE_API_URL;
 // 쿠키에서 특정 토큰을 가져오는 로직
 const getCookie = (name: string) => {
   const value = `; ${document.cookie}`;

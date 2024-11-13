@@ -12,16 +12,65 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
+import styled from "@emotion/styled";
 import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
   appTitleStyles,
   calendarStyles,
   eventItemStyles,
+  dropdownItemStyles,
+  dropdownItemRedStyles,
+  dropdownMenuStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
-import Modal from "./PlanModal";
+import Modal from "@/components/common/Modal/Modal";
 import Button from "@/components/common/Button/Button";
+
+const ModalContainer = styled.div`
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+`;
+
+const Title = styled.h2`
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  &:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+  }
+`;
+
+const ToggleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+`;
+
+const ToggleSwitch = styled.input`
+  width: 20px;
+  height: 20px;
+`;
 
 export interface CalendarEvent {
   id: string;
@@ -39,7 +88,6 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
-  // onUpdatePlan?: (planId: string, planData: any) => void;
 }
 
 const VIEW_MODES = {
@@ -55,6 +103,107 @@ const calculateEventStatus = (event: CalendarEvent) => {
   return "incomplete";
 };
 
+const EventContent = ({
+  eventInfo,
+  handleDelete,
+  handleEdit,
+  isReadOnly,
+}: {
+  eventInfo: EventContentArg;
+  handleDelete: (id: string) => void;
+  handleEdit: (
+    id: string,
+    title: string,
+    description: string,
+    accessibility: boolean | null,
+    isCompleted: boolean | null,
+  ) => void;
+  isReadOnly: boolean;
+}) => {
+  const { event, timeText } = eventInfo;
+  const description = event.extendedProps?.description || "";
+  const accessibility = event.extendedProps?.accessibility || false;
+  const isCompleted = event.extendedProps?.isCompleted || false;
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const handleEventClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setIsDropdownOpen(!isDropdownOpen);
+    }
+  };
+  const handleOptionClick = (option: string) => {
+    if (option === "edit") {
+      handleEdit(
+        event.id,
+        event.title,
+        description,
+        accessibility,
+        isCompleted,
+      );
+    } else if (option === "delete") {
+      handleDelete(event.id);
+    }
+    setIsDropdownOpen(false);
+  };
+  // 드롭다운 외부 클릭 시 닫힘 처리
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target instanceof Node)) return;
+      setIsDropdownOpen(false);
+    };
+    if (isDropdownOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+  return (
+    <div
+      css={eventItemStyles("", false)}
+      onClick={handleEventClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-haspopup="true"
+      aria-expanded={isDropdownOpen}
+      style={{ position: "relative", cursor: "pointer" }}
+    >
+      <div>{timeText}</div>
+      <div>{event.title}</div>
+      <div>{description}</div>
+      {!isReadOnly && isDropdownOpen && (
+        <ul css={dropdownMenuStyles}>
+          <li
+            css={dropdownItemStyles}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOptionClick("edit");
+            }}
+          >
+            수정
+          </li>
+          <li
+            css={dropdownItemRedStyles}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOptionClick("delete");
+            }}
+          >
+            삭제
+          </li>
+        </ul>
+      )}
+    </div>
+  );
+};
+
+// 이 함수도 컴포넌트 외부에 위치
 const renderEventContent = (
   eventInfo: EventContentArg,
   currentView: string,
@@ -68,59 +217,20 @@ const renderEventContent = (
   ) => void,
   isReadOnly: boolean,
 ) => {
+
   if (currentView === "dayGridMonth") {
     return <div css={eventItemStyles("", false)} />;
   }
 
-  const { event, timeText } = eventInfo;
-  const description = event.extendedProps?.description || "";
-  const accessibility = event.extendedProps?.accessibility || false;
-  const isCompleted = event.extendedProps?.isCompleted || false;
-
   return (
-    <div css={eventItemStyles("", false)}>
-      <div>{timeText}</div>
-      <div>{event.title}</div>
-      <div>{description}</div>
-      {!isReadOnly && (
-        <div>
-          <button
-            type="button"
-            onClick={() => handleDelete(event.id)}
-            style={{
-              marginTop: "4px",
-              color: "red",
-              backgroundColor: "transparent",
-              cursor: "pointer",
-            }}
-          >
-            삭제
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              handleEdit(
-                event.id,
-                event.title,
-                description,
-                accessibility,
-                isCompleted,
-              )
-            }
-            style={{
-              color: "blue",
-              backgroundColor: "transparent",
-              cursor: "pointer",
-            }}
-          >
-            수정
-          </button>
-        </div>
-      )}
-    </div>
+    <EventContent
+      eventInfo={eventInfo}
+      handleDelete={handleDelete}
+      handleEdit={handleEdit}
+      isReadOnly={isReadOnly}
+    />
   );
 };
-
 const parseDate = (date: any) => {
   return typeof date === "string" || typeof date === "number"
     ? new Date(date)
@@ -145,12 +255,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   const handleDelete = useCallback(
     (id: string) => {
-      {
-        if (onDeletePlan) {
-          onDeletePlan(id);
-        } else {
-          deletePlan(Number(id));
-        }
+      if (onDeletePlan) {
+        onDeletePlan(id);
+      } else {
+        deletePlan(Number(id));
       }
     },
     [deletePlan, onDeletePlan],
@@ -193,7 +301,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   };
 
   const handleResize = useCallback(() => {
-    const currentMobile = window.innerWidth <= breakpoints.sm;
+    const currentMobile =
+      typeof window !== "undefined" && window.innerWidth <= breakpoints.sm;
     setIsMobile(currentMobile);
     const calendarApi = calendarRef.current?.getApi();
     calendarApi?.changeView(
@@ -236,6 +345,12 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     [onPlanChange, plans],
   );
 
+  // useCallback으로 메모이제이션
+  const eventContent = useCallback(
+    (eventInfo: EventContentArg) =>
+      renderEventContent(eventInfo, currentView, handleDelete, handleEdit, isReadOnly),
+    [handleDelete, handleEdit, isReadOnly],
+  );
   return (
     <div css={appContainerStyles}>
       {calendarOwner && <h1 css={appTitleStyles}>{calendarOwner}</h1>}
@@ -281,20 +396,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           eventResizableFromStart={!isReadOnly}
           eventDrop={isReadOnly ? undefined : handleEventChange}
           eventResize={handleEventChange}
-          eventContent={(eventInfo) =>
-            renderEventContent(
-              eventInfo,
-              currentView,
-              handleDelete,
-              handleEdit,
-              isReadOnly,
-            )
-          }
+          eventContent={eventContent}
           selectable={false}
           selectMirror={false}
           dayMaxEvents
           weekends
           firstDay={1}
+          timeZone="UTC"
           events={parsedEvents}
           viewDidMount={({ view }) => setCurrentView(view.type)}
           datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
@@ -308,46 +416,54 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         />
         {isEditModalOpen && currentEditPlan && (
           <Modal onClose={() => setIsEditModalOpen(false)}>
-            <h2>플랜 수정</h2>
-            <input
-              placeholder="제목"
-              value={currentEditPlan.title || ""}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, title: e.target.value } : prev,
-                )
-              }
-            />
-            <input
-              placeholder="설명"
-              value={currentEditPlan.description || ""}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, description: e.target.value } : prev,
-                )
-              }
-            />
-            공개 여부:
-            <input
-              type="checkbox"
-              checked={currentEditPlan.accessibility || false}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, accessibility: e.target.checked } : prev,
-                )
-              }
-            />
-            완료 여부:
-            <input
-              type="checkbox"
-              checked={currentEditPlan.complete || false}
-              onChange={(e) =>
-                setCurrentEditPlan((prev) =>
-                  prev ? { ...prev, complete: e.target.checked } : prev,
-                )
-              }
-            />
-            <Button onClick={handleEditSubmit}>저장</Button>
+            <ModalContainer>
+              <Title>플랜 수정</Title>
+              <StyledInput
+                placeholder="제목"
+                value={currentEditPlan.title || ""}
+                onChange={(e) =>
+                  setCurrentEditPlan((prev) =>
+                    prev ? { ...prev, title: e.target.value } : prev,
+                  )
+                }
+              />
+              <StyledInput
+                placeholder="설명"
+                value={currentEditPlan.description || ""}
+                onChange={(e) =>
+                  setCurrentEditPlan((prev) =>
+                    prev ? { ...prev, description: e.target.value } : prev,
+                  )
+                }
+              />
+              <ToggleContainer>
+                공개 여부
+                <ToggleSwitch
+                  type="checkbox"
+                  checked={!!currentEditPlan.accessibility} // Converts null to false
+                  onChange={(e) =>
+                    setCurrentEditPlan((prev) => ({
+                      ...prev,
+                      accessibility: e.target.checked,
+                    }))
+                  }
+                />
+              </ToggleContainer>
+              <ToggleContainer>
+                완료 여부
+                <ToggleSwitch
+                  type="checkbox"
+                  checked={currentEditPlan.complete}
+                  onChange={(e) =>
+                    setCurrentEditPlan((prev) => ({
+                      ...prev,
+                      complete: e.target.checked,
+                    }))
+                  }
+                />
+              </ToggleContainer>
+              <Button onClick={handleEditSubmit}>저장</Button>
+            </ModalContainer>
           </Modal>
         )}
       </div>

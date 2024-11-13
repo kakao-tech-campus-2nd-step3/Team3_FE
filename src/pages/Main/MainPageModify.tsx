@@ -1,15 +1,47 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "react-router-dom";
+import ReactDatePicker from "@/components/features/DatePicker/DatePicker";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
-import useModifyPlan from "@/api/hooks/useModifyPlans";
+import { apiClient } from "@/api/instance";
 import useCreatePlan from "@/api/hooks/useCreatePlan";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Button from "@/components/common/Button/Button";
 import Modal from "@/components/common/Modal/Modal";
 import RouterPath from "@/router/RouterPath";
+
+const ModalContainer = styled.div`
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+`;
+
+const Title = styled.h2`
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  &:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+  }
+`;
 
 const PageContainer = styled.div`
   max-width: 1200px;
@@ -39,7 +71,7 @@ export default function PlanModifyPage() {
   });
   const navigate = useNavigate();
 
-  const { mutate: modifyPlan } = useModifyPlan();
+  const [pendingPlans, setPendingPlans] = useState(false);
   const { mutate: createPlan } = useCreatePlan();
   const { mutate: deletePlan } = useDeletePlan();
 
@@ -54,8 +86,8 @@ export default function PlanModifyPage() {
       accessibility,
       isCompleted,
     } = newPlanData;
-    const utcStartDate = new Date(startDate).toISOString();
-    const utcEndDate = new Date(endDate).toISOString();
+    const utcStartDate = new Date(`${startDate}Z`).toISOString();
+    const utcEndDate = new Date(`${endDate}Z`).toISOString();
 
     createPlan(
       {
@@ -76,9 +108,9 @@ export default function PlanModifyPage() {
             ...modifiedPlans,
             {
               ...newPlanData,
-              id: newPlanId, // 응답 데이터의 id 사용
-              start: new Date(startDate),
-              end: new Date(endDate),
+              id: newPlanId, 
+              start: new Date(utcStartDate),
+              end: new Date(utcEndDate),
               complete: isCompleted,
             },
           ]);
@@ -120,23 +152,30 @@ export default function PlanModifyPage() {
   };
 
   const handleSaveAll = () => {
-    modifiedPlans.forEach((plan) => {
-      if (plan.id && !Number.isNaN(Number(plan.id))) {
-        modifyPlan({
-          planId: Number(plan.id),
-          planData: {
+    setPendingPlans(true);
+    Promise.all(
+      modifiedPlans
+        .filter((plan) => plan.id && !Number.isNaN(Number(plan.id)))
+        .map((plan) =>
+          apiClient.put(`/api/plans/${plan.id}`, {
             title: plan.title,
             description: plan.description,
-            startDate: plan.start.toISOString(),
-            endDate: plan.end.toISOString(),
+            startDate: new Date(plan.start).toISOString(),
+            endDate: new Date(plan.end).toISOString(),
             accessibility: plan.accessibility ?? true,
             isCompleted: plan.complete ?? false,
-          },
-        });
-      }
-    });
-    alert("수정사항이 저장되었습니다.");
-    navigate(RouterPath.MAIN, { state: { refetchNeeded: true } });
+          }),
+        ),
+    )
+      .then(() => {
+        alert("수정사항이 저장되었습니다.");
+        setPendingPlans(false);
+        navigate(RouterPath.MAIN, { state: { refetchNeeded: true } });
+      })
+      .catch((error) => {
+        alert(`저장 중 오류 발생: ${error.message}`);
+        setPendingPlans(false);
+      });
   };
 
   return (
@@ -148,6 +187,7 @@ export default function PlanModifyPage() {
         onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
       />
+      {pendingPlans && <p>저장 중...</p>}
       <ButtonGroup>
         <Button onClick={handleAddPlan} theme="secondary">
           플랜 추가
@@ -157,38 +197,52 @@ export default function PlanModifyPage() {
 
       {isAddModalOpen && (
         <Modal onClose={() => setIsAddModalOpen(false)}>
-          <h2>새로운 플랜 추가</h2>
-          <input
-            placeholder="제목"
-            value={newPlanData.title}
-            onChange={(e) =>
-              setNewPlanData({ ...newPlanData, title: e.target.value })
-            }
-          />
-          <input
-            placeholder="설명"
-            value={newPlanData.description}
-            onChange={(e) =>
-              setNewPlanData({ ...newPlanData, description: e.target.value })
-            }
-          />
-          <input
-            type="datetime-local"
-            placeholder="시작 시간"
-            value={newPlanData.startDate}
-            onChange={(e) =>
-              setNewPlanData({ ...newPlanData, startDate: e.target.value })
-            }
-          />
-          <input
-            type="datetime-local"
-            placeholder="종료 시간"
-            value={newPlanData.endDate}
-            onChange={(e) =>
-              setNewPlanData({ ...newPlanData, endDate: e.target.value })
-            }
-          />
-          <Button onClick={handleAddPlanSubmit}>추가</Button>
+          <ModalContainer>
+            <Title>새로운 플랜 추가</Title>
+            <StyledInput
+              placeholder="제목"
+              value={newPlanData.title}
+              onChange={(e) =>
+                setNewPlanData({ ...newPlanData, title: e.target.value })
+              }
+            />
+            <StyledInput
+              placeholder="설명"
+              value={newPlanData.description}
+              onChange={(e) =>
+                setNewPlanData({ ...newPlanData, description: e.target.value })
+              }
+            />
+            <ReactDatePicker
+              placeholderText="시작 날짜 선택"
+              selectedDate={
+                newPlanData.startDate ? new Date(newPlanData.startDate) : null
+              }
+              onDateChange={(date: any) =>
+                setNewPlanData((prevData) => ({
+                  ...prevData,
+                  startDate: date ? date.toISOString().slice(0, 16) : "",
+                }))
+              }
+              showTimeSelect
+              dateFormat="yyyy/MM/dd HH:mm"
+            />
+            <ReactDatePicker
+              placeholderText="종료 날짜 선택"
+              selectedDate={
+                newPlanData.endDate ? new Date(newPlanData.endDate) : null
+              }
+              onDateChange={(date: any) =>
+                setNewPlanData((prevData) => ({
+                  ...prevData,
+                  endDate: date ? date.toISOString().slice(0, 16) : "",
+                }))
+              }
+              showTimeSelect
+              dateFormat="yyyy/MM/dd HH:mm"
+            />
+            <Button onClick={handleAddPlanSubmit}>추가</Button>
+          </ModalContainer>
         </Modal>
       )}
     </PageContainer>

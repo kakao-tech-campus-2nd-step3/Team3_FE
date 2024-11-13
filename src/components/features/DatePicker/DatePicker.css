@@ -1,0 +1,43 @@
+.custom-datepicker-wrapper {
+  position: relative;
+  z-index: 100;
+}
+
+.custom-calendar {
+  border: 1px solid #ddd !important;
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* 시간 선택 컨테이너 스타일 */
+.react-datepicker__time-container {
+  border-left: 1px solid #ddd !important;
+  width: 100px !important;
+  display: block !important;
+}
+
+.react-datepicker {
+  display: flex !important;
+}
+
+.react-datepicker__time-box {
+  width: 100px !important;
+  margin: 0 !important;
+}
+
+/* 시간 리스트 스타일 */
+.react-datepicker__time-list {
+  height: 200px !important;
+  overflow-y: scroll !important;
+  width: 100% !important;
+}
+
+.react-datepicker__time-list-item {
+  padding: 5px 10px !important;
+  height: auto !important;
+}
+
+/* 선택된 시간 스타일 */
+.react-datepicker__time-list-item--selected {
+  background-color: #216ba5 !important;
+  color: white !important;
+}
