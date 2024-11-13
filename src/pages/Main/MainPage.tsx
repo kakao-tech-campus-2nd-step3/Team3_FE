@@ -10,12 +10,20 @@ import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import { requestForToken, setupOnMessageListener } from "@/api/firebaseConfig"; // Import Firebase functions
 import { apiClient } from "@/api/instance";
+import useUserData from "@/api/hooks/useUserData";
 
 const PageContainer = styled.div`
   background-color: #ffffff;
   padding: 20px;
+  margin-top: 40px;
 `;
 
+const ButtonWrapper = styled.div`
+  gap: 16px;
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+`;
 export default function MainPage() {
   const location = useLocation();
   const { data: Plans, isLoading, error, refetch } = useGetPlans();
@@ -23,6 +31,13 @@ export default function MainPage() {
   const isPlanSaved = useRef(false);
   const hasMounted = useRef(false);
   const navigate = useNavigate();
+  const { userData } = useUserData();
+
+  const handleVisitClick = () => {
+    navigate(`/friend/${userData.id}`, {
+      state: { Plans, friendName: userData.nickname, userId: userData.id },
+    });
+  };
 
   useEffect(() => {
     if (location.state?.refetchNeeded) {
@@ -107,13 +122,14 @@ export default function MainPage() {
   return (
     <PageContainer>
       <CustomCalendar plans={Plans} isReadOnly />
-      <Button
-        onClick={handleModifyClick}
-        theme="primary"
-        style={{ marginTop: "20px" }}
-      >
-        수정하기
-      </Button>
+      <ButtonWrapper>
+        <Button onClick={handleModifyClick} theme="primary">
+          수정하기
+        </Button>
+        <Button onClick={handleVisitClick} theme="secondary">
+          방문하기
+        </Button>
+      </ButtonWrapper>
     </PageContainer>
   );
 }
