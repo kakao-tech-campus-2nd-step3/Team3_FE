@@ -38,8 +38,8 @@ const StyledInput = styled.input`
   font-size: 1rem;
   &:focus {
     outline: none;
-    border-color: #6c63ff;
-    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+    border-color: #39a7f7;
+    box-shadow: 0 0 0 2px #338bd0;
   }
 `;
 
@@ -61,6 +61,9 @@ export default function PlanModifyPage() {
   const { plans = [], teamName } = location.state || {};
   const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(plans);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [descriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [selectedDescription, setSelectedDescription] = useState("");
+
   const [newPlanData, setNewPlanData] = useState({
     title: "",
     description: "",
@@ -70,7 +73,6 @@ export default function PlanModifyPage() {
     isCompleted: false,
   });
   const navigate = useNavigate();
-
   const [pendingPlans, setPendingPlans] = useState(false);
   const { mutate: createPlan } = useCreatePlan();
   const { mutate: deletePlan } = useDeletePlan();
@@ -178,14 +180,26 @@ export default function PlanModifyPage() {
       });
   };
 
+  const handelDescriptionClick = (description: string) => {
+    setSelectedDescription(description);
+    setIsDescriptionModalOpen(true);
+  };
+
   return (
     <PageContainer>
       <CustomCalendar
         calendarOwner={`${teamName} 수정`}
-        plans={modifiedPlans}
+        plans={modifiedPlans.map((plan) => ({
+          ...plan,
+          description:
+            plan.description.length > 10
+              ? `${plan.description.slice(0, 10)}...`
+              : plan.description,
+        }))}
         isReadOnly={false}
         onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
+        onDescriptionClick={handelDescriptionClick}
       />
       {pendingPlans && <p>저장 중...</p>}
       <ButtonGroup>
@@ -242,6 +256,17 @@ export default function PlanModifyPage() {
               dateFormat="yyyy/MM/dd HH:mm"
             />
             <Button onClick={handleAddPlanSubmit}>추가</Button>
+          </ModalContainer>
+        </Modal>
+      )}
+      {descriptionModalOpen && (
+        <Modal onClose={() => setIsDescriptionModalOpen(false)}>
+          <ModalContainer>
+            <Title>전체 설명</Title>
+            <p>{selectedDescription}</p>
+            <Button onClick={() => setIsDescriptionModalOpen(false)}>
+              닫기
+            </Button>
           </ModalContainer>
         </Modal>
       )}

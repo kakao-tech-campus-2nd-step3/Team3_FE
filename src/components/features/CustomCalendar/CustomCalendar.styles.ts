@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 
 export const appContainerStyles = css`
-  max-width: 960px;
+  max-width: 1280px;
   margin: 0 auto;
   padding-bottom: 0.4rem;
 `;
@@ -52,8 +52,14 @@ export const calendarStyles = css`
     flex-basis: calc(100% / 3) !important; /* 3개의 열 */
   }
 
+  .fc-toolbar-title {
+      font-size: 5rem !important;
+   }
+
   .fc-timegrid-slot {
+    height: 2rem
     border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  }
   }
 
   /* 데스크탑 스타일 적용 (1280px 이상) */
@@ -72,6 +78,15 @@ export const calendarStyles = css`
     .fc-timegrid-col {
       flex-basis: calc(100% / 7); /* 7개의 열 */
     }
+
+    .fc-toolbar-title {
+      font-size: 2rem !important;
+      }
+
+    .fc-timegrid-slot {
+    height: 10rem
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    }
   }
 
   .fc-event {
@@ -86,16 +101,19 @@ export const calendarStyles = css`
   .fc-event-completed {
     background-color: #e5e7eb;
     border-left: 3.2px solid #9ca3af;
+    color: #9ca3af;
   }
 
   .fc-event-upcoming {
     background-color: #dbeafe;
     border-left: 3.2px solid #3b82f6;
+    color: #3b82f6;
   }
 
   .fc-event-incomplete {
     background-color: #fee2e2;
     border-left: 3.2px solid #ef4444;
+    color: #ef4444;
   }
 
   .fc-event-completed .fc-event-title,
@@ -169,8 +187,7 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
   position: absolute;
   left: 0;
   right: 0;
-  padding: 0.2rem;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   border-left-width: 3.2px;
   box-sizing: border-box;
   opacity: ${isDragging ? 0.5 : 1};
@@ -189,6 +206,7 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
   `
     background-color: #fee2e2;
     border-left-color: #ef4444;
+
   `}
 `;
 
@@ -219,7 +237,7 @@ export const dropdownMenuStyles = css`
   }
 `;
 
-export const dropdownItemStyles = css`
+export const dropdownBlueStyles = css`
   padding: 10px 12px;
   color: blue;
   border-radius: 8px;
@@ -229,16 +247,14 @@ export const dropdownItemStyles = css`
   transition: background-color 0.2s;
   display: block;
   white-space: nowrap;
+`;
 
-  &:hover {
-    padding: 7px 11px; /* hover 시 패딩을 줄여 크기 감소 */
-  }
+export const dropdownBlackStyles = css`
+  ${dropdownBlueStyles}
+  color: black;
 `;
 
 export const dropdownItemRedStyles = css`
-  ${dropdownItemStyles}
+  ${dropdownBlueStyles}
   color: red;
-  &:hover {
-    padding: 7px 11px; /* hover 시 패딩을 줄여 크기 감소 */
-  }
 `;
