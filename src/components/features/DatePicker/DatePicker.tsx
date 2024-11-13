@@ -1,4 +1,4 @@
-import { useState, forwardRef, InputHTMLAttributes } from "react";
+import { forwardRef, InputHTMLAttributes } from "react";
 import styled from "@emotion/styled";
 import DatePicker from "react-datepicker";
 import { Global, css } from "@emotion/react";
@@ -165,6 +165,7 @@ const ReactDatePicker = ({
         placeholderText={placeholderText}
         onChange={handleDateChange}
         selected={selectedDate}
+        timeIntervals={10}
         showTimeSelect={showTimeSelect} // 시간 선택 기능 활성화
         dateFormat={dateFormat} // 날짜 포맷 설정
         popperPlacement="bottom-start"
