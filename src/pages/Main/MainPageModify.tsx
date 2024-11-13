@@ -69,13 +69,14 @@ export default function PlanModifyPage() {
         },
       },
       {
-        onSuccess: () => {
+        onSuccess: (response) => {
+          const newPlanId = response.data.id; 
           alert("플랜이 추가되었습니다.");
           setModifiedPlans([
             ...modifiedPlans,
             {
               ...newPlanData,
-              id: Date.now().toString(), // 가상의 ID 생성
+              id: newPlanId, // 응답 데이터의 id 사용
               start: new Date(startDate),
               end: new Date(endDate),
               complete: isCompleted,
