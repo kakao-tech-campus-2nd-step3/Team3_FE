@@ -5,7 +5,7 @@ import ReactDatePicker from "@/components/features/DatePicker/DatePicker";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
-import useModifyPlan from "@/api/hooks/useModifyPlans";
+import { apiClient } from "@/api/instance";
 import useCreatePlan from "@/api/hooks/useCreatePlan";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Button from "@/components/common/Button/Button";
@@ -69,35 +69,13 @@ export default function PlanModifyPage() {
     accessibility: true,
     isCompleted: false,
   });
+  const [pendingPlans, setPendingPlans] = useState(false);
   const navigate = useNavigate();
 
-  const { mutate: modifyPlan } = useModifyPlan();
   const { mutate: createPlan } = useCreatePlan();
   const { mutate: deletePlan } = useDeletePlan();
 
   const handleAddPlan = () => setIsAddModalOpen(true);
-
-  const handlePlanChange = (
-    date: Date | null,
-    field: "startDate" | "endDate",
-  ) => {
-    if (date) {
-      const localDate = date.toISOString().slice(0, 19); // 'YYYY-MM-DDTHH:mm:ss' 형식으로 저장
-      setNewPlanData((prevData) => ({
-        ...prevData,
-        [field]: localDate,
-      }));
-    }
-  };
-
-  const updateModifiedPlans = (updatedPlans: CalendarEvent[]) => {
-    const localPlans = updatedPlans.map((plan) => ({
-      ...plan,
-      start: new Date(plan.start), // 서버 응답 시간을 로컬 타임존으로 변환
-      end: new Date(plan.end),
-    }));
-    setModifiedPlans(localPlans);
-  };
 
   const handleAddPlanSubmit = () => {
     const {
@@ -108,8 +86,6 @@ export default function PlanModifyPage() {
       accessibility,
       isCompleted,
     } = newPlanData;
-
-    // UTC로 변환된 시간을 준비합니다.
     const utcStartDate = new Date(`${startDate}Z`).toISOString();
     const utcEndDate = new Date(`${endDate}Z`).toISOString();
 
@@ -118,7 +94,7 @@ export default function PlanModifyPage() {
         plan: {
           title,
           description,
-          startDate: utcStartDate, // UTC로 변환된 값을 저장
+          startDate: utcStartDate,
           endDate: utcEndDate,
           accessibility,
           isCompleted,
@@ -170,25 +146,35 @@ export default function PlanModifyPage() {
     }
   };
 
+  const handlePlanChange = (updatedPlans: CalendarEvent[]) => {
+    setModifiedPlans(updatedPlans);
+  };
+
   const handleSaveAll = () => {
-    modifiedPlans.forEach((plan) => {
-      // eslint-disable-next-line no-restricted-globals
-      if (plan.id && !isNaN(Number(plan.id))) {
-        modifyPlan({
-          planId: Number(plan.id),
-          planData: {
+    setPendingPlans(true);
+    Promise.all(
+      modifiedPlans
+        .filter((plan) => plan.id && !Number.isNaN(Number(plan.id)))
+        .map((plan) =>
+          apiClient.put(`/api/plans/${plan.id}`, {
             title: plan.title,
             description: plan.description,
-            startDate: new Date(plan.start).toISOString(), // 저장할 때 UTC로 변환
+            startDate: new Date(plan.start).toISOString(),
             endDate: new Date(plan.end).toISOString(),
             accessibility: plan.accessibility ?? true,
             isCompleted: plan.complete ?? false,
-          },
-        });
-      }
-    });
-    alert("수정사항이 저장되었습니다.");
-    navigate(RouterPath.MAIN, { state: { refetchNeeded: true } });
+          }),
+        ),
+    )
+      .then(() => {
+        alert("수정사항이 저장되었습니다.");
+        setPendingPlans(false);
+        navigate(RouterPath.MAIN, { state: { refetchNeeded: true } });
+      })
+      .catch((error) => {
+        alert(`저장 중 오류 발생: ${error.message}`);
+        setPendingPlans(false);
+      });
   };
 
   return (
@@ -197,9 +183,10 @@ export default function PlanModifyPage() {
         calendarOwner={`${teamName} 수정`}
         plans={modifiedPlans}
         isReadOnly={false}
-        onPlanChange={updateModifiedPlans}
+        onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
       />
+      {pendingPlans && <p>저장 중...</p>}
       <ButtonGroup>
         <Button onClick={handleAddPlan} theme="secondary">
           플랜 추가
@@ -230,7 +217,12 @@ export default function PlanModifyPage() {
               selectedDate={
                 newPlanData.startDate ? new Date(newPlanData.startDate) : null
               }
-              onDateChange={(date: any) => handlePlanChange(date, "startDate")}
+              onDateChange={(date: any) =>
+                setNewPlanData((prevData) => ({
+                  ...prevData,
+                  startDate: date ? date.toISOString().slice(0, 16) : "",
+                }))
+              }
               showTimeSelect
               dateFormat="yyyy/MM/dd HH:mm"
             />
@@ -239,7 +231,12 @@ export default function PlanModifyPage() {
               selectedDate={
                 newPlanData.endDate ? new Date(newPlanData.endDate) : null
               }
-              onDateChange={(date: any) => handlePlanChange(date, "endDate")}
+              onDateChange={(date: any) =>
+                setNewPlanData((prevData) => ({
+                  ...prevData,
+                  endDate: date ? date.toISOString().slice(0, 16) : "",
+                }))
+              }
               showTimeSelect
               dateFormat="yyyy/MM/dd HH:mm"
             />
