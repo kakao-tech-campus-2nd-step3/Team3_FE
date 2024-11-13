@@ -19,7 +19,7 @@ import {
   appTitleStyles,
   calendarStyles,
   eventItemStyles,
-  dropdownItemStyles,
+  dropdownBlackStyles,
   dropdownItemRedStyles,
   dropdownMenuStyles,
 } from "./CustomCalendar.styles";
@@ -53,8 +53,8 @@ const StyledInput = styled.input`
   font-size: 1rem;
   &:focus {
     outline: none;
-    border-color: #6c63ff;
-    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+    border-color: #39a7f7;
+    box-shadow: 0 0 0 2px #338bd0;
   }
 `;
 
@@ -125,6 +125,9 @@ const EventContent = ({
   const accessibility = event.extendedProps?.accessibility || false;
   const isCompleted = event.extendedProps?.isCompleted || false;
 
+  const truncatedDescription =
+    description.length > 10 ? `${description.slice(0, 10)}...` : description;
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleEventClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
@@ -174,13 +177,13 @@ const EventContent = ({
       aria-expanded={isDropdownOpen}
       style={{ position: "relative", cursor: "pointer" }}
     >
+      <div css={{ fontWeight: "bold", fontSize: "12px" }}>{event.title}</div>
       <div>{timeText}</div>
-      <div>{event.title}</div>
-      <div>{description}</div>
+      <div>{truncatedDescription}</div>
       {!isReadOnly && isDropdownOpen && (
         <ul css={dropdownMenuStyles}>
           <li
-            css={dropdownItemStyles}
+            css={dropdownBlackStyles}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("edit");
@@ -217,7 +220,6 @@ const renderEventContent = (
   ) => void,
   isReadOnly: boolean,
 ) => {
-
   if (currentView === "dayGridMonth") {
     return <div css={eventItemStyles("", false)} />;
   }
@@ -348,7 +350,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   // useCallback으로 메모이제이션
   const eventContent = useCallback(
     (eventInfo: EventContentArg) =>
-      renderEventContent(eventInfo, currentView, handleDelete, handleEdit, isReadOnly),
+      renderEventContent(
+        eventInfo,
+        currentView,
+        handleDelete,
+        handleEdit,
+        isReadOnly,
+      ),
     [handleDelete, handleEdit, isReadOnly],
   );
   return (

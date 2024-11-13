@@ -38,8 +38,8 @@ const StyledInput = styled.input`
   font-size: 1rem;
   &:focus {
     outline: none;
-    border-color: #6c63ff;
-    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+    border-color: #39a7f7;
+    box-shadow: 0 0 0 2px #338bd0;
   }
 `;
 
@@ -102,13 +102,13 @@ export default function PlanModifyPage() {
       },
       {
         onSuccess: (response) => {
-          const newPlanId = response.data.id; 
+          const newPlanId = response.data.id;
           alert("플랜이 추가되었습니다.");
           setModifiedPlans([
             ...modifiedPlans,
             {
               ...newPlanData,
-              id: newPlanId, 
+              id: newPlanId,
               start: new Date(utcStartDate),
               end: new Date(utcEndDate),
               complete: isCompleted,
