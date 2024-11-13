@@ -133,7 +133,7 @@ const DeleteButtonWrapper = styled.div`
   gap: 10px;
 
   ${breakpoints.mobile} {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
   }
 `;
