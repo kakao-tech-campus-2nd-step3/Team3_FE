@@ -19,7 +19,7 @@ import {
   appTitleStyles,
   calendarStyles,
   eventItemStyles,
-  dropdownBlackStyles,
+  dropdownItemStyles,
   dropdownItemRedStyles,
   dropdownMenuStyles,
 } from "./CustomCalendar.styles";
@@ -53,8 +53,8 @@ const StyledInput = styled.input`
   font-size: 1rem;
   &:focus {
     outline: none;
-    border-color: #39a7f7;
-    box-shadow: 0 0 0 2px #338bd0;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
   }
 `;
 
@@ -88,7 +88,6 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
-  onDescriptionClick?: (description: string) => void;
 }
 
 const VIEW_MODES = {
@@ -109,7 +108,6 @@ const EventContent = ({
   handleDelete,
   handleEdit,
   isReadOnly,
-  onDescriptionClick,
 }: {
   eventInfo: EventContentArg;
   handleDelete: (id: string) => void;
@@ -121,31 +119,12 @@ const EventContent = ({
     isCompleted: boolean | null,
   ) => void;
   isReadOnly: boolean;
-  onDescriptionClick?: (description: string) => void;
 }) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
   const accessibility = event.extendedProps?.accessibility || false;
   const isCompleted = event.extendedProps?.isCompleted || false;
-  const [descriptonExpanded, setIsDescriptionExpanded] = useState(false);
 
-  // 잘린 설명 또는 전체 설명을 조건에 따라 표시
-  let displayDescription;
-  if (descriptonExpanded) {
-    displayDescription = description;
-  } else if (description.length > 10) {
-    displayDescription = `${description.slice(0, 10)}...`;
-  } else {
-    displayDescription = description;
-  }
-
-  const handleDescriptionToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDescriptionExpanded((prev) => !prev);
-    if (!descriptonExpanded && onDescriptionClick) {
-      onDescriptionClick(description);
-    }
-  };
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleEventClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
@@ -195,27 +174,13 @@ const EventContent = ({
       aria-expanded={isDropdownOpen}
       style={{ position: "relative", cursor: "pointer" }}
     >
-      <div
-        css={{ fontWeight: "bold", fontSize: "0.9rem", marginBottom: "0.2rem" }}
-      >
-        {event.title}
-      </div>
-
       <div>{timeText}</div>
-      <div
-        onClick={handleDescriptionToggle}
-        role="button"
-        tabIndex={0}
-        style={{ cursor: "pointer" }}
-        aria-expanded={descriptonExpanded}
-      >
-        {displayDescription}
-      </div>
-
+      <div>{event.title}</div>
+      <div>{description}</div>
       {!isReadOnly && isDropdownOpen && (
         <ul css={dropdownMenuStyles}>
           <li
-            css={dropdownBlackStyles}
+            css={dropdownItemStyles}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("edit");
@@ -251,7 +216,6 @@ const renderEventContent = (
     isCompleted: boolean | null,
   ) => void,
   isReadOnly: boolean,
-  onDescriptionClick?: (description: string) => void,
 ) => {
   if (currentView === "dayGridMonth") {
     return <div css={eventItemStyles("", false)} />;
@@ -263,7 +227,6 @@ const renderEventContent = (
       handleDelete={handleDelete}
       handleEdit={handleEdit}
       isReadOnly={isReadOnly}
-      onDescriptionClick={onDescriptionClick}
     />
   );
 };
@@ -279,7 +242,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   isReadOnly = false,
   onPlanChange,
   onDeletePlan,
-  onDescriptionClick,
 }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const [currentView, setCurrentView] = useState<string>("timeGridWeek");
@@ -337,19 +299,18 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     }
   };
 
-  const handleResize = useCallback(() => {
-    const currentMobile =
-      typeof window !== "undefined" && window.innerWidth <= breakpoints.sm;
-    setIsMobile(currentMobile);
-    const calendarApi = calendarRef.current?.getApi();
-    if (currentMobile && currentView !== VIEW_MODES.THREEDAY) {
-      setCurrentView(VIEW_MODES.THREEDAY);
-      calendarApi?.changeView(VIEW_MODES.THREEDAY);
-    } else if (!currentMobile && currentView !== VIEW_MODES.WEEK) {
-      setCurrentView(VIEW_MODES.WEEK);
-      calendarApi?.changeView(VIEW_MODES.WEEK);
-    }
-  }, []);
+const handleResize = useCallback(() => {
+  const isMobileNow = window.innerWidth <= breakpoints.sm;
+  setIsMobile(isMobileNow);
+  const calendarApi = calendarRef.current?.getApi();
+  if (!calendarApi) return;
+  // 화면 크기에 따라 초기 뷰를 설정, 그러나 currentView 상태는 업데이트하지 않음
+  if (isMobileNow && calendarApi?.view.type !== VIEW_MODES.THREEDAY) {
+    calendarApi.changeView(VIEW_MODES.THREEDAY);
+  } else if (!isMobileNow && calendarApi?.view.type !== VIEW_MODES.WEEK) {
+    calendarApi.changeView(VIEW_MODES.WEEK);
+  }
+}, []);
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
@@ -395,9 +356,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         handleDelete,
         handleEdit,
         isReadOnly,
-        onDescriptionClick,
       ),
-    [handleDelete, handleEdit, isReadOnly, onDescriptionClick],
+    [handleDelete, handleEdit, isReadOnly, currentView],
   );
   return (
     <div css={appContainerStyles}>
@@ -459,7 +419,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           timeZone="UTC"
           events={parsedEvents}
           viewDidMount={({ view }) => setCurrentView(view.type)}
-          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
+          datesSet={(dateInfo) => {
+            setCurrentDate(dateInfo.start);
+          }}
           dayHeaderFormat={{
             weekday: "short",
             month: "numeric",

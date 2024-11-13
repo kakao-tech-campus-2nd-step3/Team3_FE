@@ -12,7 +12,6 @@ export const appTitleStyles = css`
   margin-bottom: 0.8rem;
 `;
 
-/* calendarStyles */
 export const calendarStyles = css`
   display: flex;
   flex-direction: column;
@@ -29,18 +28,24 @@ export const calendarStyles = css`
 
   .fc-toolbar-chunk {
     margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .fc-toolbar-title {
-    font-size: 0.8rem !important;
+    font-size: 1rem !important;
   }
 
   .fc-event-main {
-    padding: 0.16rem;
+    padding: 0.2rem;
+    width: 100% !important;
+    color: inherit;
   }
 
   .fc-timegrid-slot {
     height: 1rem;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
   }
 
   .fc-view-harness {
@@ -50,52 +55,11 @@ export const calendarStyles = css`
   /* 모바일: 3개의 열 */
   .fc-timegrid-col {
     flex-basis: calc(100% / 3) !important; /* 3개의 열 */
-  }
-
-  .fc-toolbar-title {
-      font-size: 5rem !important;
-   }
-
-  .fc-timegrid-slot {
-    height: 2rem
-    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-  }
-  }
-
-  /* 데스크탑 스타일 적용 (1280px 이상) */
-  @media (min-width: 1280px) {
-    font-size: 0.8rem;
-
-    .fc-toolbar-title {
-      font-size: 1.2rem !important;
-    }
-
-    .fc-timegrid-slot {
-      height: 2.4rem;
-    }
-
-    /* 데스크탑: 7개의 열 */
-    .fc-timegrid-col {
-      flex-basis: calc(100% / 7); /* 7개의 열 */
-    }
-
-    .fc-toolbar-title {
-      font-size: 2rem !important;
-      }
-
-    .fc-timegrid-slot {
-    height: 10rem
-    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-    }
+    border-right: 1px solid #e5e7eb;
   }
 
   .fc-event {
     cursor: move;
-  }
-
-  .fc-event-main {
-    padding: 0.2rem;
-    width: 100% !important;
   }
 
   .fc-event-completed {
@@ -128,10 +92,6 @@ export const calendarStyles = css`
 
   .fc-timegrid-axis {
     width: 2.4rem;
-  }
-
-  .fc-timegrid-col {
-    border-right: 1px solid #e5e7eb;
   }
 
   .fc-timegrid-col-frame {
@@ -171,23 +131,14 @@ export const calendarStyles = css`
   .fc-button:hover {
     background-color: #338bd0;
   }
-
-  .fc-toolbar-chunk {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .fc-toolbar-title {
-    font-size: 1rem !important;
-  }
 `;
 
 export const eventItemStyles = (status: string, isDragging: boolean) => css`
   position: absolute;
   left: 0;
   right: 0;
-  font-size: 0.9rem;
+  padding: 0.2rem;
+  font-size: 0.8rem;
   border-left-width: 3.2px;
   box-sizing: border-box;
   opacity: ${isDragging ? 0.5 : 1};
@@ -206,7 +157,6 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
   `
     background-color: #fee2e2;
     border-left-color: #ef4444;
-
   `}
 `;
 
@@ -237,7 +187,7 @@ export const dropdownMenuStyles = css`
   }
 `;
 
-export const dropdownBlueStyles = css`
+export const dropdownItemStyles = css`
   padding: 10px 12px;
   color: blue;
   border-radius: 8px;
@@ -247,14 +197,13 @@ export const dropdownBlueStyles = css`
   transition: background-color 0.2s;
   display: block;
   white-space: nowrap;
-`;
 
-export const dropdownBlackStyles = css`
-  ${dropdownBlueStyles}
-  color: black;
+  &:hover {
+    padding: 7px 11px; /* hover 시 패딩을 줄여 크기 감소 */
+  }
 `;
 
 export const dropdownItemRedStyles = css`
-  ${dropdownBlueStyles}
+  ${dropdownItemStyles}
   color: red;
 `;
