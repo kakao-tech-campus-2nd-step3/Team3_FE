@@ -217,7 +217,6 @@ const renderEventContent = (
   ) => void,
   isReadOnly: boolean,
 ) => {
-
   if (currentView === "dayGridMonth") {
     return <div css={eventItemStyles("", false)} />;
   }
@@ -305,9 +304,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       typeof window !== "undefined" && window.innerWidth <= breakpoints.sm;
     setIsMobile(currentMobile);
     const calendarApi = calendarRef.current?.getApi();
-    calendarApi?.changeView(
-      currentMobile ? "timeGridThreeDay" : "timeGridWeek",
-    );
+    if (currentMobile && currentView !== VIEW_MODES.THREEDAY) {
+      setCurrentView(VIEW_MODES.THREEDAY);
+      calendarApi?.changeView(VIEW_MODES.THREEDAY);
+    } else if (!currentMobile && currentView !== VIEW_MODES.WEEK) {
+      setCurrentView(VIEW_MODES.WEEK);
+      calendarApi?.changeView(VIEW_MODES.WEEK);
+    }
   }, []);
 
   useEffect(() => {
@@ -348,7 +351,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   // useCallback으로 메모이제이션
   const eventContent = useCallback(
     (eventInfo: EventContentArg) =>
-      renderEventContent(eventInfo, currentView, handleDelete, handleEdit, isReadOnly),
+      renderEventContent(
+        eventInfo,
+        currentView,
+        handleDelete,
+        handleEdit,
+        isReadOnly,
+      ),
     [handleDelete, handleEdit, isReadOnly],
   );
   return (
@@ -368,13 +377,19 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               dayHeaderFormat: { weekday: "short" },
             },
           }}
+          buttonText={{
+            today: "오늘",
+            month: "월",
+            week: "주",
+            day: "일",
+            timeGridThreeDay: "3일",
+          }}
           initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
           initialDate={currentDate}
           headerToolbar={{
-            left: "title",
-            center: "",
-            right:
-              "prev,next,today dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
+            left: "prev,next,today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
           }}
           locale={koLocale}
           slotDuration="00:10:00"
