@@ -1,7 +1,6 @@
 import { css } from "@emotion/react";
 
 export const appContainerStyles = css`
-  max-width: 1280px;
   margin: 0 auto;
   padding-bottom: 0.4rem;
 `;
@@ -131,6 +130,10 @@ export const calendarStyles = css`
   .fc-button:hover {
     background-color: #338bd0;
   }
+
+  .fc-button-active {
+  background-color: #76818d !important; /* 원하는 색상으로 설정 */
+}
 `;
 
 export const eventItemStyles = (status: string, isDragging: boolean) => css`
@@ -171,10 +174,9 @@ export const dropdownMenuStyles = css`
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
   min-width: 100px;
+  max-width: 120px;
   animation: fadeIn 0.2s ease-in-out;
-
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -189,21 +191,16 @@ export const dropdownMenuStyles = css`
 
 export const dropdownItemStyles = css`
   padding: 10px 12px;
-  color: blue;
-  border-radius: 8px;
+  color: black;
   font-size: 14px;
   cursor: pointer;
   text-align: left;
   transition: background-color 0.2s;
   display: block;
-  white-space: nowrap;
-
-  &:hover {
-    padding: 7px 11px; /* hover 시 패딩을 줄여 크기 감소 */
-  }
+  white-space: normal; 
+  overflow: visible; 
+  word-wrap: break-word;
+  white-space: normal;
+  word-break: break-word;
 `;
 
-export const dropdownItemRedStyles = css`
-  ${dropdownItemStyles}
-  color: red;
-`;
