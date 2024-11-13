@@ -134,12 +134,30 @@ const EventContent = ({
   const handleEventClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
     setIsDropdownOpen((prev) => !prev);
+    
     // Calculate and set the dropdown position
     if (eventRef.current) {
       const rect = eventRef.current.getBoundingClientRect();
+      const dropdownWidth = 120; // 드롭다운 메뉴의 예상 너비
+      const dropdownHeight = 150; // 드롭다운 메뉴의 예상 높이 (내용에 따라 조정 필요)
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+      let left = rect.left + window.scrollX;
+      let top = rect.bottom + window.scrollY; // 기본적으로 아래쪽에 표시
+
+      // 드롭다운 메뉴가 화면의 오른쪽 밖으로 나가는지 확인
+      if (left + dropdownWidth > viewportWidth) {
+        left = viewportWidth - dropdownWidth - 10; // 오른쪽 여백 10px 확보
+      }
+
+      // 드롭다운 메뉴가 화면의 하단 밖으로 나가는지 확인
+      if (rect.bottom + dropdownHeight > viewportHeight) {
+        top = rect.top + window.scrollY - dropdownHeight; // 위쪽에 표시
+      }
       setDropdownPosition({
-        top: rect.top + window.scrollY + rect.height,
-        left: rect.left + window.scrollX,
+        top: top,
+        left: left,
       });
     } 
   };
@@ -196,7 +214,12 @@ const EventContent = ({
       {!isReadOnly && (
         <>
           <div
-            css={dropdownItemStyles}
+            css={[
+              dropdownItemStyles,
+              css`
+                color: blue;
+              `,
+            ]}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("edit");
@@ -205,7 +228,12 @@ const EventContent = ({
             수정
           </div>
           <div
-            css={dropdownItemStyles}
+            css={[
+              dropdownItemStyles,
+              css`
+                color: red; 
+              `,
+            ]}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("delete");
