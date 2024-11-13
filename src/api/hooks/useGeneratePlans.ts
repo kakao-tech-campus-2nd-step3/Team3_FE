@@ -15,6 +15,13 @@ interface GptResponse {
   groupId: number;
   planCards: CalendarEvent[];
 }
+const convertToKST = (events: CalendarEvent[]): CalendarEvent[] => {
+  return events.map((event) => ({
+    ...event,
+    start: new Date(new Date(event.start).getTime() + 9 * 60 * 60 * 1000),
+    end: new Date(new Date(event.end).getTime() + 9 * 60 * 60 * 1000),
+  }));
+};
 
 // gpt 요청 함수 - 동적 URL로 공통 함수 생성
 const fetchGptData = async (
@@ -28,7 +35,7 @@ const fetchGptData = async (
   );
   return {
     ...response.data,
-    planCards: transformPlanData(response.data.planCards), // 변환 함수 사용
+    planCards: convertToKST(transformPlanData(response.data.planCards)), // 변환 함수 사용
   };
 };
 
