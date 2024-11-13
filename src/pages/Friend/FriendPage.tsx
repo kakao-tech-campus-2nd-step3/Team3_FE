@@ -30,7 +30,6 @@ import breakpoints from "@/variants/breakpoints";
 // Styled Components
 const PageContainer = styled.div`
   width: 100%;
-  max-width: 1200px;
   padding: 32px;
   display: flex;
   flex-direction: column;
