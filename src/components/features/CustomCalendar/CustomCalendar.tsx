@@ -88,6 +88,7 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
+  onDescriptionClick?: (description: string) => void;
 }
 
 const VIEW_MODES = {
@@ -108,6 +109,7 @@ const EventContent = ({
   handleDelete,
   handleEdit,
   isReadOnly,
+  onDescriptionClick,
 }: {
   eventInfo: EventContentArg;
   handleDelete: (id: string) => void;
@@ -119,15 +121,31 @@ const EventContent = ({
     isCompleted: boolean | null,
   ) => void;
   isReadOnly: boolean;
+  onDescriptionClick?: (description: string) => void;
 }) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
   const accessibility = event.extendedProps?.accessibility || false;
   const isCompleted = event.extendedProps?.isCompleted || false;
+  const [descriptonExpanded, setIsDescriptionExpanded] = useState(false);
 
-  const truncatedDescription =
-    description.length > 10 ? `${description.slice(0, 10)}...` : description;
+  // 잘린 설명 또는 전체 설명을 조건에 따라 표시
+  let displayDescription;
+  if (descriptonExpanded) {
+    displayDescription = description;
+  } else if (description.length > 10) {
+    displayDescription = `${description.slice(0, 10)}...`;
+  } else {
+    displayDescription = description;
+  }
 
+  const handleDescriptionToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDescriptionExpanded((prev) => !prev);
+    if (!descriptonExpanded && onDescriptionClick) {
+      onDescriptionClick(description);
+    }
+  };
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleEventClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
@@ -177,9 +195,23 @@ const EventContent = ({
       aria-expanded={isDropdownOpen}
       style={{ position: "relative", cursor: "pointer" }}
     >
-      <div css={{ fontWeight: "bold", fontSize: "12px" }}>{event.title}</div>
+      <div
+        css={{ fontWeight: "bold", fontSize: "0.9rem", marginBottom: "0.2rem" }}
+      >
+        {event.title}
+      </div>
+
       <div>{timeText}</div>
-      <div>{truncatedDescription}</div>
+      <div
+        onClick={handleDescriptionToggle}
+        role="button"
+        tabIndex={0}
+        style={{ cursor: "pointer" }}
+        aria-expanded={descriptonExpanded}
+      >
+        {displayDescription}
+      </div>
+
       {!isReadOnly && isDropdownOpen && (
         <ul css={dropdownMenuStyles}>
           <li
@@ -219,6 +251,7 @@ const renderEventContent = (
     isCompleted: boolean | null,
   ) => void,
   isReadOnly: boolean,
+  onDescriptionClick?: (description: string) => void,
 ) => {
   if (currentView === "dayGridMonth") {
     return <div css={eventItemStyles("", false)} />;
@@ -230,6 +263,7 @@ const renderEventContent = (
       handleDelete={handleDelete}
       handleEdit={handleEdit}
       isReadOnly={isReadOnly}
+      onDescriptionClick={onDescriptionClick}
     />
   );
 };
@@ -245,6 +279,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   isReadOnly = false,
   onPlanChange,
   onDeletePlan,
+  onDescriptionClick,
 }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
   const [currentView, setCurrentView] = useState<string>("timeGridWeek");
@@ -356,8 +391,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         handleDelete,
         handleEdit,
         isReadOnly,
+        onDescriptionClick,
       ),
-    [handleDelete, handleEdit, isReadOnly],
+    [handleDelete, handleEdit, isReadOnly, onDescriptionClick],
   );
   return (
     <div css={appContainerStyles}>

@@ -7,7 +7,7 @@ export const appContainerStyles = css`
 `;
 
 export const appTitleStyles = css`
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 0.8rem;
 `;
@@ -58,8 +58,15 @@ export const calendarStyles = css`
    }
 
   .fc-timegrid-slot {
-    height: 5rem
+    height: 2rem
     border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  }
+
+    @media (max-width: 768px) {
+    .fc-timegrid-slot {
+      height: 6rem; /* 모바일 화면에서 칸 높이를 6rem으로 증가 */
+      font-size: 0.7rem;
+    }
   }
 
   /* 데스크탑 스타일 적용 (1280px 이상) */
@@ -67,7 +74,7 @@ export const calendarStyles = css`
     font-size: 0.8rem;
 
     .fc-toolbar-title {
-      font-size: 2rem !important;
+      font-size: 1rem !important;
     }
 
     .fc-timegrid-slot {
@@ -186,7 +193,7 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
   position: absolute;
   left: 0;
   right: 0;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   border-left-width: 3.2px;
   box-sizing: border-box;
   opacity: ${isDragging ? 0.5 : 1};
