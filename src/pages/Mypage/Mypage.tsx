@@ -1,5 +1,5 @@
 // src/pages/MyPage.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -11,6 +11,8 @@ import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
 import useAuth from "@/hooks/useAuth";
 import RouterPath from "@/router/RouterPath";
+import useFcmUpdate from "@/api/hooks/useFcmUpdate";
+import { requestForToken } from "@/api/firebaseConfig";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -100,9 +102,57 @@ export default function MyPage() {
   const { userData, handleDeleteAccount, handleSubscription } = useUserData();
   const { setAuthState } = useAuth();
   const navigate = useNavigate();
+  const { mutateAsync: updateFcm } = useFcmUpdate();
 
-  const handleNotificationToggle = () => {
-    setNotificationEnabled(!isNotificationEnabled);
+  // 초기 알림 상태 설정
+  useEffect(() => {
+    const storedToken = localStorage.getItem("fcmToken");
+    setNotificationEnabled(!!storedToken);
+  }, []);
+
+  const handleNotificationToggle = async () => {
+    try {
+      const newState = !isNotificationEnabled;
+
+      if (newState) {
+        // 알림 켜기
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+          const fcmToken = await requestForToken();
+          if (fcmToken) {
+            await updateFcm({
+              token: fcmToken,
+              isNotificatioinEnabled: true,
+            });
+            localStorage.setItem("fcmToken", fcmToken);
+            setNotificationEnabled(true);
+            console.log("알람이 활성화 되었습니다.");
+          }
+        } else {
+          alert(
+            "알림 권한이 필요합니다. 브라우저 설정에서 알림을 허용해주세요.",
+          );
+          setNotificationEnabled(false);
+        }
+      } else {
+        // 알람 끄기
+        const currentToken = localStorage.getItem("fcmToken");
+        if (currentToken) {
+          await updateFcm({
+            token: currentToken,
+            isNotificatioinEnabled: false,
+          });
+          localStorage.removeItem("fcmToken");
+        }
+        setNotificationEnabled(false);
+        console.log("알람이 비활성화 되었습니다.");
+      }
+    } catch (error) {
+      console.error("알림 설정 변경 중 오류 발생:", error);
+      alert("알림 설정 변경에 실패했습니다.");
+      // 상태를 이전 값으로 되돌림
+      setNotificationEnabled(!isNotificationEnabled);
+    }
   };
 
   const handleSubscriptionClick = () => {
@@ -166,29 +216,61 @@ export default function MyPage() {
               </Button>
             </CardContent>
           </Card>
-
           {/* 알림설정 카드 */}
           <Card
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            style={{
+              opacity: isNotificationEnabled ? 1 : 0.6,
+              transition: "opacity 0.3s ease",
+            }}
           >
             <CardHeader>
               <NotificationsIcon
                 fontSize="small"
-                style={{ color: "#4a5568" }}
+                style={{
+                  color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
+                }}
               />
-              <CardTitle>알림설정</CardTitle>
+              <CardTitle
+                style={{
+                  color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
+                }}
+              >
+                알림설정
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <span>알림 켜기</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span
+                  style={{
+                    color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
+                  }}
+                >
+                  알림 {isNotificationEnabled ? "켜짐" : "꺼짐"}
+                </span>
                 <Switch
                   checked={isNotificationEnabled}
                   onChange={handleNotificationToggle}
                   color="primary"
                 />
               </div>
+              {!isNotificationEnabled && (
+                <div
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "12px",
+                    color: "#9ca3af",
+                  }}
+                />
+              )}
             </CardContent>
           </Card>
         </GridLayout>
