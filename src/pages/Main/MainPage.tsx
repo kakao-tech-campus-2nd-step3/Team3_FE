@@ -16,7 +16,7 @@ const PageContainer = styled.div`
   padding: 20px;
 `;
 
-export default function MainlPage() {
+export default function MainPage() {
   const location = useLocation();
   const { data: Plans, isLoading, error, refetch } = useGetPlans();
   const savePlanMutation = useCreatePlan();
