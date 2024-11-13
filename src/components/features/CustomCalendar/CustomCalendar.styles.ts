@@ -23,7 +23,7 @@ export const calendarStyles = css`
   font-size: 0.7rem;
 
   .fc-toolbar {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 
@@ -137,16 +137,17 @@ export const calendarStyles = css`
   }
 
   .fc-col-header-cell.fc-day-today {
-    background-color: #39a7f7 !important;
+    background-color: #2196f3 !important;
     color: white;
   }
 
   .fc-button {
     border: none;
     padding: 0.4rem 0.8rem;
-    background-color: #39a7f7;
+    background-color: #2196f3;
     color: white;
     transition: background-color 0.3s ease;
+    border-radius: 4px;
   }
 
   .fc-button:hover {
