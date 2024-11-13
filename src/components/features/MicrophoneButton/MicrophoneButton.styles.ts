@@ -1,14 +1,13 @@
 // src/components/features/MicrophoneButton/MicrophoneButton.styles.ts
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
-import breakpoints from "@/variants/breakpoints";
 
 export const ButtonContainer = styled(motion.button)`
   border: none;
   background: none;
   cursor: pointer;
   position: relative;
-  overflow: visible;
+  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,19 +17,16 @@ export const ButtonContainer = styled(motion.button)`
   width: 58px;
   height: 58px;
 
-  @media (max-width: ${breakpoints.sm}px) {
-    width: 50px;
-    height: 50px;
-  }
-
   &:focus {
     outline: none;
   }
 `;
 
 export const Circle = styled(motion.ellipse)`
-  fill: #39a7f7;
+  fill: #2196f3;
   filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));
+  width: 58px;
+  height: 58px;
 `;
 
 export const MicrophoneIcon = styled(motion.g)`
@@ -54,8 +50,4 @@ export const Wave = styled(motion.div)`
   width: 4px;
   height: 8px;
 
-  @media (max-width: ${breakpoints.sm}px) {
-    width: 3px;
-    height: 6px;
-  }
 `;
