@@ -102,13 +102,13 @@ export default function PlanModifyPage() {
       },
       {
         onSuccess: (response) => {
-          const newPlanId = response.data.id; 
+          const newPlanId = response.data.id;
           alert("플랜이 추가되었습니다.");
           setModifiedPlans([
             ...modifiedPlans,
             {
               ...newPlanData,
-              id: newPlanId, 
+              id: newPlanId,
               start: new Date(utcStartDate),
               end: new Date(utcEndDate),
               complete: isCompleted,

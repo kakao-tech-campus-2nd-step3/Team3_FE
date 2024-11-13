@@ -72,7 +72,7 @@ const PreviewPlanSelectPage: React.FC = () => {
   const { mutate: fetchLightPlans } = useGptTrialLight();
   const { mutate: fetchModeratePlans } = useGptTrialModerate();
   const { mutate: fetchStrongPlans } = useGptTrialStrong();
-  
+
   const handleNextClick = async () => {
     navigate(RouterPath.PREVIEW_PLAN_UPDATE, {
       state: { plans: planCache[selectedLevel] },
