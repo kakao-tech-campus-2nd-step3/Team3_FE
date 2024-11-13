@@ -69,9 +69,9 @@ export default function PlanModifyPage() {
     accessibility: true,
     isCompleted: false,
   });
-  const [pendingPlans, setPendingPlans] = useState(false);
   const navigate = useNavigate();
 
+  const [pendingPlans, setPendingPlans] = useState(false);
   const { mutate: createPlan } = useCreatePlan();
   const { mutate: deletePlan } = useDeletePlan();
 
