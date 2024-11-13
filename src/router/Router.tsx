@@ -1,7 +1,4 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useEffect } from "react";
 import { useModal } from "@/context/LoginModalContext";
 import LandingPage from "@/pages/Landing/LandingPage";
