@@ -132,8 +132,8 @@ export const calendarStyles = css`
   }
 
   .fc-button-active {
-  background-color: #76818d !important; /* 원하는 색상으로 설정 */
-}
+    background-color: #76818d !important; /* 원하는 색상으로 설정 */
+  }
 `;
 
 export const eventItemStyles = (status: string, isDragging: boolean) => css`
@@ -197,10 +197,9 @@ export const dropdownItemStyles = css`
   text-align: left;
   transition: background-color 0.2s;
   display: block;
-  white-space: normal; 
-  overflow: visible; 
+  white-space: normal;
+  overflow: visible;
   word-wrap: break-word;
   white-space: normal;
   word-break: break-word;
 `;
-

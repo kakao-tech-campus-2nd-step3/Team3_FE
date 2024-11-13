@@ -7,7 +7,7 @@ export const ButtonContainer = styled(motion.button)`
   background: none;
   cursor: pointer;
   position: relative;
-  
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -49,5 +49,4 @@ export const Wave = styled(motion.div)`
   border-radius: 5px;
   width: 4px;
   height: 8px;
-
 `;

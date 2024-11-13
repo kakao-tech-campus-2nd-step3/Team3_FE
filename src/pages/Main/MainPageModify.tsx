@@ -62,7 +62,7 @@ export default function PlanModifyPage() {
   const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(plans);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [descriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
-  const [selectedDescription ] = useState("");
+  const [selectedDescription] = useState("");
 
   const [newPlanData, setNewPlanData] = useState({
     title: "",
@@ -183,7 +183,7 @@ export default function PlanModifyPage() {
   return (
     <PageContainer>
       <CustomCalendar
-        calendarOwner={`플래너 수정`}
+        calendarOwner="플래너 수정"
         plans={modifiedPlans}
         isReadOnly={false}
         onPlanChange={handlePlanChange}

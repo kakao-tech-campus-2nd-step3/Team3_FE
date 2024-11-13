@@ -13,6 +13,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
 import styled from "@emotion/styled";
+import { css } from "@emotion/react";
+import { createPortal } from "react-dom";
 import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
@@ -24,10 +26,7 @@ import {
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Modal from "@/components/common/Modal/Modal";
-import { css } from "@emotion/react";
 import Button from "@/components/common/Button/Button";
-import { createPortal } from "react-dom";
-
 
 const ModalContainer = styled.div`
   padding: 20px;
@@ -118,7 +117,7 @@ const EventContent = ({
     title: string,
     description: string,
     accessibility: boolean | null,
-    isCompleted: boolean | null
+    isCompleted: boolean | null,
   ) => void;
   isReadOnly: boolean;
 }) => {
@@ -134,14 +133,16 @@ const EventContent = ({
   const handleEventClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
     setIsDropdownOpen((prev) => !prev);
-    
+
     // Calculate and set the dropdown position
     if (eventRef.current) {
       const rect = eventRef.current.getBoundingClientRect();
       const dropdownWidth = 120; // 드롭다운 메뉴의 예상 너비
       const dropdownHeight = 150; // 드롭다운 메뉴의 예상 높이
-      const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const viewportWidth =
+        window.innerWidth || document.documentElement.clientWidth;
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
 
       let left = rect.left + window.scrollX;
       let top = rect.bottom + window.scrollY; // 기본적으로 아래쪽에 표시
@@ -156,10 +157,10 @@ const EventContent = ({
         top = rect.top + window.scrollY - dropdownHeight; // 위쪽에 표시
       }
       setDropdownPosition({
-        top: top,
-        left: left,
+        top,
+        left,
       });
-    } 
+    }
   };
 
   const handleOptionClick = (option: string) => {
@@ -169,7 +170,7 @@ const EventContent = ({
         event.title,
         description,
         accessibility,
-        isCompleted
+        isCompleted,
       );
     } else if (option === "delete") {
       handleDelete(event.id);
@@ -200,10 +201,11 @@ const EventContent = ({
         position: "absolute",
         top: dropdownPosition.top,
         left: dropdownPosition.left,
-        zIndex: 9999, 
+        zIndex: 9999,
       }}
     >
-      <div css={css`
+      <div
+        css={css`
           ${dropdownItemStyles};
           white-space: normal;
           word-break: break-word;
@@ -218,10 +220,12 @@ const EventContent = ({
               dropdownItemStyles,
               css`
                 color: blue;
-                transition: background-color 0.3s ease, transform 0.2s ease;
-          &:hover {
-            background-color: rgba(0, 0, 255, 0.1); 
-          }
+                transition:
+                  background-color 0.3s ease,
+                  transform 0.2s ease;
+                &:hover {
+                  background-color: rgba(0, 0, 255, 0.1);
+                }
               `,
             ]}
             onClick={(e) => {
@@ -235,11 +239,13 @@ const EventContent = ({
             css={[
               dropdownItemStyles,
               css`
-                color: red; 
-                transition: background-color 0.3s ease, transform 0.2s ease;
-          &:hover {
-            background-color: rgba(255, 0, 0, 0.1); 
-          }
+                color: red;
+                transition:
+                  background-color 0.3s ease,
+                  transform 0.2s ease;
+                &:hover {
+                  background-color: rgba(255, 0, 0, 0.1);
+                }
               `,
             ]}
             onClick={(e) => {
@@ -284,9 +290,9 @@ const renderEventContent = (
     title: string,
     description: string,
     accessibility: boolean | null,
-    isCompleted: boolean | null
+    isCompleted: boolean | null,
   ) => void,
-  isReadOnly: boolean
+  isReadOnly: boolean,
 ) => {
   if (currentView === "dayGridMonth") {
     return <div css={eventItemStyles("", false)} />;
@@ -316,7 +322,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   onDeletePlan,
 }) => {
   const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" && window.innerWidth <= breakpoints.sm
+    typeof window !== "undefined" && window.innerWidth <= breakpoints.sm,
   );
   const [currentView, setCurrentView] = useState<string>("timeGridWeek");
   const calendarRef = useRef<FullCalendar>(null);
@@ -334,7 +340,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         deletePlan(Number(id));
       }
     },
-    [deletePlan, onDeletePlan]
+    [deletePlan, onDeletePlan],
   );
 
   const handleEdit = (
@@ -342,7 +348,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     title: string,
     description: string,
     accessibility: boolean | null,
-    isCompleted: boolean | null
+    isCompleted: boolean | null,
   ) => {
     setCurrentEditPlan({
       id,
@@ -365,7 +371,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
       // 수정된 플랜 리스트 업데이트
       const updatedPlans = plans.map((plan) =>
-        plan.id === currentEditPlan.id ? { ...plan, ...updatedPlan } : plan
+        plan.id === currentEditPlan.id ? { ...plan, ...updatedPlan } : plan,
       );
       onPlanChange?.(updatedPlans);
       setIsEditModalOpen(false);
@@ -408,7 +414,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           isCompleted: plan.complete,
         },
       })),
-    [plans]
+    [plans],
   );
 
   const handleEventChange = useCallback(
@@ -416,11 +422,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const updatedPlans = plans.map((plan) =>
         plan.id === info.event.id
           ? { ...plan, start: info.event.start, end: info.event.end }
-          : plan
+          : plan,
       );
       onPlanChange?.(updatedPlans);
     },
-    [onPlanChange, plans]
+    [onPlanChange, plans],
   );
 
   const eventContent = useCallback(
@@ -430,9 +436,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         currentView,
         handleDelete,
         handleEdit,
-        isReadOnly
+        isReadOnly,
       ),
-    [handleDelete, handleEdit, isReadOnly, currentView]
+    [handleDelete, handleEdit, isReadOnly, currentView],
   );
 
   return (
@@ -516,7 +522,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                 value={currentEditPlan.title || ""}
                 onChange={(e) =>
                   setCurrentEditPlan((prev) =>
-                    prev ? { ...prev, title: e.target.value } : prev
+                    prev ? { ...prev, title: e.target.value } : prev,
                   )
                 }
               />
@@ -525,7 +531,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                 value={currentEditPlan.description || ""}
                 onChange={(e) =>
                   setCurrentEditPlan((prev) =>
-                    prev ? { ...prev, description: e.target.value } : prev
+                    prev ? { ...prev, description: e.target.value } : prev,
                   )
                 }
               />
