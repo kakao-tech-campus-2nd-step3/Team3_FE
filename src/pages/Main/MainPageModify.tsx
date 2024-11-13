@@ -62,7 +62,7 @@ export default function PlanModifyPage() {
   const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(plans);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [descriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
-  const [selectedDescription, setSelectedDescription] = useState("");
+  const [selectedDescription ] = useState("");
 
   const [newPlanData, setNewPlanData] = useState({
     title: "",
@@ -180,26 +180,14 @@ export default function PlanModifyPage() {
       });
   };
 
-  const handelDescriptionClick = (description: string) => {
-    setSelectedDescription(description);
-    setIsDescriptionModalOpen(true);
-  };
-
   return (
     <PageContainer>
       <CustomCalendar
-        calendarOwner={`${teamName} 수정`}
-        plans={modifiedPlans.map((plan) => ({
-          ...plan,
-          description:
-            plan.description.length > 10
-              ? `${plan.description.slice(0, 10)}...`
-              : plan.description,
-        }))}
+        calendarOwner={`플래너 수정`}
+        plans={modifiedPlans}
         isReadOnly={false}
         onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
-        onDescriptionClick={handelDescriptionClick}
       />
       {pendingPlans && <p>저장 중...</p>}
       <ButtonGroup>
