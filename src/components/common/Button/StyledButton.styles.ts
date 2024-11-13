@@ -9,16 +9,14 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>`
   align-items: center;
   border-radius: 10px;
   border: none;
-  font-weight: 500;
+  font-weight: 550;
   cursor: pointer;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
   padding: 8px 16px; /* py-2 px-4 */
   outline: none;
-  font-size: 16px;
-  min-width: 120px;
-  height: 40px;
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.5); /* focus:ring-2 focus:ring-offset-2 */
@@ -73,25 +71,34 @@ const StyledButton = styled.button<Pick<Props, "theme" | "size">>`
         return `
           height: 36px;
           font-size: 14px;
+          width: 100px;
+          min-width: 95px;
         `;
       case "large":
         return `
-          height: 48px;
-          font-size: 18px;
+          height: 38px;
+          font-size: 16px;
+          width: 110px;
+          min-width: 103px;
         `;
       case "long":
         return `
-          width: 100%;
+          width: 150px;
+          min-width: 150px;
           height: 40px;
-          font-size: 16px;
+          font-size: 14px;
         `;
-      default:
+      default: // 반응형
         return `
-          @media (max-width: ${breakpoints.sm}px) {
+            height: 38px;
+          font-size: 16px;
+          width: 110px;
+          min-width: 103px;
+          ${breakpoints.mobile} {
             height: 36px;
             font-size: 14px;
-            min-width: 100px;
-          }
+            width: 100px;
+          }    
         `;
     }
   }}
