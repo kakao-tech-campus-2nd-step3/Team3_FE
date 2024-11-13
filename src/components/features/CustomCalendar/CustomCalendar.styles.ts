@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 
 export const appContainerStyles = css`
-  max-width: 960px;
+  max-width: 1280px;
   margin: 0 auto;
   padding-bottom: 0.4rem;
 `;
@@ -32,7 +32,7 @@ export const calendarStyles = css`
   }
 
   .fc-toolbar-title {
-    font-size: 4rem !important;
+    font-size: 0.5rem !important;
   }
 
   .fc-event-main {
@@ -41,7 +41,7 @@ export const calendarStyles = css`
   }
 
   .fc-timegrid-slot {
-    height: 4rem;
+    height: 2rem;
   }
 
   .fc-view-harness {
@@ -78,7 +78,7 @@ export const calendarStyles = css`
     }
 
     .fc-timegrid-slot {
-      height: 4rem;
+      height: 5rem;
     }
 
     /* 데스크탑: 7개의 열 */
@@ -87,7 +87,7 @@ export const calendarStyles = css`
     }
 
     .fc-toolbar-title {
-      font-size: 10rem !important;
+      font-size: 2rem !important;
       }
 
     .fc-timegrid-slot {
