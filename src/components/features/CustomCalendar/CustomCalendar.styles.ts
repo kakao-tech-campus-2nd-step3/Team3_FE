@@ -78,7 +78,7 @@ export const calendarStyles = css`
     }
 
     .fc-timegrid-slot {
-      height: 5rem;
+      height: 4rem;
     }
 
     /* 데스크탑: 7개의 열 */
