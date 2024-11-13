@@ -139,7 +139,7 @@ const EventContent = ({
     if (eventRef.current) {
       const rect = eventRef.current.getBoundingClientRect();
       const dropdownWidth = 120; // 드롭다운 메뉴의 예상 너비
-      const dropdownHeight = 150; // 드롭다운 메뉴의 예상 높이 (내용에 따라 조정 필요)
+      const dropdownHeight = 150; // 드롭다운 메뉴의 예상 높이
       const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
@@ -218,6 +218,10 @@ const EventContent = ({
               dropdownItemStyles,
               css`
                 color: blue;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+          &:hover {
+            background-color: rgba(0, 0, 255, 0.1); 
+          }
               `,
             ]}
             onClick={(e) => {
@@ -232,6 +236,10 @@ const EventContent = ({
               dropdownItemStyles,
               css`
                 color: red; 
+                transition: background-color 0.3s ease, transform 0.2s ease;
+          &:hover {
+            background-color: rgba(255, 0, 0, 0.1); 
+          }
               `,
             ]}
             onClick={(e) => {
