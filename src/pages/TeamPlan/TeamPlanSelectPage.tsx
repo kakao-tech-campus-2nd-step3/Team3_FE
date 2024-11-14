@@ -114,12 +114,12 @@ const TeamPlanSelectPage: React.FC = () => {
           typeof strongData === "string"
         ) {
           const responseData = [
-            typeof lightData === "string" ? `1번째 AI답변: ${lightData}` : null,
-            typeof moderateData === "string"
-              ? `\n2번째 AI답변: ${moderateData}`
-              : null,
+            // typeof lightData === "string" ? `1번째 AI답변: ${lightData}` : null,
+            // typeof moderateData === "string"
+            //   ? `\n2번째 AI답변: ${moderateData}`
+            //   : null,
             typeof strongData === "string"
-              ? `\n3번째 AI답변: ${strongData}`
+              ? `${strongData}`
               : null,
           ]
             .filter((data) => data !== null)
