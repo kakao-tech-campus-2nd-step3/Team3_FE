@@ -63,7 +63,7 @@ const LoginModal: React.FC = () => {
         <Title>세션이 만료되었습니다.</Title>
         <Description>다시 로그인해주세요. </Description>
         <Button theme="kakao" size="long" onClick={handleLogin}>
-        <SymbolImage src={kakao_symbol} alt="Login" />
+          <SymbolImage src={kakao_symbol} alt="Login" />
           카카오 로그인
         </Button>
       </ModalContent>

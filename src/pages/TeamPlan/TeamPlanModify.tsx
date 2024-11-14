@@ -39,8 +39,8 @@ export default function TeamPlanModifyPage() {
   const navigate = useNavigate();
 
   const { mutateAsync: savePlan } = useSaveTeamPlan();
-const { mutateAsync: updatePlan } = useUpdateTeamPlan();
-const { mutateAsync: deletePlan } = useDeleteTeamPlan();
+  const { mutateAsync: updatePlan } = useUpdateTeamPlan();
+  const { mutateAsync: deletePlan } = useDeleteTeamPlan();
 
   const handleAddPlan = () => setIsAddModalOpen(true); // 모달 열기
 
@@ -78,7 +78,7 @@ const { mutateAsync: deletePlan } = useDeleteTeamPlan();
               id: newPlanId,
               start: new Date(startDate),
               end: new Date(endDate),
-              isCompleted: isCompleted,
+              isCompleted,
             },
           ]);
           setIsAddModalOpen(false);
@@ -138,12 +138,12 @@ const { mutateAsync: deletePlan } = useDeleteTeamPlan();
               accessibility: plan.accessibility ?? true,
               isCompleted: plan.isCompleted ?? false,
             },
-          })
+          }),
         );
-  
+
       // 모든 업데이트가 완료될 때까지 기다림
       await Promise.all(updatePromises);
-  
+
       // 모든 업데이트가 성공적으로 완료되면 알림 후 페이지 이동
       alert("수정사항이 저장되었습니다.");
       navigate(`/team-plan/${teamId}`, { state: { teamId, teamName } });
@@ -151,9 +151,6 @@ const { mutateAsync: deletePlan } = useDeleteTeamPlan();
       alert(`저장 중 오류 발생`);
     }
   };
-  
-  
-  
 
   return (
     <PageContainer>

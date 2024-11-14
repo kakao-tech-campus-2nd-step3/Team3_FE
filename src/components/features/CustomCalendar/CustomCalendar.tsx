@@ -53,7 +53,7 @@ const StyledInput = styled.input`
   border-radius: 8px;
   font-size: 1rem;
   &:focus {
-    outline: none; 
+    outline: none;
     border-color: #2196f3; /* focus:border-[#2196F3] */
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); /* focus:ring-2 focus:ring-[#2196F3] */
   }
@@ -264,7 +264,9 @@ const EventContent = ({
               dropdownItemStyles,
               css`
                 color: green;
-                transition: background-color 0.3s ease, transform 0.2s ease;
+                transition:
+                  background-color 0.3s ease,
+                  transform 0.2s ease;
                 &:hover {
                   background-color: rgba(0, 255, 0, 0.1);
                 }
@@ -314,7 +316,7 @@ const renderEventContent = (
     accessibility: boolean | null,
     isCompleted: boolean | null,
   ) => void,
-  handleToggleComplete: (id: string) => void, 
+  handleToggleComplete: (id: string) => void,
   isReadOnly: boolean,
 ) => {
   if (currentView === "dayGridMonth") {
@@ -406,11 +408,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const handleToggleComplete = useCallback(
     (id: string) => {
       const updatedPlans = plans.map((plan) =>
-        plan.id === id ? { ...plan, isCompleted: !plan.isCompleted } : plan
+        plan.id === id ? { ...plan, isCompleted: !plan.isCompleted } : plan,
       );
       onPlanChange?.(updatedPlans);
     },
-    [plans, onPlanChange]
+    [plans, onPlanChange],
   );
 
   const handleResize = useCallback(() => {
@@ -473,7 +475,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         handleToggleComplete,
         isReadOnly,
       ),
-    [handleDelete, handleEdit, handleToggleComplete,isReadOnly, currentView],
+    [handleDelete, handleEdit, handleToggleComplete, isReadOnly, currentView],
   );
 
   return (

@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import React, { forwardRef, InputHTMLAttributes } from "react"
-import styled from "@emotion/styled"
-import DatePicker from "react-datepicker"
-import { Global, css } from "@emotion/react"
-import "react-datepicker/dist/react-datepicker.css"
-import { Calendar } from 'lucide-react'
+import React, { forwardRef, InputHTMLAttributes } from "react";
+import styled from "@emotion/styled";
+import DatePicker from "react-datepicker";
+import { Global, css } from "@emotion/react";
+import "react-datepicker/dist/react-datepicker.css";
+import { Calendar } from "lucide-react";
 
 // StyledInput 스타일 정의 (unchanged)
 const StyledInput = styled.input`
@@ -39,10 +39,13 @@ const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
         readOnly
         placeholder={placeholder}
       />
-      <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+      <Calendar
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
+        size={20}
+      />
     </div>
-  )
-)
+  ),
+);
 
 interface ReactDatePickerProps {
   placeholderText: string;
@@ -62,7 +65,7 @@ const ReactDatePicker = ({
   const handleDateChange = (date: Date | null) => {
     if (date) {
       const utcDate = new Date(
-        date.getTime() - date.getTimezoneOffset() * 60000
+        date.getTime() - date.getTimezoneOffset() * 60000,
       );
       onDateChange(utcDate);
     } else {
@@ -75,9 +78,11 @@ const ReactDatePicker = ({
       <Global
         styles={css`
           .react-datepicker {
-            font-family: 'Arial', sans-serif;
+            font-family: "Arial", sans-serif;
             border-color: #e5e7eb;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow:
+              0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
           }
           .react-datepicker__header {
             background-color: #f3f4f6;
@@ -100,17 +105,25 @@ const ReactDatePicker = ({
           }
           .react-datepicker__day--selected,
           .react-datepicker__day--keyboard-selected {
-            background-color: #39A7F7;
+            background-color: #39a7f7;
             color: white;
           }
           .react-datepicker__day--selected:hover {
             background-color: #2196f3;
           }
-          .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
-            background-color: #39A7F7;
+          .react-datepicker__time-container
+            .react-datepicker__time
+            .react-datepicker__time-box
+            ul.react-datepicker__time-list
+            li.react-datepicker__time-list-item--selected {
+            background-color: #39a7f7;
             color: white;
           }
-          .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected:hover {
+          .react-datepicker__time-container
+            .react-datepicker__time
+            .react-datepicker__time-box
+            ul.react-datepicker__time-list
+            li.react-datepicker__time-list-item--selected:hover {
             background-color: #2196f3;
           }
         `}

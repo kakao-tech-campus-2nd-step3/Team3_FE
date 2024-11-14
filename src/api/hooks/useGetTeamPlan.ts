@@ -8,7 +8,7 @@ const fetchTeamPlans = async (teamId: number): Promise<CalendarEvent[]> => {
   // return transformPlanData(response.data); // 응답 데이터를 CalendarEvent 형식으로 변환
   const transformedData = transformPlanData(response.data).map((plan) => ({
     ...plan,
-    id: String(plan.id), 
+    id: String(plan.id),
     start: new Date(plan.start.getTime() + 9 * 60 * 60 * 1000), // KST 변환
     end: new Date(plan.end.getTime() + 9 * 60 * 60 * 1000), // KST 변환
     isCompleted: plan.isCompleted ?? false,

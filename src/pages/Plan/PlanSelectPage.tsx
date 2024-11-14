@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios, { AxiosError } from "axios";
+import { Rings } from "react-loader-spinner";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
@@ -16,7 +17,6 @@ import Button from "@/components/common/Button/Button";
 import NumberButton from "@/components/common/NumberButton/NumberButton";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import {Rings} from 'react-loader-spinner'
 
 const PageContainer = styled.div`
   display: flex;
@@ -74,8 +74,8 @@ const PlanSelectPage: React.FC = () => {
   >("light");
 
   const { mutateAsync: fetchLightPlansAsync } = useGptLight();
-const { mutateAsync: fetchModeratePlansAsync } = useGptModerate();
-const { mutateAsync: fetchStrongPlansAsync } = useGptStrong();
+  const { mutateAsync: fetchModeratePlansAsync } = useGptModerate();
+  const { mutateAsync: fetchStrongPlansAsync } = useGptStrong();
 
   const handleNextClick = async () => {
     navigate(RouterPath.PLAN_UPDATE, {
@@ -93,9 +93,18 @@ const { mutateAsync: fetchStrongPlansAsync } = useGptStrong();
     const fetchPlans = async () => {
       try {
         const [lightData, moderateData, strongData] = await Promise.all([
-          fetchLightPlansAsync({ deviceId, text: transcript || "기본 추천 텍스트" }),
-          fetchModeratePlansAsync({ deviceId, text: transcript || "기본 추천 텍스트" }),
-          fetchStrongPlansAsync({ deviceId, text: transcript || "기본 추천 텍스트" }),
+          fetchLightPlansAsync({
+            deviceId,
+            text: transcript || "기본 추천 텍스트",
+          }),
+          fetchModeratePlansAsync({
+            deviceId,
+            text: transcript || "기본 추천 텍스트",
+          }),
+          fetchStrongPlansAsync({
+            deviceId,
+            text: transcript || "기본 추천 텍스트",
+          }),
         ]);
 
         // 응답 데이터 검증
@@ -106,12 +115,16 @@ const { mutateAsync: fetchStrongPlansAsync } = useGptStrong();
         ) {
           const responseData = [
             typeof lightData === "string" ? `1번째 AI답변: ${lightData}` : null,
-            typeof moderateData === "string" ? `\n2번째 AI답변: ${moderateData}` : null,
-            typeof strongData === "string" ? `\n3번째 AI답변: ${strongData}` : null,
+            typeof moderateData === "string"
+              ? `\n2번째 AI답변: ${moderateData}`
+              : null,
+            typeof strongData === "string"
+              ? `\n3번째 AI답변: ${strongData}`
+              : null,
           ]
             .filter((data) => data !== null)
             .join("\n");
-  
+
           alert(`잘못된 요청입니다. \n${responseData}`);
           navigate(-1);
         } else {
@@ -124,7 +137,7 @@ const { mutateAsync: fetchStrongPlansAsync } = useGptStrong();
         }
       } catch (error: unknown) {
         setIsLoading(false);
-  
+
         // 에러가 AxiosError인지 확인
         if (axios.isAxiosError(error)) {
           if (error.response) {
@@ -136,7 +149,9 @@ const { mutateAsync: fetchStrongPlansAsync } = useGptStrong();
               alert("플랜 요청 실패: 알 수 없는 오류");
             }
           } else {
-            alert("네트워크 오류가 발생했습니다. 유효한 입력값인지 확인해주세요.");
+            alert(
+              "네트워크 오류가 발생했습니다. 유효한 입력값인지 확인해주세요.",
+            );
           }
         } else {
           alert("예기치 못한 오류가 발생했습니다.");
@@ -172,18 +187,24 @@ const { mutateAsync: fetchStrongPlansAsync } = useGptStrong();
       </ButtonContainer>
 
       {isLoading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Rings
-          height="100"
-          width="100"
-          color="#39A7F7"
-          ariaLabel="rings-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-          visible={true}
-        />
-        <p>플랜을 생성하고 있습니다. 잠시만 기다려주세요...</p>
-      </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Rings
+            height="100"
+            width="100"
+            color="#39A7F7"
+            ariaLabel="rings-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible
+          />
+          <p>플랜을 생성하고 있습니다. 잠시만 기다려주세요...</p>
+        </div>
       ) : (
         <CalendarContainer>
           <CustomCalendar plans={planCache[selectedLevel]} isReadOnly />

@@ -186,7 +186,9 @@ export default function MainPage() {
     async (updatedPlans: CalendarEvent[]) => {
       // 변경된 플랜 식별
       const changedPlans = updatedPlans.filter((updatedPlan) => {
-        const originalPlan = modifiedPlans.find((plan) => plan.id === updatedPlan.id);
+        const originalPlan = modifiedPlans.find(
+          (plan) => plan.id === updatedPlan.id,
+        );
         if (!originalPlan) return true; // 새 플랜인 경우
         return (
           originalPlan.title !== updatedPlan.title ||
@@ -197,10 +199,10 @@ export default function MainPage() {
           originalPlan.isCompleted !== updatedPlan.isCompleted
         );
       });
-  
+
       // 상태 업데이트
       setModifiedPlans(updatedPlans);
-  
+
       // 변경된 플랜들에 대해 서버에 업데이트
       for (const plan of changedPlans) {
         try {

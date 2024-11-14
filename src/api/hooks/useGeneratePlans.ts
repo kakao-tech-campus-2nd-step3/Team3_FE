@@ -50,7 +50,11 @@ const fetchGptData = async (
 
 // 레벨별 훅
 export const useGptLight = (
-  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<
+    GptResponseOrString,
+    AxiosError,
+    GptRequestParams
+  >,
 ) =>
   useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/light", params),
@@ -58,7 +62,11 @@ export const useGptLight = (
   });
 
 export const useGptModerate = (
-  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<
+    GptResponseOrString,
+    AxiosError,
+    GptRequestParams
+  >,
 ) =>
   useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/moderate", params),
@@ -66,7 +74,11 @@ export const useGptModerate = (
   });
 
 export const useGptStrong = (
-  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<
+    GptResponseOrString,
+    AxiosError,
+    GptRequestParams
+  >,
 ) =>
   useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/strong", params),
@@ -74,7 +86,11 @@ export const useGptStrong = (
   });
 
 export const useGptTrialLight = (
-  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<
+    GptResponseOrString,
+    AxiosError,
+    GptRequestParams
+  >,
 ) =>
   useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/trial/light", params),
@@ -82,7 +98,11 @@ export const useGptTrialLight = (
   });
 
 export const useGptTrialModerate = (
-  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<
+    GptResponseOrString,
+    AxiosError,
+    GptRequestParams
+  >,
 ) =>
   useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/trial/moderate", params),
@@ -90,7 +110,11 @@ export const useGptTrialModerate = (
   });
 
 export const useGptTrialStrong = (
-  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<
+    GptResponseOrString,
+    AxiosError,
+    GptRequestParams
+  >,
 ) =>
   useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/trial/strong", params),
