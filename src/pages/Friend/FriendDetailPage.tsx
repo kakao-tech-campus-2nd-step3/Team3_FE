@@ -141,6 +141,22 @@ const ActionButtons = styled.div`
   font-size: 9px;
 `;
 
+const Spinner = styled.div`
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #39a7f7;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+
 export default function FriendDetailPage() {
   const { friendId } = useParams();
   const location = useLocation();
@@ -206,7 +222,15 @@ export default function FriendDetailPage() {
     return `${diffDays}일 전`;
   };
 
-  if (isLoadingPlans || isLoadingComments) return <div>로딩 중...</div>;
+  if (isLoadingPlans || isLoadingComments) {
+    return (
+      <PageContainer>
+        <ContentWrapper style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+          <Spinner />
+        </ContentWrapper>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
