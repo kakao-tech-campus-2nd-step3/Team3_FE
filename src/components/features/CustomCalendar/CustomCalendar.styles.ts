@@ -1,18 +1,16 @@
 import { css } from "@emotion/react";
 
 export const appContainerStyles = css`
-  max-width: 1280px;
   margin: 0 auto;
   padding-bottom: 0.4rem;
 `;
 
 export const appTitleStyles = css`
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 0.8rem;
 `;
 
-/* calendarStyles */
 export const calendarStyles = css`
   display: flex;
   flex-direction: column;
@@ -23,25 +21,30 @@ export const calendarStyles = css`
   font-size: 0.7rem;
 
   .fc-toolbar {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 
   .fc-toolbar-chunk {
     margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .fc-toolbar-title {
-    font-size: 0.5rem !important;
+    font-size: 1rem !important;
   }
 
   .fc-event-main {
-    padding: 0.16rem;
-    color: inherit !important;
+    padding: 0.2rem;
+    width: 100% !important;
+    color: inherit;
   }
 
   .fc-timegrid-slot {
-    height: 2rem;
+    height: 1rem;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
   }
 
   .fc-view-harness {
@@ -51,58 +54,11 @@ export const calendarStyles = css`
   /* 모바일: 3개의 열 */
   .fc-timegrid-col {
     flex-basis: calc(100% / 3) !important; /* 3개의 열 */
-  }
-
-  .fc-toolbar-title {
-      font-size: 5rem !important;
-   }
-
-  .fc-timegrid-slot {
-    height: 2rem
-    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-  }
-
-    @media (max-width: 768px) {
-    .fc-timegrid-slot {
-      height: 6rem; /* 모바일 화면에서 칸 높이를 6rem으로 증가 */
-      font-size: 0.7rem;
-    }
-  }
-
-  /* 데스크탑 스타일 적용 (1280px 이상) */
-  @media (min-width: 1280px) {
-    font-size: 0.8rem;
-
-    .fc-toolbar-title {
-      font-size: 1rem !important;
-    }
-
-    .fc-timegrid-slot {
-      height: 5rem;
-    }
-
-    /* 데스크탑: 7개의 열 */
-    .fc-timegrid-col {
-      flex-basis: calc(100% / 7); /* 7개의 열 */
-    }
-
-    .fc-toolbar-title {
-      font-size: 2rem !important;
-      }
-
-    .fc-timegrid-slot {
-    height: 10rem
-    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-    }
+    border-right: 1px solid #e5e7eb;
   }
 
   .fc-event {
     cursor: move;
-  }
-
-  .fc-event-main {
-    padding: 0.2rem;
-    width: 100% !important;
   }
 
   .fc-event-completed {
@@ -137,10 +93,6 @@ export const calendarStyles = css`
     width: 2.4rem;
   }
 
-  .fc-timegrid-col {
-    border-right: 1px solid #e5e7eb;
-  }
-
   .fc-timegrid-col-frame {
     position: relative;
   }
@@ -162,30 +114,25 @@ export const calendarStyles = css`
   }
 
   .fc-col-header-cell.fc-day-today {
-    background-color: #39a7f7 !important;
+    background-color: #2196f3 !important;
     color: white;
   }
 
   .fc-button {
     border: none;
     padding: 0.4rem 0.8rem;
-    background-color: #39a7f7;
+    background-color: #2196f3;
     color: white;
     transition: background-color 0.3s ease;
+    border-radius: 4px;
   }
 
   .fc-button:hover {
     background-color: #338bd0;
   }
 
-  .fc-toolbar-chunk {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .fc-toolbar-title {
-    font-size: 1rem !important;
+  .fc-button-active {
+    background-color: #76818d !important; /* 원하는 색상으로 설정 */
   }
 `;
 
@@ -193,7 +140,8 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
   position: absolute;
   left: 0;
   right: 0;
-  font-size: 0.9rem;
+  padding: 0.2rem;
+  font-size: 0.8rem;
   border-left-width: 3.2px;
   box-sizing: border-box;
   opacity: ${isDragging ? 0.5 : 1};
@@ -212,7 +160,6 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
   `
     background-color: #fee2e2;
     border-left-color: #ef4444;
-
   `}
 `;
 
@@ -227,10 +174,9 @@ export const dropdownMenuStyles = css`
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
   min-width: 100px;
+  max-width: 120px;
   animation: fadeIn 0.2s ease-in-out;
-
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -243,24 +189,17 @@ export const dropdownMenuStyles = css`
   }
 `;
 
-export const dropdownBlueStyles = css`
+export const dropdownItemStyles = css`
   padding: 10px 12px;
-  color: blue;
-  border-radius: 8px;
+  color: black;
   font-size: 14px;
   cursor: pointer;
   text-align: left;
   transition: background-color 0.2s;
   display: block;
-  white-space: nowrap;
-`;
-
-export const dropdownBlackStyles = css`
-  ${dropdownBlueStyles}
-  color: black;
-`;
-
-export const dropdownItemRedStyles = css`
-  ${dropdownBlueStyles}
-  color: red;
+  white-space: normal;
+  overflow: visible;
+  word-wrap: break-word;
+  white-space: normal;
+  word-break: break-word;
 `;

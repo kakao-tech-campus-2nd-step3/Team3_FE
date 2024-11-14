@@ -13,14 +13,15 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import koLocale from "@fullcalendar/core/locales/ko";
 import styled from "@emotion/styled";
+import { css } from "@emotion/react";
+import { createPortal } from "react-dom";
 import breakpoints from "@/variants/breakpoints";
 import {
   appContainerStyles,
   appTitleStyles,
   calendarStyles,
   eventItemStyles,
-  dropdownBlackStyles,
-  dropdownItemRedStyles,
+  dropdownItemStyles,
   dropdownMenuStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
@@ -53,8 +54,8 @@ const StyledInput = styled.input`
   font-size: 1rem;
   &:focus {
     outline: none;
-    border-color: #39a7f7;
-    box-shadow: 0 0 0 2px #338bd0;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
   }
 `;
 
@@ -88,7 +89,6 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
-  onDescriptionClick?: (description: string) => void;
 }
 
 const VIEW_MODES = {
@@ -109,7 +109,6 @@ const EventContent = ({
   handleDelete,
   handleEdit,
   isReadOnly,
-  onDescriptionClick,
 }: {
   eventInfo: EventContentArg;
   handleDelete: (id: string) => void;
@@ -121,42 +120,49 @@ const EventContent = ({
     isCompleted: boolean | null,
   ) => void;
   isReadOnly: boolean;
-  onDescriptionClick?: (description: string) => void;
 }) => {
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
   const accessibility = event.extendedProps?.accessibility || false;
   const isCompleted = event.extendedProps?.isCompleted || false;
-  const [descriptonExpanded, setIsDescriptionExpanded] = useState(false);
 
-  // 잘린 설명 또는 전체 설명을 조건에 따라 표시
-  let displayDescription;
-  if (descriptonExpanded) {
-    displayDescription = description;
-  } else if (description.length > 10) {
-    displayDescription = `${description.slice(0, 10)}...`;
-  } else {
-    displayDescription = description;
-  }
-
-  const handleDescriptionToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDescriptionExpanded((prev) => !prev);
-    if (!descriptonExpanded && onDescriptionClick) {
-      onDescriptionClick(description);
-    }
-  };
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const eventRef = useRef<HTMLDivElement>(null);
+
   const handleEventClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 버블링 방지
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      setIsDropdownOpen(!isDropdownOpen);
+    setIsDropdownOpen((prev) => !prev);
+
+    // Calculate and set the dropdown position
+    if (eventRef.current) {
+      const rect = eventRef.current.getBoundingClientRect();
+      const dropdownWidth = 120; // 드롭다운 메뉴의 예상 너비
+      const dropdownHeight = 150; // 드롭다운 메뉴의 예상 높이
+      const viewportWidth =
+        window.innerWidth || document.documentElement.clientWidth;
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+
+      let left = rect.left + window.scrollX;
+      let top = rect.bottom + window.scrollY; // 기본적으로 아래쪽에 표시
+
+      // 드롭다운 메뉴가 화면의 오른쪽 밖으로 나가는지 확인
+      if (left + dropdownWidth > viewportWidth) {
+        left = viewportWidth - dropdownWidth - 10; // 오른쪽 여백 10px 확보
+      }
+
+      // 드롭다운 메뉴가 화면의 하단 밖으로 나가는지 확인
+      if (rect.bottom + dropdownHeight > viewportHeight) {
+        top = rect.top + window.scrollY - dropdownHeight; // 위쪽에 표시
+      }
+      setDropdownPosition({
+        top,
+        left,
+      });
     }
   };
+
   const handleOptionClick = (option: string) => {
     if (option === "edit") {
       handleEdit(
@@ -171,11 +177,13 @@ const EventContent = ({
     }
     setIsDropdownOpen(false);
   };
+
   // 드롭다운 외부 클릭 시 닫힘 처리
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (!(e.target instanceof Node)) return;
-      setIsDropdownOpen(false);
+      if (eventRef.current && !eventRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
     };
     if (isDropdownOpen) {
       document.addEventListener("click", handleClickOutside);
@@ -184,61 +192,111 @@ const EventContent = ({
       document.removeEventListener("click", handleClickOutside);
     };
   }, [isDropdownOpen]);
-  return (
+
+  // Portal 이용해서 드랍다운 메뉴 렌더링
+  const DropdownMenu = (
     <div
-      css={eventItemStyles("", false)}
-      onClick={handleEventClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-haspopup="true"
-      aria-expanded={isDropdownOpen}
-      style={{ position: "relative", cursor: "pointer" }}
+      css={dropdownMenuStyles}
+      style={{
+        position: "absolute",
+        top: dropdownPosition.top,
+        left: dropdownPosition.left,
+        zIndex: 9999,
+      }}
     >
       <div
-        css={{ fontWeight: "bold", fontSize: "0.9rem", marginBottom: "0.2rem" }}
+        css={css`
+          ${dropdownItemStyles};
+          white-space: normal;
+          word-break: break-word;
+        `}
       >
-        {event.title}
+        {description}
       </div>
-
-      <div>{timeText}</div>
-      <div
-        onClick={handleDescriptionToggle}
-        role="button"
-        tabIndex={0}
-        style={{ cursor: "pointer" }}
-        aria-expanded={descriptonExpanded}
-      >
-        {displayDescription}
-      </div>
-
-      {!isReadOnly && isDropdownOpen && (
-        <ul css={dropdownMenuStyles}>
-          <li
-            css={dropdownBlackStyles}
+      {!isReadOnly && (
+        <>
+          <div
+            css={[
+              dropdownItemStyles,
+              css`
+                color: blue;
+                transition:
+                  background-color 0.3s ease,
+                  transform 0.2s ease;
+                &:hover {
+                  background-color: rgba(0, 0, 255, 0.1);
+                }
+              `,
+            ]}
+            role="button"
+            tabIndex="0"
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("edit");
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleOptionClick("edit");
+              }
+            }}
           >
             수정
-          </li>
-          <li
-            css={dropdownItemRedStyles}
+          </div>
+          <div
+            css={[
+              dropdownItemStyles,
+              css`
+                color: red;
+                transition:
+                  background-color 0.3s ease,
+                  transform 0.2s ease;
+                &:hover {
+                  background-color: rgba(255, 0, 0, 0.1);
+                }
+              `,
+            ]}
+            role="button"
+            tabIndex="0"
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("delete");
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleOptionClick("delete");
+              }
+            }}
           >
             삭제
-          </li>
-        </ul>
+          </div>
+        </>
       )}
     </div>
   );
+
+  return (
+    <>
+      <div
+        ref={eventRef}
+        css={eventItemStyles("", false)}
+        onClick={handleEventClick}
+        role="button"
+        tabIndex={0}
+        aria-haspopup="true"
+        aria-expanded={isDropdownOpen}
+        style={{ position: "relative", cursor: "pointer" }}
+      >
+        <div>{timeText}</div>
+        <div>{event.title}</div>
+      </div>
+      {isDropdownOpen && createPortal(DropdownMenu, document.body)}
+    </>
+  );
 };
 
-// 이 함수도 컴포넌트 외부에 위치
+// renderEventContent 함수
 const renderEventContent = (
   eventInfo: EventContentArg,
   currentView: string,
@@ -251,7 +309,6 @@ const renderEventContent = (
     isCompleted: boolean | null,
   ) => void,
   isReadOnly: boolean,
-  onDescriptionClick?: (description: string) => void,
 ) => {
   if (currentView === "dayGridMonth") {
     return <div css={eventItemStyles("", false)} />;
@@ -263,10 +320,10 @@ const renderEventContent = (
       handleDelete={handleDelete}
       handleEdit={handleEdit}
       isReadOnly={isReadOnly}
-      onDescriptionClick={onDescriptionClick}
     />
   );
 };
+
 const parseDate = (date: any) => {
   return typeof date === "string" || typeof date === "number"
     ? new Date(date)
@@ -279,9 +336,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   isReadOnly = false,
   onPlanChange,
   onDeletePlan,
-  onDescriptionClick,
 }) => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= breakpoints.sm);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" && window.innerWidth <= breakpoints.sm,
+  );
   const [currentView, setCurrentView] = useState<string>("timeGridWeek");
   const calendarRef = useRef<FullCalendar>(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
@@ -338,13 +396,18 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   };
 
   const handleResize = useCallback(() => {
-    const currentMobile =
+    const isMobileNow =
       typeof window !== "undefined" && window.innerWidth <= breakpoints.sm;
-    setIsMobile(currentMobile);
+    setIsMobile(isMobileNow);
     const calendarApi = calendarRef.current?.getApi();
-    calendarApi?.changeView(
-      currentMobile ? "timeGridThreeDay" : "timeGridWeek",
-    );
+    if (!calendarApi) return;
+    const currentViewType = calendarApi.view.type;
+    // 화면 크기에 따라 뷰를 설정
+    if (isMobileNow && currentViewType !== VIEW_MODES.THREEDAY) {
+      calendarApi.changeView(VIEW_MODES.THREEDAY);
+    } else if (!isMobileNow && currentViewType !== VIEW_MODES.WEEK) {
+      calendarApi.changeView(VIEW_MODES.WEEK);
+    }
   }, []);
 
   useEffect(() => {
@@ -382,7 +445,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     [onPlanChange, plans],
   );
 
-  // useCallback으로 메모이제이션
   const eventContent = useCallback(
     (eventInfo: EventContentArg) =>
       renderEventContent(
@@ -391,10 +453,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         handleDelete,
         handleEdit,
         isReadOnly,
-        onDescriptionClick,
       ),
-    [handleDelete, handleEdit, isReadOnly, onDescriptionClick],
+    [handleDelete, handleEdit, isReadOnly, currentView],
   );
+
   return (
     <div css={appContainerStyles}>
       {calendarOwner && <h1 css={appTitleStyles}>{calendarOwner}</h1>}
@@ -412,13 +474,19 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
               dayHeaderFormat: { weekday: "short" },
             },
           }}
+          buttonText={{
+            today: "오늘",
+            month: "월",
+            week: "주",
+            day: "일",
+            timeGridThreeDay: "3일",
+          }}
           initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
           initialDate={currentDate}
           headerToolbar={{
-            left: "title",
-            center: "",
-            right:
-              "prev,next,today dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
+            left: "prev,next,today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
           }}
           locale={koLocale}
           slotDuration="00:10:00"
@@ -449,7 +517,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           timeZone="UTC"
           events={parsedEvents}
           viewDidMount={({ view }) => setCurrentView(view.type)}
-          datesSet={(dateInfo) => setCurrentDate(dateInfo.start)}
+          datesSet={(dateInfo) => {
+            setCurrentDate(dateInfo.start);
+            setCurrentView(dateInfo.view.type);
+          }}
           dayHeaderFormat={{
             weekday: "short",
             month: "numeric",
@@ -487,7 +558,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                   checked={!!currentEditPlan.accessibility} // Converts null to false
                   onChange={(e) =>
                     setCurrentEditPlan((prev) => ({
-                      ...prev,
+                      ...prev!,
                       accessibility: e.target.checked,
                     }))
                   }
@@ -500,13 +571,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                   checked={currentEditPlan.complete}
                   onChange={(e) =>
                     setCurrentEditPlan((prev) => ({
-                      ...prev,
+                      ...prev!,
                       complete: e.target.checked,
                     }))
                   }
                 />
               </ToggleContainer>
-              <Button onClick={handleEditSubmit}>저장</Button>
+              <button onClick={handleEditSubmit}>저장</button>
             </ModalContainer>
           </Modal>
         )}

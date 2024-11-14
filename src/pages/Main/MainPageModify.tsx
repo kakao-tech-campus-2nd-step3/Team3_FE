@@ -56,6 +56,16 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
+// newPlanData의 타입 정의
+interface NewPlanData {
+  title: string;
+  description: string;
+  startDate: string | null;
+  endDate: string | null;
+  accessibility: boolean;
+  isCompleted: boolean;
+}
+
 export default function PlanModifyPage() {
   const location = useLocation();
   const { plans = [], teamName } = location.state || {};
@@ -64,11 +74,11 @@ export default function PlanModifyPage() {
   const [descriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState("");
 
-  const [newPlanData, setNewPlanData] = useState({
+  const [newPlanData, setNewPlanData] = useState<NewPlanData>({
     title: "",
     description: "",
-    startDate: "",
-    endDate: "",
+    startDate: null,
+    endDate: null,
     accessibility: true,
     isCompleted: false,
   });
@@ -88,49 +98,58 @@ export default function PlanModifyPage() {
       accessibility,
       isCompleted,
     } = newPlanData;
-    const utcStartDate = new Date(`${startDate}Z`).toISOString();
-    const utcEndDate = new Date(`${endDate}Z`).toISOString();
 
-    createPlan(
-      {
-        plan: {
-          title,
-          description,
-          startDate: utcStartDate,
-          endDate: utcEndDate,
-          accessibility,
-          isCompleted,
+    if (!startDate || !endDate) {
+      alert("시작일과 종료일을 모두 선택해주세요.");
+      return;
+    }
+
+    try {
+      // 날짜 형식이 이미 'Z'로 끝나는 ISO 문자열이므로 그대로 사용
+      createPlan(
+        {
+          plan: {
+            title,
+            description,
+            startDate, // 이미 "YYYY-MM-DDTHH:mm:ss.SSSZ" 형식
+            endDate, // 이미 "YYYY-MM-DDTHH:mm:ss.SSSZ" 형식
+            accessibility,
+            isCompleted,
+          },
         },
-      },
-      {
-        onSuccess: (response) => {
-          const newPlanId = response.data.id;
-          alert("플랜이 추가되었습니다.");
-          setModifiedPlans([
-            ...modifiedPlans,
-            {
-              ...newPlanData,
-              id: newPlanId,
-              start: new Date(utcStartDate),
-              end: new Date(utcEndDate),
-              complete: isCompleted,
-            },
-          ]);
-          setIsAddModalOpen(false);
-          setNewPlanData({
-            title: "",
-            description: "",
-            startDate: "",
-            endDate: "",
-            accessibility: true,
-            isCompleted: false,
-          });
+        {
+          onSuccess: (response) => {
+            const newPlanId = response.data.id;
+            alert("플랜이 추가되었습니다.");
+            setModifiedPlans([
+              ...modifiedPlans,
+              {
+                ...newPlanData,
+                id: newPlanId,
+                start: new Date(startDate), // UTC 문자열을 Date 객체로 변환
+                end: new Date(endDate), // UTC 문자열을 Date 객체로 변환
+                complete: isCompleted,
+              },
+            ]);
+            setIsAddModalOpen(false);
+            setNewPlanData({
+              title: "",
+              description: "",
+              startDate: null,
+              endDate: null,
+              accessibility: true,
+              isCompleted: false,
+            });
+          },
+          onError: (error: any) => {
+            alert(`추가 중 오류 발생: ${error.message}`);
+          },
         },
-        onError: (error) => {
-          alert(`추가 중 오류 발생: ${error.message}`);
-        },
-      },
-    );
+      );
+    } catch (error) {
+      alert("날짜 형식이 올바르지 않습니다. 다시 선택해주세요.");
+      console.error(error);
+    }
   };
 
   const handleDeletePlan = (planId: string) => {
@@ -142,7 +161,7 @@ export default function PlanModifyPage() {
             prevPlans.filter((plan) => plan.id !== planId),
           );
         },
-        onError: (error) => {
+        onError: (error: any) => {
           alert(`삭제 중 오류 발생: ${error.message}`);
         },
       });
@@ -174,7 +193,7 @@ export default function PlanModifyPage() {
         setPendingPlans(false);
         navigate(RouterPath.MAIN, { state: { refetchNeeded: true } });
       })
-      .catch((error) => {
+      .catch((error: any) => {
         alert(`저장 중 오류 발생: ${error.message}`);
         setPendingPlans(false);
       });
@@ -183,6 +202,21 @@ export default function PlanModifyPage() {
   const handelDescriptionClick = (description: string) => {
     setSelectedDescription(description);
     setIsDescriptionModalOpen(true);
+  };
+
+  // 날짜 변경 핸들러
+  const handleStartDateChange = (date: string | null) => {
+    setNewPlanData((prevData) => ({
+      ...prevData,
+      startDate: date,
+    }));
+  };
+
+  const handleEndDateChange = (date: string | null) => {
+    setNewPlanData((prevData) => ({
+      ...prevData,
+      endDate: date,
+    }));
   };
 
   return (
@@ -199,7 +233,6 @@ export default function PlanModifyPage() {
         isReadOnly={false}
         onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
-        onDescriptionClick={handelDescriptionClick}
       />
       {pendingPlans && <p>저장 중...</p>}
       <ButtonGroup>
@@ -227,34 +260,8 @@ export default function PlanModifyPage() {
                 setNewPlanData({ ...newPlanData, description: e.target.value })
               }
             />
-            <ReactDatePicker
-              placeholderText="시작 날짜 선택"
-              selectedDate={
-                newPlanData.startDate ? new Date(newPlanData.startDate) : null
-              }
-              onDateChange={(date: any) =>
-                setNewPlanData((prevData) => ({
-                  ...prevData,
-                  startDate: date ? date.toISOString().slice(0, 16) : "",
-                }))
-              }
-              showTimeSelect
-              dateFormat="yyyy/MM/dd HH:mm"
-            />
-            <ReactDatePicker
-              placeholderText="종료 날짜 선택"
-              selectedDate={
-                newPlanData.endDate ? new Date(newPlanData.endDate) : null
-              }
-              onDateChange={(date: any) =>
-                setNewPlanData((prevData) => ({
-                  ...prevData,
-                  endDate: date ? date.toISOString().slice(0, 16) : "",
-                }))
-              }
-              showTimeSelect
-              dateFormat="yyyy/MM/dd HH:mm"
-            />
+            <ReactDatePicker onDateChange={handleStartDateChange} />
+            <ReactDatePicker onDateChange={handleEndDateChange} />
             <Button onClick={handleAddPlanSubmit}>추가</Button>
           </ModalContainer>
         </Modal>
