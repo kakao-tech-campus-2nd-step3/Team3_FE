@@ -546,7 +546,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           dayMaxEvents
           weekends
           firstDay={1}
-          timeZone="UTC"
+          timeZone="KST"
           events={parsedEvents}
           viewDidMount={({ view }) => setCurrentView(view.type)}
           datesSet={(dateInfo) => {
