@@ -23,7 +23,7 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-export default function TeamPlanChangePage() {
+export default function TeamPlanModifyPage() {
   const location = useLocation();
   const { teamId, teamName, plans = [] } = location.state || {};
   const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(plans);
@@ -38,9 +38,9 @@ export default function TeamPlanChangePage() {
   });
   const navigate = useNavigate();
 
-  const { mutate: savePlan } = useSaveTeamPlan();
-  const { mutate: updatePlan } = useUpdateTeamPlan();
-  const { mutate: deletePlan } = useDeleteTeamPlan();
+  const { mutateAsync: savePlan } = useSaveTeamPlan();
+  const { mutateAsync: updatePlan } = useUpdateTeamPlan();
+  const { mutateAsync: deletePlan } = useDeleteTeamPlan();
 
   const handleAddPlan = () => setIsAddModalOpen(true); // 모달 열기
 
@@ -68,16 +68,17 @@ export default function TeamPlanChangePage() {
         },
       },
       {
-        onSuccess: () => {
+        onSuccess: (response) => {
+          const newPlanId = response.data.id;
           alert("플랜이 추가되었습니다.");
           setModifiedPlans([
             ...modifiedPlans,
             {
               ...newPlanData,
-              id: Date.now().toString(),
+              id: newPlanId,
               start: new Date(startDate),
               end: new Date(endDate),
-              complete: isCompleted,
+              isCompleted,
             },
           ]);
           setIsAddModalOpen(false);
@@ -120,26 +121,35 @@ export default function TeamPlanChangePage() {
     setModifiedPlans(updatedPlans);
   };
 
-  const handleSaveAll = () => {
-    modifiedPlans.forEach((plan) => {
-      if (plan.id && typeof plan.id === "string") {
-        // 문자열로 확인
-        updatePlan({
-          teamId,
-          planId: parseInt(plan.id, 10),
-          plan: {
-            title: plan.title,
-            description: plan.description,
-            startDate: plan.start.toISOString(),
-            endDate: plan.end.toISOString(),
-            accessibility: plan.accessibility ?? true,
-            isCompleted: plan.complete ?? false,
-          },
-        });
-      }
-    });
-    alert("수정사항이 저장되었습니다.");
-    navigate(`/team-plan/${teamId}`, { state: { teamId, teamName } });
+  const handleSaveAll = async () => {
+    try {
+      // 모든 업데이트를 mutateAsync로 처리하여 Promise.all로 병렬 실행
+      const updatePromises = modifiedPlans
+        .filter((plan) => plan.id && typeof plan.id === "string")
+        .map((plan) =>
+          updatePlan({
+            teamId,
+            planId: parseInt(plan.id, 10),
+            plan: {
+              title: plan.title,
+              description: plan.description,
+              startDate: plan.start.toISOString(),
+              endDate: plan.end.toISOString(),
+              accessibility: plan.accessibility ?? true,
+              isCompleted: plan.isCompleted ?? false,
+            },
+          }),
+        );
+
+      // 모든 업데이트가 완료될 때까지 기다림
+      await Promise.all(updatePromises);
+
+      // 모든 업데이트가 성공적으로 완료되면 알림 후 페이지 이동
+      alert("수정사항이 저장되었습니다.");
+      navigate(`/team-plan/${teamId}`, { state: { teamId, teamName } });
+    } catch (error) {
+      alert(`저장 중 오류 발생`);
+    }
   };
 
   return (

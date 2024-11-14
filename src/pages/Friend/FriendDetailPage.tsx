@@ -1,3 +1,4 @@
+// src/pages/Friend/FriendDetailPage.tsx
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useParams } from "react-router-dom";
@@ -13,129 +14,152 @@ import {
 import { useGetFriendPlans } from "@/api/hooks/useGetPlans";
 
 const PageContainer = styled.div`
-  width: 100%;
-  margin: 0 auto;
-  padding: 16px;
+  display: flex;
+  min-height: 100vh;
+  background-color: #ffffff;
+`;
+
+const ContentWrapper = styled.main`
+  flex-grow: 1;
+  padding: 32px;
+  overflow: auto;
+  box-sizing: border-box;
+`;
+
+const Heading = styled.h1`
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #2d3748;
+`;
+
+const CalendarWrapper = styled.div`
+  margin-bottom: 32px;
 `;
 
 const CommentSection = styled.div`
-  display: flex;
-  flex-direction: column;
+  padding: 24px;
+  border-radius: 8px;
 `;
 
 const CommentInput = styled.div`
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 8px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: #ffffff;
+  padding: 16px 0px 16px 16px;
 `;
 
 const InputWrapper = styled.div`
-  flex: 1;
+  flex-grow: 1;
   display: flex;
   align-items: center;
-  padding: 10.4px 14.4px;
-  border-radius: 12.8px;
-  border: 1px solid black;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e0;
+  background-color: #ffffff;
 `;
 
 const Input = styled.input`
   flex: 1;
   border: none;
   outline: none;
-  font-size: 15.3px;
-  font-family: "Inter", sans-serif;
-  font-weight: 700;
+  font-size: 15px;
   color: #464646;
   &::placeholder {
     color: rgba(70, 70, 70, 0.5);
   }
 `;
 
-const Divider = styled.hr`
+const IconButton = styled.button`
+  background: none;
   border: none;
-  height: 1.6px;
-  background-color: #eeeeee;
-  margin: 8px 0;
+  cursor: pointer;
+  color: #39a7f7;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  margin-left: 2px;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
+const CommentList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
 const CommentItem = styled.div`
   display: flex;
-  flex-direction: column;
-  padding: 8px;
+  align-items: flex-start;
+  gap: 16px;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
 const CommentContent = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-`;
-
-const CommentBubble = styled.div`
-  background-color: #d9d9d9;
-  border-radius: 12.8px;
-  padding: 8px 16.8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const CommentBox = styled.div`
-  border-radius: 12.8px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
 `;
 
 const CommentAuthor = styled.div`
-  color: black;
-  font-size: 15.3px;
-  font-family: "Inter", sans-serif;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
 `;
 
 const CommentText = styled.div`
+  font-size: 15px;
   color: #464646;
-  font-size: 15.3px;
-  font-family: "Inter", sans-serif;
-  font-weight: 700;
+  margin-top: 4px;
 `;
 
 const CommentDate = styled.div`
+  font-size: 14px;
+  color: #718096;
+`;
+
+const CommentDateWrapper = styled.div`
   display: flex;
   align-items: center;
-  color: rgba(55.95, 55.95, 55.95, 0.7);
-  font-size: 15.3px;
-  font-family: "Inter", sans-serif;
-  font-weight: 700;
-  margin-top: 4px;
-  padding-left: 12px;
+  justify-content: space-between;
+  margin-top: 8px;
 `;
 
 const ActionButtons = styled.div`
   display: flex;
-  align-items: center;
-  margin-left: 3px;
+  margin-right: auto;
+  font-size: 9px;
 `;
 
-const IconButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  color: rgba(55.95, 55.95, 55.95, 0.7);
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  &:hover {
-    color: #000;
+const Spinner = styled.div`
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #39a7f7;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;
 
 export default function FriendDetailPage() {
   const { friendId } = useParams();
   const location = useLocation();
-  const { friendName, userId } = location.state || {};
+  const { Plans: myPlans, friendName, userId } = location.state || {};
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -176,7 +200,7 @@ export default function FriendDetailPage() {
       {
         onSuccess: () => {
           alert("수정이 완료되었습니다.");
-          setEditingCommentId(null); // 수정 후 수정 모드 종료
+          setEditingCommentId(null);
           setEditContent("");
         },
       },
@@ -197,102 +221,124 @@ export default function FriendDetailPage() {
     return `${diffDays}일 전`;
   };
 
-  if (isLoadingPlans || isLoadingComments) return <div>로딩 중...</div>;
+  if (isLoadingPlans || isLoadingComments) {
+    return (
+      <PageContainer>
+        <ContentWrapper
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Spinner />
+        </ContentWrapper>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
-      <CustomCalendar
-        calendarOwner={friendName ? `${friendName}님의 계획표` : "계획표"}
-        plans={plans}
-      />
-      <CommentSection>
-        <CommentInput>
-          <ProfileImage />
-          <InputWrapper>
-            <Input
-              type="text"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="댓글을 입력하세요."
-              aria-label="댓글 입력"
-              onKeyPress={(e) => {
-                if (e.key === "Enter") handleSubmitComment();
-              }}
-              disabled={createCommentMutation.isPending}
-            />
-            <IconButton
-              onClick={handleSubmitComment}
-              disabled={createCommentMutation.isPending}
-            >
-              <Send />
-            </IconButton>
-          </InputWrapper>
-        </CommentInput>
-        <Divider />
-        {comments.map((comment) => (
-          <CommentItem key={comment.id}>
-            <CommentContent>
-              <ProfileImage src={comment.writerProfileImage} />
-              <CommentBox>
-                {editingCommentId === comment.id ? (
-                  <InputWrapper>
-                    <Input
-                      type="text"
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") handleUpdateComment(comment.id);
-                      }}
-                      disabled={updateCommentMutation.isPending}
-                    />
-                    <IconButton
-                      onClick={() => handleUpdateComment(comment.id)}
-                      disabled={updateCommentMutation.isPending}
-                    >
-                      <Check />
-                    </IconButton>
-                  </InputWrapper>
-                ) : (
-                  <>
-                    <CommentBubble>
-                      <CommentAuthor>{comment.writerNickname}</CommentAuthor>
+      <ContentWrapper>
+        <Heading>{friendName ? `${friendName}님의 계획표` : "계획표"}</Heading>
+        <CalendarWrapper>
+          {myPlans && myPlans.length > 0 ? (
+            <CustomCalendar plans={myPlans} isReadOnly />
+          ) : (
+            <CustomCalendar plans={plans} isReadOnly />
+          )}
+        </CalendarWrapper>
+        <Heading>댓글</Heading>
+        <CommentSection>
+          <CommentInput>
+            <ProfileImage />
+            <InputWrapper>
+              <Input
+                type="text"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="댓글을 입력하세요."
+                aria-label="댓글 입력"
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") handleSubmitComment();
+                }}
+                disabled={createCommentMutation.isPending}
+              />
+              <IconButton
+                onClick={handleSubmitComment}
+                disabled={createCommentMutation.isPending}
+              >
+                <Send />
+              </IconButton>
+            </InputWrapper>
+          </CommentInput>
+          <CommentList>
+            {comments.map((comment) => (
+              <CommentItem key={comment.id}>
+                <ProfileImage src={comment.writerProfileImage} />
+                <CommentContent>
+                  <CommentAuthor>{comment.writerNickname}</CommentAuthor>
+                  {editingCommentId === comment.id ? (
+                    <InputWrapper>
+                      <Input
+                        type="text"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter")
+                            handleUpdateComment(comment.id);
+                        }}
+                        disabled={updateCommentMutation.isPending}
+                      />
+                      <IconButton
+                        onClick={() => handleUpdateComment(comment.id)}
+                        disabled={updateCommentMutation.isPending}
+                      >
+                        <Check />
+                      </IconButton>
+                    </InputWrapper>
+                  ) : (
+                    <>
                       <CommentText>{comment.content}</CommentText>
-                    </CommentBubble>
-                    <CommentDate>
-                      {formatDate(comment.createdAt)}
-                      {comment.writerId === userId && (
-                        <ActionButtons>
-                          <IconButton
-                            onClick={() => {
-                              setEditingCommentId(comment.id);
-                              setEditContent(comment.content);
-                            }}
-                            disabled={
-                              updateCommentMutation.isPending ||
-                              deleteCommentMutation.isPending
-                            }
-                          >
-                            <Edit />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => handleDeleteComment(comment.id)}
-                            disabled={
-                              updateCommentMutation.isPending ||
-                              deleteCommentMutation.isPending
-                            }
-                          >
-                            <Delete />
-                          </IconButton>
-                        </ActionButtons>
-                      )}
-                    </CommentDate>
-                  </>
-                )}
-              </CommentBox>
-            </CommentContent>
-          </CommentItem>
-        ))}
-      </CommentSection>
+                      <CommentDateWrapper>
+                        <CommentDate>
+                          {formatDate(comment.createdAt)}
+                        </CommentDate>
+                        {comment.writerId === userId && (
+                          <ActionButtons>
+                            <IconButton
+                              onClick={() => {
+                                setEditingCommentId(comment.id);
+                                setEditContent(comment.content);
+                              }}
+                              disabled={
+                                updateCommentMutation.isPending ||
+                                deleteCommentMutation.isPending
+                              }
+                            >
+                              <Edit />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => handleDeleteComment(comment.id)}
+                              disabled={
+                                updateCommentMutation.isPending ||
+                                deleteCommentMutation.isPending
+                              }
+                            >
+                              <Delete />
+                            </IconButton>
+                          </ActionButtons>
+                        )}
+                      </CommentDateWrapper>
+                    </>
+                  )}
+                </CommentContent>
+              </CommentItem>
+            ))}
+          </CommentList>
+        </CommentSection>
+      </ContentWrapper>
     </PageContainer>
   );
 }

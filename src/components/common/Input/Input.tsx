@@ -1,4 +1,5 @@
-import StyledInput from "./StyledInput.styles";
+// src/components/common/Input/Input.tsx
+import StyledInputContainer, { StyledInput } from "./StyledInput.styles";
 
 export type Props = {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
@@ -9,12 +10,14 @@ export type Props = {
 
 const Input: React.FC<Props> = ({ value, placeholder, onChange, ...props }) => {
   return (
-    <StyledInput
-      onChange={onChange}
-      value={value}
-      placeholder={placeholder}
-      {...props}
-    />
+    <StyledInputContainer>
+      <StyledInput
+        onChange={onChange}
+        value={value}
+        placeholder={placeholder}
+        {...props}
+      />
+    </StyledInputContainer>
   );
 };
 

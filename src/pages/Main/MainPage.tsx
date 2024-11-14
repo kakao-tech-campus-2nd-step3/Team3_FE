@@ -1,289 +1,447 @@
+// src/pages/MainPage.tsx
+import { useState, useEffect, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
+import { useNavigate, useLocation } from "react-router-dom";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
 import { useGetPlans } from "@/api/hooks/useGetPlans";
-import useCreatePlan from "@/api/hooks/useCreatePlans";
-import useDeletePlan from "@/api/hooks/useDeletePlans";
-import CircleButton from "@/components/common/CircleButton/CircleButton";
-import breakpoints from "@/variants/breakpoints";
-import useUpdatePlan from "@/api/hooks/useUpdatePlan";
+import useCreatePlan from "@/api/hooks/useCreatePlan";
+import useDeletePlan from "@/api/hooks/useDeletePlan";
+import Button from "@/components/common/Button/Button";
+import Modal from "@/components/common/Modal/Modal";
+import ReactDatePicker from "@/components/features/DatePicker/DatePicker";
+import { requestForToken, setupOnMessageListener } from "@/api/firebaseConfig";
+import { apiClient } from "@/api/instance";
+import useUserData from "@/api/hooks/useUserData";
 
-// 스타일드 컴포넌트 정의
-const CalendarContainer = styled.div`
-  position: relative;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+const PageContainer = styled.div`
+  background-color: #ffffff;
   padding: 20px;
+  margin-top: 40px;
 `;
 
 const ButtonWrapper = styled.div`
-  position: absolute;
-  top: 10%;
+  gap: 20px;
   display: flex;
-  justify-content: flex-start;
+  flex-direction: row;
   margin-top: 20px;
-  left: calc(10% + 10px);
-  z-index: 1;
-  ${breakpoints.tablet} {
-    top: 10%;
-    left: 20px;
-  }
-  ${breakpoints.mobile} {
-    top: 10%;
-    left: 20px;
-  }
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2;
 `;
 
-const ModalContent = styled.div`
-  background: white;
-  padding: 20px 30px;
-  width: 500px;
-  max-width: 95%;
-  border-radius: 8px;
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+const ModalContainer = styled.div`
+  width: 100%;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 15px;
+  box-sizing: border-box;
 `;
 
-const Input = styled.input`
+const Title = styled.h2`
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+`;
+const ContentWrapper = styled.main`
+  flex-grow: 1;
+  padding: 32px;
+  overflow: auto;
+  box-sizing: border-box;
+`;
+const StyledInput = styled.input`
   width: 100%;
-  padding: 8px;
-  margin-top: 10px;
+  padding: 12px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-`;
-
-const Textarea = styled.textarea`
-  width: 99%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-`;
-
-const CloseButton = styled.button`
-  margin-top: 10px;
-  background-color: #39a7f7;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-
-const ToggleWrapper = styled.label`
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  gap: 10px;
-`;
-
-const ToggleInput = styled.input`
-  appearance: none;
-  width: 40px;
-  height: 20px;
-  background: #ccc;
-  border-radius: 20px;
-  position: relative;
-  outline: none;
-  transition: background 0.3s;
-  &:checked {
-    background: #39a7f7;
-  }
-  &:before {
-    content: "";
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: white;
-    top: 1px;
-    left: 1px;
-    transition: transform 0.3s;
-  }
-  &:checked:before {
-    transform: translateX(20px);
+  border-radius: 8px;
+  font-size: 1rem;
+  &:focus {
+    outline: none; /* focus:outline-none */
+    border-color: #2196f3; /* focus:border-[#2196F3] */
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); /* focus:ring-2 focus:ring-[#2196F3] */
   }
 `;
 
-const ToggleLabel = styled.span`
-  font-size: 16px;
-  color: #333;
+const Spinner = styled.div`
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #39a7f7;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
-const usePlanData = (initialSavedPlan: any) => {
-  const { data: plans, isLoading, error } = useGetPlans();
-  const createPlanMutation = useCreatePlan();
-  const deletePlanMutation = useDeletePlan();
-  const updatePlanMutation = useUpdatePlan();
-  const [savedPlan, setSavedPlan] = useState(initialSavedPlan || []);
+export default function MainPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { data: fetchedPlans, isLoading, error, refetch } = useGetPlans();
+  const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newPlanData, setNewPlanData] = useState({
+    title: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    accessibility: true,
+    isCompleted: false,
+  });
+  const { mutateAsync: createPlan } = useCreatePlan();
+  const { mutateAsync: deletePlan } = useDeletePlan();
+  const { userData } = useUserData();
+  const isTokenRegistered = useRef(false);
+  const hasMounted = useRef(false);
+  const savePlanMutation = useCreatePlan();
+  const isPlanSaved = useRef(false);
+
+  // FCM 토큰 등록 함수
+  const registerFcmToken = async () => {
+    // 이미 토큰이 등록되어 있다면 종료
+    if (isTokenRegistered.current) {
+      console.log("이미 FCM 토큰이 등록되어 있습니다.");
+      return;
+    }
+
+    // localStorage에서 토큰 확인
+    const storedToken = localStorage.getItem("fcmToken");
+    if (storedToken) {
+      console.log(
+        "저장된 FCM 토큰을 사용합니다:",
+        `${storedToken.slice(0, 10)}...`,
+      );
+      isTokenRegistered.current = true;
+      return;
+    }
+
+    try {
+      console.log("FCM 토큰 등록 시작...");
+      const permission = await Notification.requestPermission();
+      console.log("알림 권한 상태:", permission);
+
+      if (permission === "granted") {
+        const fcmToken = await requestForToken();
+        if (fcmToken) {
+          console.log("새로운 FCM 토큰 발급됨:", `${fcmToken.slice(0, 10)}...`);
+          await apiClient.post("/api/fcm/register", { token: fcmToken });
+          localStorage.setItem("fcmToken", fcmToken);
+          isTokenRegistered.current = true;
+          console.log("FCM 토큰 등록 완료");
+        } else {
+          console.warn("FCM 토큰이 null입니다.");
+        }
+      } else {
+        console.warn("알림 권한이 거부되었습니다.");
+      }
+    } catch (err) {
+      console.error("FCM 토큰 등록 중 오류 발생:", err);
+    }
+  };
+  // Notification functionality (기존 코드 유지)
+  useEffect(() => {
+    const registerFcmToken = async () => {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        try {
+          const fcmToken = await requestForToken();
+          if (fcmToken) {
+            await apiClient.post("/api/fcm/register", { token: fcmToken });
+            console.log("FCM 토큰이 성공적으로 등록되었습니다.");
+          }
+        } catch (err) {
+          console.error("FCM 토큰 등록 중 오류 발생:", err);
+        }
+      } else {
+        console.log("알림 권한이 거부되었습니다.");
+      }
+    };
+
+    registerFcmToken();
+    setupOnMessageListener(); // Set up the listener for foreground messages
+  }, []);
+  // 앱 초기 마운트시에만 FCM 토큰 등록 및 리스너 설정
+  useEffect(() => {
+    if (!hasMounted.current) {
+      console.log("FCM 초기화 시작...");
+      registerFcmToken().then(() => {
+        console.log("FCM 초기화 완료");
+        setupOnMessageListener();
+      });
+      hasMounted.current = true;
+    }
+  }, []);
+
+  // 플랜 데이터 초기화
+  useEffect(() => {
+    if (fetchedPlans) {
+      setModifiedPlans(fetchedPlans);
+    }
+  }, [fetchedPlans]);
 
   useEffect(() => {
-    if (Array.isArray(initialSavedPlan)) {
-      setSavedPlan(initialSavedPlan);
+    if (location.state?.refetchNeeded) {
+      refetch();
     }
-  }, [initialSavedPlan]);
+  }, [location, refetch]);
 
-  const combinedPlans = [...(plans || []), ...savedPlan];
+  // 세션 스토리지의 plans 저장 useEffect
+  useEffect(() => {
+    const savePlans = async () => {
+      const storedPlans = sessionStorage.getItem("plans");
+      if (storedPlans && !isPlanSaved.current) {
+        const parsedPlans: CalendarEvent[] = JSON.parse(storedPlans).map(
+          (plan: CalendarEvent) => ({
+            ...plan,
+            start: new Date(plan.start),
+            end: new Date(plan.end),
+          }),
+        );
 
-  const createPlan = (newPlan: any) => {
-    createPlanMutation.mutate(newPlan);
-  };
+        try {
+          await Promise.all(
+            parsedPlans.map((plan) =>
+              savePlanMutation.mutateAsync({
+                plan: {
+                  title: plan.title,
+                  description: plan.description,
+                  startDate: plan.start.toISOString(),
+                  endDate: plan.end.toISOString(),
+                  accessibility: plan.accessibility ?? true,
+                  isCompleted: plan.isCompleted ?? false,
+                },
+              }),
+            ),
+          );
+          sessionStorage.removeItem("plans");
+          console.log("세션의 플랜이 저장되었습니다.");
+          isPlanSaved.current = true;
+          refetch();
+        } catch (err) {
+          console.error("세션의 플랜 저장 실패:", err);
+        }
+      }
+    };
 
-  const handleDeletePlan = (planId: string) => {
-    deletePlanMutation.mutate(Number(planId));
-  };
+    if (!isPlanSaved.current) {
+      savePlans();
+    }
+  }, [savePlanMutation, refetch]);
 
-  const handleUpdatePlan = (planId: string, updatedPlanData: any) => {
-    updatePlanMutation.mutate({
-      planId: Number(planId),
-      planData: updatedPlanData,
-    });
-  };
+  // 플랜 추가 핸들러
+  const handleAddPlan = () => setIsAddModalOpen(true);
 
-  return {
-    plans: combinedPlans,
-    isLoading,
-    error,
-    createPlan,
-    handleDeletePlan,
-    handleUpdatePlan,
-  };
-};
-
-// MainPage 컴포넌트
-const MainPage: React.FC = () => {
-  const location = useLocation();
-  const {
-    plans,
-    isLoading,
-    error,
-    createPlan,
-    handleDeletePlan,
-    // handleUpdatePlan,
-  } = usePlanData(location.state?.savedPlan);
-
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [isAccessible, setIsAccessible] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createPlan({
-      id: Date.now().toString(),
+  const handleAddPlanSubmit = async () => {
+    const {
       title,
       description,
       startDate,
       endDate,
-      accessibility: isAccessible,
+      accessibility,
       isCompleted,
-    });
-    closeModal();
+    } = newPlanData;
+    const utcStartDate = new Date(`${startDate}Z`).toISOString();
+    const utcEndDate = new Date(`${endDate}Z`).toISOString();
+
+    try {
+      const response = await createPlan({
+        plan: {
+          title,
+          description,
+          startDate: utcStartDate,
+          endDate: utcEndDate,
+          accessibility,
+          isCompleted,
+        },
+      });
+      const newPlanId = String(response.data.id);
+      alert("플랜이 추가되었습니다.");
+      setModifiedPlans([
+        ...modifiedPlans,
+        {
+          ...newPlanData,
+          id: newPlanId,
+          start: new Date(utcStartDate),
+          end: new Date(utcEndDate),
+        },
+      ]);
+      setIsAddModalOpen(false);
+      setNewPlanData({
+        title: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+        accessibility: true,
+        isCompleted: false,
+      });
+    } catch (error) {
+      alert(`추가 중 오류 발생: ${error}`);
+    }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  // 플랜 삭제 핸들러
+  const handleDeletePlan = async (planId: string) => {
+    if (window.confirm("정말로 삭제하시겠습니까?")) {
+      try {
+        await deletePlan(parseInt(planId, 10));
+        alert("플랜이 삭제되었습니다.");
+        setModifiedPlans((prevPlans) =>
+          prevPlans.filter((plan) => plan.id !== planId),
+        );
+      } catch (error) {
+        alert(`삭제 중 오류 발생: ${error}`);
+      }
+    }
+  };
+
+  // 플랜 변경 핸들러 (드래그 앤 드롭, 완료 여부 토글 등)
+  const handlePlanChange = useCallback(
+    async (updatedPlans: CalendarEvent[]) => {
+      // 변경된 플랜 식별
+      const changedPlans = updatedPlans.filter((updatedPlan) => {
+        const originalPlan = modifiedPlans.find(
+          (plan) => plan.id === updatedPlan.id,
+        );
+        if (!originalPlan) return true; // 새 플랜인 경우
+        return (
+          originalPlan.title !== updatedPlan.title ||
+          originalPlan.description !== updatedPlan.description ||
+          originalPlan.start.getTime() !== updatedPlan.start.getTime() ||
+          originalPlan.end.getTime() !== updatedPlan.end.getTime() ||
+          originalPlan.accessibility !== updatedPlan.accessibility ||
+          originalPlan.isCompleted !== updatedPlan.isCompleted
+        );
+      });
+
+      // 상태 업데이트
+      setModifiedPlans(updatedPlans);
+
+      // 변경된 플랜들에 대해 서버에 업데이트
+      for (const plan of changedPlans) {
+        try {
+          await apiClient.put(`/api/plans/${plan.id}`, {
+            title: plan.title,
+            description: plan.description,
+            startDate: new Date(plan.start).toISOString(),
+            endDate: new Date(plan.end).toISOString(),
+            accessibility: plan.accessibility ?? true,
+            isCompleted: plan.isCompleted ?? false,
+          });
+          console.log(`플랜 ID ${plan.id}이 성공적으로 업데이트되었습니다.`);
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            alert(`플랜 업데이트 중 오류 발생: ${error.message}`);
+          } else {
+            alert("플랜 업데이트 중 알 수 없는 오류가 발생했습니다.");
+          }
+        }
+      }
+    },
+    [modifiedPlans],
+  );
+
+  const handleVisitClick = () => {
+    navigate(`/friend/${userData.id}`, {
+      state: {
+        Plans: modifiedPlans,
+        friendName: userData.nickname,
+        userId: userData.id,
+      },
+    });
+  };
+
+  if (isLoading)
+    return (
+      <PageContainer>
+        <ContentWrapper
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Spinner />
+        </ContentWrapper>
+      </PageContainer>
+    );
+  if (error) return <p>데이터를 불러오지 못했습니다. 오류: {error.message}</p>;
 
   return (
-    <CalendarContainer>
-      <ButtonWrapper>
-        <CircleButton onClick={openModal}>+</CircleButton>
-      </ButtonWrapper>
+    <PageContainer>
       <CustomCalendar
-        plans={plans}
+        plans={modifiedPlans}
+        isReadOnly={false}
+        onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
-        // onUpdatePlan={handleUpdatePlan}
       />
+      <ButtonWrapper>
+        <Button onClick={handleAddPlan} theme="secondary">
+          플랜 추가
+        </Button>
+        <Button onClick={handleVisitClick} theme="secondary">
+          댓글 조회
+        </Button>
+      </ButtonWrapper>
 
-      {modalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <h3>새 일정 추가</h3>
-            <form onSubmit={handleSubmit}>
-              <span>제목</span>
-              <Input
-                type="text"
-                name="title"
-                aria-label="제목"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <span>설명</span>
-              <Textarea
-                name="description"
-                aria-label="설명"
-                required
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-              <span>시작 날짜</span>
-              <Input
-                type="datetime-local"
-                name="startDate"
-                aria-label="시작 날짜"
-                required
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-              <span>종료 날짜</span>
-              <Input
-                type="datetime-local"
-                name="endDate"
-                aria-label="종료 날짜"
-                required
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-              <ToggleWrapper>
-                <ToggleLabel>공개 여부</ToggleLabel>
-                <ToggleInput
-                  type="checkbox"
-                  checked={isAccessible}
-                  onChange={() => setIsAccessible(!isAccessible)}
-                />
-              </ToggleWrapper>
-              <ToggleWrapper>
-                <ToggleLabel>완료 여부</ToggleLabel>
-                <ToggleInput
-                  type="checkbox"
-                  checked={isCompleted}
-                  onChange={() => setIsCompleted(!isCompleted)}
-                />
-              </ToggleWrapper>
-              <CloseButton type="submit">저장</CloseButton>
-            </form>
-          </ModalContent>
-        </ModalOverlay>
+      {isAddModalOpen && (
+        <Modal onClose={() => setIsAddModalOpen(false)}>
+          <ModalContainer>
+            <Title>새로운 플랜 추가</Title>
+            <StyledInput
+              placeholder="제목"
+              value={newPlanData.title}
+              onChange={(e) =>
+                setNewPlanData({ ...newPlanData, title: e.target.value })
+              }
+            />
+            <StyledInput
+              placeholder="설명"
+              value={newPlanData.description}
+              onChange={(e) =>
+                setNewPlanData({ ...newPlanData, description: e.target.value })
+              }
+            />
+            <ReactDatePicker
+              placeholderText="시작 날짜 선택"
+              selectedDate={
+                newPlanData.startDate ? new Date(newPlanData.startDate) : null
+              }
+              onDateChange={(date: any) =>
+                setNewPlanData((prevData) => ({
+                  ...prevData,
+                  startDate: date ? date.toISOString().slice(0, 16) : "",
+                }))
+              }
+              showTimeSelect
+              dateFormat="yyyy/MM/dd HH:mm"
+            />
+            <ReactDatePicker
+              placeholderText="종료 날짜 선택"
+              selectedDate={
+                newPlanData.endDate ? new Date(newPlanData.endDate) : null
+              }
+              onDateChange={(date: any) =>
+                setNewPlanData((prevData) => ({
+                  ...prevData,
+                  endDate: date ? date.toISOString().slice(0, 16) : "",
+                }))
+              }
+              showTimeSelect
+              dateFormat="yyyy/MM/dd HH:mm"
+            />
+            <Button onClick={handleAddPlanSubmit}>추가</Button>
+          </ModalContainer>
+        </Modal>
       )}
-    </CalendarContainer>
+    </PageContainer>
   );
-};
-
-export default MainPage;
+}
