@@ -100,16 +100,9 @@ export default function MainPage() {
   const { mutateAsync: deletePlan } = useDeletePlan();
   const { userData } = useUserData();
   const isTokenRegistered = useRef(false);
+  const hasMounted = useRef(false);
   const savePlanMutation = useCreatePlan();
   const isPlanSaved = useRef(false);
-  const hasMounted = useRef(false);
-
-  // 플랜 데이터 초기화
-  useEffect(() => {
-    if (fetchedPlans) {
-      setModifiedPlans(fetchedPlans);
-    }
-  }, [fetchedPlans]);
 
   // FCM 토큰 등록 함수
   const registerFcmToken = async () => {
@@ -153,26 +146,6 @@ export default function MainPage() {
       console.error("FCM 토큰 등록 중 오류 발생:", err);
     }
   };
-
-  // 앱 초기 마운트시에만 FCM 토큰 등록 및 리스너 설정
-  useEffect(() => {
-    if (!hasMounted.current) {
-      console.log("FCM 초기화 시작...");
-      registerFcmToken().then(() => {
-        console.log("FCM 초기화 완료");
-        setupOnMessageListener();
-      });
-      hasMounted.current = true;
-    }
-  }, []);
-
-  // Plans 관련 useEffect
-  useEffect(() => {
-    if (location.state?.refetchNeeded) {
-      refetch();
-    }
-  }, [location, refetch]);
-
   // Notification functionality (기존 코드 유지)
   useEffect(() => {
     const registerFcmToken = async () => {
@@ -195,6 +168,30 @@ export default function MainPage() {
     registerFcmToken();
     setupOnMessageListener(); // Set up the listener for foreground messages
   }, []);
+  // 앱 초기 마운트시에만 FCM 토큰 등록 및 리스너 설정
+  useEffect(() => {
+    if (!hasMounted.current) {
+      console.log("FCM 초기화 시작...");
+      registerFcmToken().then(() => {
+        console.log("FCM 초기화 완료");
+        setupOnMessageListener();
+      });
+      hasMounted.current = true;
+    }
+  }, []);
+
+  // 플랜 데이터 초기화
+  useEffect(() => {
+    if (fetchedPlans) {
+      setModifiedPlans(fetchedPlans);
+    }
+  }, [fetchedPlans]);
+
+  useEffect(() => {
+    if (location.state?.refetchNeeded) {
+      refetch();
+    }
+  }, [location, refetch]);
 
   // 세션 스토리지의 plans 저장 useEffect
   useEffect(() => {
@@ -391,7 +388,7 @@ export default function MainPage() {
           플랜 추가
         </Button>
         <Button onClick={handleVisitClick} theme="secondary">
-          방문하기
+          댓글 조회
         </Button>
       </ButtonWrapper>
 

@@ -1,33 +1,12 @@
-import { InputHTMLAttributes, useState, forwardRef } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+"use client";
+
+import { forwardRef, InputHTMLAttributes } from "react";
 import styled from "@emotion/styled";
+import DatePicker from "react-datepicker";
 import { Global, css } from "@emotion/react";
+import "react-datepicker/dist/react-datepicker.css";
 
-// 유틸리티 함수: null이 아닌 Date만 형식에 맞춰 변환
-function formatDateToServer(date: Date): string {
-  const utcDate = new Date(
-    Date.UTC(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      date.getHours(),
-      date.getMinutes(),
-      date.getSeconds(),
-    ),
-  );
-
-  return utcDate.toISOString(); // 이미 UTC 시간이므로 그대로 반환
-}
-const DatePickerContainer = styled.div`
-  width: 100% !important;
-  margin-left: -20px;
-
-  .datepicker-wrapper {
-    width: 100%;
-  }
-`;
-
+// StyledInput 스타일 정의
 const StyledInput = styled.input`
   width: 100%;
   padding: 12px; /* 좌우 패딩을 동일하게 유지 */
@@ -48,195 +27,114 @@ interface CustomDateInputProps extends InputHTMLAttributes<HTMLInputElement> {
   value?: string;
 }
 
-// 커스텀 입력 컴포넌트
+// DatePicker의 커스텀 입력 컴포넌트
 const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
-  ({ value, onClick, onChange, ...props }, ref) => (
+  ({ value, onClick, placeholder }, ref) => (
     <StyledInput
       onClick={onClick}
-      value={value}
-      onChange={onChange}
       ref={ref}
-      {...props}
+      value={value}
+      readOnly
+      placeholder={placeholder}
     />
   ),
 );
-CustomDateInput.displayName = "CustomDateInput";
 
-const ReactDatePicker = ({
-  onDateChange,
+interface ReactDatePickerProps {
+  placeholderText: string;
+  onDateChange: (date: Date | null) => void;
+  selectedDate?: Date | null;
+  showTimeSelect?: boolean;
+  dateFormat?: string;
+}
+
+const ReactDatePickerComponent = ({
   placeholderText,
-}: {
-  onDateChange: (date: string | null) => void;
-  placeholderText?: string;
-}) => {
-  const [startDate, setStartDate] = useState<Date | null>(null);
-
+  onDateChange,
+  selectedDate,
+  showTimeSelect = false,
+  dateFormat = "yyyy/MM/dd",
+}: ReactDatePickerProps) => {
   const handleDateChange = (date: Date | null) => {
-    setStartDate(date);
     if (date) {
-      const formattedDate = formatDateToServer(date);
-      onDateChange(formattedDate);
+      const utcDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000,
+      );
+      onDateChange(utcDate);
     } else {
       onDateChange(null);
     }
   };
 
   return (
-    <DatePickerContainer>
+    <>
       <Global
         styles={css`
           .react-datepicker {
-            background-color: #f0f8ff;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 0.85rem;
-            margin-left: -5px;
-
-            @media (max-width: 600px) {
-              font-size: 0.75rem;
-              max-width: 100vw;
-              max-height: 40vh;
-            }
+            font-family: "Arial", sans-serif;
+            border-color: #e5e7eb;
+            box-shadow:
+              0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
           }
-
-          .react-datepicker__day {
-            color: #333;
-            font-size: 0.9rem;
-            padding: 0.3rem;
-            border-radius: 50%;
-
-            &:hover {
-              background-color: #e6e6e6;
-            }
-
-            @media (max-width: 600px) {
-              padding: 0.2rem;
-            }
-          }
-
-          .react-datepicker__day--today {
-            font-weight: bold;
-            border: 1px solid #39a7f7;
-            background-color: #f0e6ff;
-          }
-
-          .react-datepicker__day--selected {
-            background-color: #39a7f7;
-            color: #fff;
-            border: 1px solid #39a7f7;
-          }
-
           .react-datepicker__header {
-            background-color: #39a7f7;
-            color: #fff;
+            background-color: #f3f4f6;
             border-bottom: none;
           }
-
-          .react-datepicker__day-name,
-          .react-datepicker__current-month {
-            color: #fff;
-          }
-
-          .react-datepicker__navigation {
-            top: 12px;
-
-            @media (max-width: 600px) {
-              top: 8px;
-            }
-          }
-
           .react-datepicker__navigation-icon::before {
-            border-color: #fff;
-          }
-
-          /* 기존의 라벨을 숨김 */
-          .react-datepicker-time__caption {
             display: none;
           }
-
-          /* 시간 입력 필드 컨테이너 수정 */
-          .react-datepicker__input-time-container {
-            margin: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            .react-datepicker-time__caption {
-              display: inline-block;
-              font-size: 0.9rem;
-              color: #666;
-              margin-right: 4px;
-            }
+          .react-datepicker__current-month,
+          .react-datepicker-time__header {
+            color: #374151;
+            font-weight: 600;
           }
-
-          /* 시간 입력 필드 내부 input 스타일 */
-          .react-datepicker-time__input-container input {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: transparent;
-            font-size: 1rem;
-            color: #333;
-            width: 50px;
-            text-align: center;
-            margin-right: 5px;
+          .react-datepicker__day-name,
+          .react-datepicker__day {
+            color: #4b5563;
           }
-
-          .react-datepicker-time__input-container input:focus {
-            outline: none;
-            border-color: #39a7f7;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(57, 167, 247, 0.1);
+          .react-datepicker__day:hover {
+            background-color: #e5e7eb;
           }
-
-          .react-datepicker-time__input-container label {
-            font-size: 0.85rem;
-            color: #666;
-            margin-right: 5px;
+          .react-datepicker__day--selected,
+          .react-datepicker__day--keyboard-selected {
+            background-color: #39a7f7;
+            color: white;
           }
-
-          /* 시간 및 분 리스트 항목 스타일 */
-          react-datepicker__time-list-item {
-            padding: 8px 0;
-            color: #333;
-            font-size: 0.85rem;
-            cursor: pointer;
-            background-color: #fff;
-            border-radius: 4px;
-            margin: 2px 0;
-
-            /* 모바일 화면에서의 높이와 줄 간격 조정 */
-            @media (max-width: 600px) {
-              height: 20px !important;
-              line-height: 20px !important;
-              padding: 0 !important;
-            }
-
-            &:hover {
-              background-color: #b3e0ff;
-            }
+          .react-datepicker__day--selected:hover {
+            background-color: #2196f3;
           }
-          .react-datepicker__time-list {
-            border: none !important;
-            box-shadow: none !important;
-
-            @media (max-width: 600px) {
-              height: 10px !important;
-              overflow-y: auto;
-            }
+          .react-datepicker__time-container
+            .react-datepicker__time
+            .react-datepicker__time-box
+            ul.react-datepicker__time-list
+            li.react-datepicker__time-list-item--selected {
+            background-color: #39a7f7;
+            color: white;
+          }
+          .react-datepicker__time-container
+            .react-datepicker__time
+            .react-datepicker__time-box
+            ul.react-datepicker__time-list
+            li.react-datepicker__time-list-item--selected:hover {
+            background-color: #2196f3;
           }
         `}
       />
       <DatePicker
-        selected={startDate}
-        onChange={handleDateChange}
-        timeInputLabel="Time:"
-        dateFormat="yyyy/MM/dd HH:mm:ss"
-        showTimeInput
         placeholderText={placeholderText}
-        customInput={<CustomDateInput />}
-        wrapperClassName="datepicker-wrapper"
-        popperPlacement="top"
+        onChange={handleDateChange}
+        selected={selectedDate}
+        showTimeSelect={showTimeSelect}
+        timeIntervals={10}
+        timeFormat="HH:mm" /* 24시간 형식으로 시간 설정 */
+        dateFormat={
+          showTimeSelect ? "yyyy/MM/dd HH:mm" : dateFormat
+        } /* 시간 선택 시 포맷 포함 */
+        popperPlacement="bottom-start"
+        customInput={<CustomDateInput placeholder={placeholderText} />}
       />
-    </DatePickerContainer>
+    </>
   );
 };
 

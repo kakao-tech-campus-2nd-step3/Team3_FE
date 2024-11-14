@@ -24,7 +24,7 @@ import OAuthRedirectHandler from "@/pages/LoginModal/RedirectPage";
 import TeamPlanSelectPage from "@/pages/TeamPlan/TeamPlanSelectPage";
 import TeamInvitePage from "@/pages/TeamPlan/TeamPlanInvite";
 import TeamPlanModifyPage from "@/pages/TeamPlan/TeamPlanModify";
-import PlanModifyPage from "@/pages/Main/MainPageModify";
+
 import ProtectedRoute from "@/components/features/ProtectedRoute/ProtectedRoute";
 
 function Router() {
@@ -106,7 +106,6 @@ function Router() {
               path: RouterPath.TEAM_PLAN_MODIFY,
               element: <TeamPlanModifyPage />,
             },
-            { path: RouterPath.MAIN_MODIFY, element: <PlanModifyPage /> },
           ],
         },
       ],
