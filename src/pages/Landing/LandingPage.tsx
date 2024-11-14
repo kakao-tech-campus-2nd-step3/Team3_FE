@@ -83,8 +83,27 @@ const Description = styled(motion.p)`
 `
 
 const AnimationContainer = styled.div`
-  flex: 1;
+  width: 100%;
+  display: flex;
   position: relative;
+  margin-left: auto;
+  
+  overflow: visible;
+  align-items: center;
+  justify-content: flex-end;
+  @media (max-width: 1024px) {
+    justify-content: center;
+  }
+`;
+
+//////////////////////////////////////////
+const AnimationGroup = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 10%; 
+  width: 34rem; 
+  height: 34rem;
+  z-index: 0.1;  
 `;
 
 const BackgroundCircle = styled(motion.div)`
@@ -93,21 +112,28 @@ const BackgroundCircle = styled(motion.div)`
   background-color: #39a7f7;
   border-radius: 50%;
   position: absolute;
-  left: -15rem;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 0;
   opacity: 0.1;
-`
+  top: -50%;
+  left: -40%;
+`;
+const OrbitContainer = styled(motion.div)`
+  position: absolute;
+  width: 34rem;
+  height: 34rem;
+  transform: translate(-50%, -50%);
+  top: -50%;
+  left: -40%;
+`;
 
-const OrbitingCircle = styled(motion.div)`
+const OrbitingCircle = styled.div`
   width: 2rem;
   height: 2rem;
   background-color: #39a7f7;
   border-radius: 50%;
   position: absolute;
+  transform: translate(-50%, 0);
   z-index: 1;
-`
+`;
 
 const PlanetRing = styled(motion.div)`
   width: 34rem;
@@ -115,13 +141,12 @@ const PlanetRing = styled(motion.div)`
   border: 2px solid #39a7f7;
   border-radius: 50%;
   position: absolute;
-  left: -17rem;
-  top: 50%;
-  transform: translateY(-50%);
   z-index: 0;
   opacity: 0.2;
-`
-
+  top: -56%;
+  left: -46%;
+`;
+/////////////////////////////////////////////
 const StepSVG = styled.img`
   width: 5rem;
   height: 5rem;
@@ -129,12 +154,16 @@ const StepSVG = styled.img`
 `
 
 const Card = styled(motion.div)`
+  width: 70%;
   position: relative;
   z-index: 10;
   background: white;
   padding: 2rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
 `;
 
 const SectionTitle = styled.h2`
@@ -375,32 +404,16 @@ const LandingPage: React.FC = () => {
             </ButtonWrapper>
           </TextSection>
 
-          <AnimationContainer>
-          <BackgroundCircle
-              animate={{
-                rotate: 360,
-              }}
-              transition={{
-                duration: 60,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            />
-            <PlanetRing />
-            <OrbitingCircle
-              animate={{
-                rotate: 360,
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              style={{
-                left: 'calc(50% + 17rem * cos(0deg))',
-                top: 'calc(50% + 17rem * sin(0deg))',
-              }}
-            />
+    <AnimationGroup>
+      <BackgroundCircle/>
+  <PlanetRing/>
+  <OrbitContainer>
+    <OrbitingCircle />
+  </OrbitContainer>
+    </AnimationGroup>
+  
+
+          <AnimationContainer> 
             <Card
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
