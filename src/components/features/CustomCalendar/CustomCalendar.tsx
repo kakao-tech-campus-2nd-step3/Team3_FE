@@ -54,8 +54,8 @@ const StyledInput = styled.input`
   font-size: 1rem;
   &:focus {
     outline: none;
-    border-color: #6c63ff;
-    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+    border-color: #39a7f7;
+    box-shadow: 0 0 0 2px #338bd0;
   }
 `;
 
@@ -564,20 +564,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                   }
                 />
               </ToggleContainer>
-              <ToggleContainer>
-                완료 여부
-                <ToggleSwitch
-                  type="checkbox"
-                  checked={currentEditPlan.complete}
-                  onChange={(e) =>
-                    setCurrentEditPlan((prev) => ({
-                      ...prev!,
-                      complete: e.target.checked,
-                    }))
-                  }
-                />
-              </ToggleContainer>
-              <button onClick={handleEditSubmit}>저장</button>
+              <Button onClick={handleEditSubmit}>추가</Button>
             </ModalContainer>
           </Modal>
         )}
