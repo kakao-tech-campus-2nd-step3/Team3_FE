@@ -217,6 +217,21 @@ const ParticipantName = styled.span`
   }
 `;
 
+const Spinner = styled.div`
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #39a7f7;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
 export default function TeamPlanPage() {
   const navigate = useNavigate();
   const { userData } = useUserData();
@@ -392,9 +407,18 @@ export default function TeamPlanPage() {
 
           if (isLoading) {
             return (
-              <PlanCard key={team.id}>
-                <div>로딩 중...</div>
-              </PlanCard>
+              <PageContainer>
+                <ContentWrapper
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "100vh",
+                  }}
+                >
+                  <Spinner />
+                </ContentWrapper>
+              </PageContainer>
             );
           }
 

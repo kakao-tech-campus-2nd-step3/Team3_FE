@@ -5,12 +5,11 @@ import styled from "@emotion/styled";
 import DatePicker from "react-datepicker";
 import { Global, css } from "@emotion/react";
 import "react-datepicker/dist/react-datepicker.css";
-import { Calendar } from "lucide-react";
 
-// StyledInput 스타일 정의 (unchanged)
+// StyledInput 스타일 정의
 const StyledInput = styled.input`
   width: 100%;
-  padding: 12px;
+  padding: 12px; /* 좌우 패딩을 동일하게 유지 */
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -31,19 +30,13 @@ interface CustomDateInputProps extends InputHTMLAttributes<HTMLInputElement> {
 // DatePicker의 커스텀 입력 컴포넌트
 const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
   ({ value, onClick, placeholder }, ref) => (
-    <div className="relative">
-      <StyledInput
-        onClick={onClick}
-        ref={ref}
-        value={value}
-        readOnly
-        placeholder={placeholder}
-      />
-      <Calendar
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-        size={20}
-      />
-    </div>
+    <StyledInput
+      onClick={onClick}
+      ref={ref}
+      value={value}
+      readOnly
+      placeholder={placeholder}
+    />
   ),
 );
 
@@ -55,7 +48,7 @@ interface ReactDatePickerProps {
   dateFormat?: string;
 }
 
-const ReactDatePicker = ({
+const ReactDatePickerComponent = ({
   placeholderText,
   onDateChange,
   selectedDate,
@@ -134,7 +127,10 @@ const ReactDatePicker = ({
         selected={selectedDate}
         showTimeSelect={showTimeSelect}
         timeIntervals={10}
-        dateFormat={dateFormat}
+        timeFormat="HH:mm" /* 24시간 형식으로 시간 설정 */
+        dateFormat={
+          showTimeSelect ? "yyyy/MM/dd HH:mm" : dateFormat
+        } /* 시간 선택 시 포맷 포함 */
         popperPlacement="bottom-start"
         customInput={<CustomDateInput placeholder={placeholderText} />}
       />
@@ -142,4 +138,4 @@ const ReactDatePicker = ({
   );
 };
 
-export default ReactDatePicker;
+export default ReactDatePickerComponent;

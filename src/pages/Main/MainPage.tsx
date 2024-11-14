@@ -22,13 +22,15 @@ const PageContainer = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  gap: 16px;
+  gap: 20px;
   display: flex;
   flex-direction: row;
   margin-top: 20px;
+  justify-content: center;
 `;
 
 const ModalContainer = styled.div`
+  width: 100%;
   padding: 20px;
   background-color: white;
   border-radius: 12px;
@@ -45,7 +47,12 @@ const Title = styled.h2`
   color: #333;
   margin-bottom: 20px;
 `;
-
+const ContentWrapper = styled.main`
+  flex-grow: 1;
+  padding: 32px;
+  overflow: auto;
+  box-sizing: border-box;
+`;
 const StyledInput = styled.input`
   width: 100%;
   padding: 12px;
@@ -57,6 +64,21 @@ const StyledInput = styled.input`
     outline: none; /* focus:outline-none */
     border-color: #2196f3; /* focus:border-[#2196F3] */
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); /* focus:ring-2 focus:ring-[#2196F3] */
+  }
+`;
+
+const Spinner = styled.div`
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #39a7f7;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -236,7 +258,21 @@ export default function MainPage() {
     });
   };
 
-  if (isLoading) return <p>로딩 중...</p>;
+  if (isLoading)
+    return (
+      <PageContainer>
+        <ContentWrapper
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Spinner />
+        </ContentWrapper>
+      </PageContainer>
+    );
   if (error) return <p>데이터를 불러오지 못했습니다. 오류: {error.message}</p>;
 
   return (
