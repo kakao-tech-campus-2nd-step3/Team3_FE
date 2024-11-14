@@ -74,7 +74,6 @@ const ReactDatePicker = ({
   const handleDateChange = (date: Date | null) => {
     setStartDate(date);
     if (date) {
-      // 날짜가 있을 때만 포맷팅하여 전달
       const formattedDate = formatDateToServer(date);
       onDateChange(formattedDate);
     } else {
@@ -202,22 +201,34 @@ const ReactDatePicker = ({
           }
 
           /* 시간 및 분 리스트 항목 스타일 */
-          .react-datepicker__time-list-item {
+          react-datepicker__time-list-item {
             padding: 8px 0;
             color: #333;
             font-size: 0.85rem;
             cursor: pointer;
-            background-color: #fff; /* 리스트 항목의 기본 배경색 */
+            background-color: #fff;
             border-radius: 4px;
             margin: 2px 0;
 
+            /* 모바일 화면에서의 높이와 줄 간격 조정 */
+            @media (max-width: 600px) {
+              height: 20px !important;
+              line-height: 20px !important;
+              padding: 0 !important;
+            }
+
             &:hover {
-              background-color: #b3e0ff; /* hover 시 배경색 */
+              background-color: #b3e0ff;
             }
           }
           .react-datepicker__time-list {
             border: none !important;
             box-shadow: none !important;
+
+            @media (max-width: 600px) {
+              height: 10px !important;
+              overflow-y: auto;
+            }
           }
         `}
       />
@@ -230,6 +241,7 @@ const ReactDatePicker = ({
         placeholderText={placeholderText}
         customInput={<CustomDateInput />}
         wrapperClassName="datepicker-wrapper"
+        popperPlacement="top"
       />
     </DatePickerContainer>
   );
