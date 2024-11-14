@@ -94,6 +94,21 @@ const ButtonWrapper = styled.div`
   gap: 16px;
 `;
 
+const Spinner = styled.div`
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #39a7f7;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
 export default function TeamPlanDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -137,7 +152,21 @@ export default function TeamPlanDetailPage() {
     },
   });
 
-  if (isLoading) return <p>로딩 중...</p>;
+  if (isLoading)
+    return (
+      <PageContainer>
+        <ContentWrapper
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Spinner />
+        </ContentWrapper>
+      </PageContainer>
+    );
   if (error) return <p>데이터를 불러오지 못했습니다. 오류: {error.message}</p>;
 
   const handleRemoveUser = (userId: number) => {
