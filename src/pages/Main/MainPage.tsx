@@ -70,7 +70,7 @@ export default function MainPage() {
                   startDate: plan.start.toISOString(),
                   endDate: plan.end.toISOString(),
                   accessibility: plan.accessibility ?? true,
-                  isCompleted: plan.complete ?? false,
+                  isCompleted: plan.isCompleted ?? false,
                 },
               }),
             ),

@@ -80,7 +80,7 @@ export interface CalendarEvent {
   start: Date;
   end: Date;
   accessibility: boolean | null;
-  complete: boolean;
+  isCompleted: boolean;
 }
 
 interface CustomCalendarProps {
@@ -98,9 +98,9 @@ const VIEW_MODES = {
 
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
-  if (event.complete) return "completed";
+  if (event.isCompleted) return "completed";
   if (event.start > now) return "upcoming";
-  if (!event.complete && event.end < now) return "incomplete";
+  if (!event.isCompleted && event.end < now) return "incomplete";
   return "incomplete";
 };
 
@@ -126,7 +126,7 @@ const EventContent = ({
   const { event, timeText } = eventInfo;
   const description = event.extendedProps?.description || "";
   const accessibility = event.extendedProps?.accessibility || false;
-  const isCompleted = event.extendedProps?.isCompleted || false;
+  const isCompleted = event.extendedProps?.isCompleted ?? false;
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -379,7 +379,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       title,
       description,
       accessibility,
-      complete: isCompleted ?? undefined,
+      isCompleted: isCompleted ?? undefined,
     });
     setIsEditModalOpen(true);
   };
@@ -390,7 +390,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         title: currentEditPlan.title || "",
         description: currentEditPlan.description || "",
         accessibility: Boolean(currentEditPlan.accessibility),
-        isCompleted: Boolean(currentEditPlan.complete),
+        isCompleted: Boolean(currentEditPlan.isCompleted),
       };
 
       // 수정된 플랜 리스트 업데이트
@@ -406,7 +406,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   const handleToggleComplete = useCallback(
     (id: string) => {
       const updatedPlans = plans.map((plan) =>
-        plan.id === id ? { ...plan, complete: !plan.complete } : plan
+        plan.id === id ? { ...plan, isCompleted: !plan.isCompleted } : plan
       );
       onPlanChange?.(updatedPlans);
     },
@@ -445,7 +445,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         extendedProps: {
           description: plan.description,
           accessibility: plan.accessibility,
-          isCompleted: plan.complete,
+          isCompleted: plan.isCompleted,
         },
       })),
     [plans],
@@ -587,11 +587,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                 완료 여부
                 <ToggleSwitch
                   type="checkbox"
-                  checked={currentEditPlan.complete}
+                  checked={currentEditPlan.isCompleted}
                   onChange={(e) =>
                     setCurrentEditPlan((prev) => ({
                       ...prev!,
-                      complete: e.target.checked,
+                      isCompleted: e.target.checked,
                     }))
                   }
                 />

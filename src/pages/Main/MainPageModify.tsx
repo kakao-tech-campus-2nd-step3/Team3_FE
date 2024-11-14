@@ -113,7 +113,7 @@ export default function PlanModifyPage() {
               id: newPlanId,
               start: new Date(utcStartDate),
               end: new Date(utcEndDate),
-              complete: isCompleted,
+              isCompleted,
             },
           ]);
           setIsAddModalOpen(false);
@@ -165,7 +165,7 @@ export default function PlanModifyPage() {
             startDate: new Date(plan.start).toISOString(),
             endDate: new Date(plan.end).toISOString(),
             accessibility: plan.accessibility ?? true,
-            isCompleted: plan.complete ?? false,
+            isCompleted: plan.isCompleted ?? false,
           }),
         ),
     )

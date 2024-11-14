@@ -15,7 +15,7 @@ export const transformPlanData = (data: any[]): CalendarEvent[] => {
       ? new Date(plan.endDate)
       : new Date(plan.endTimestamp * 1000), // ISO와 timestamp 대응
     accessibility: plan.accessibility ?? true, // 기본값 설정
-    complete: plan.isCompleted ?? false,
+    isCompleted: plan.isCompleted ?? false,
     status: plan.isCompleted ? "completed" : "incomplete",
   }));
 };
