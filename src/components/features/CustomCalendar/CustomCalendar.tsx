@@ -53,9 +53,9 @@ const StyledInput = styled.input`
   border-radius: 8px;
   font-size: 1rem;
   &:focus {
-    outline: none;
-    border-color: #6c63ff;
-    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+    outline: none; 
+    border-color: #2196f3; /* focus:border-[#2196F3] */
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); /* focus:ring-2 focus:ring-[#2196F3] */
   }
 `;
 
@@ -570,33 +570,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                   )
                 }
               />
-              <ToggleContainer>
-                공개 여부
-                <ToggleSwitch
-                  type="checkbox"
-                  checked={!!currentEditPlan.accessibility} // Converts null to false
-                  onChange={(e) =>
-                    setCurrentEditPlan((prev) => ({
-                      ...prev!,
-                      accessibility: e.target.checked,
-                    }))
-                  }
-                />
-              </ToggleContainer>
-              <ToggleContainer>
-                완료 여부
-                <ToggleSwitch
-                  type="checkbox"
-                  checked={currentEditPlan.isCompleted}
-                  onChange={(e) =>
-                    setCurrentEditPlan((prev) => ({
-                      ...prev!,
-                      isCompleted: e.target.checked,
-                    }))
-                  }
-                />
-              </ToggleContainer>
-              <button onClick={handleEditSubmit}>저장</button>
+              <Button onClick={handleEditSubmit}>저장</Button>
             </ModalContainer>
           </Modal>
         )}
