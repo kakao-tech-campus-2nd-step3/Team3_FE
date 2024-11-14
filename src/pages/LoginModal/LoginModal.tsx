@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import Button from "@/components/common/Button/Button";
 import { useModal } from "@/context/LoginModalContext";
+import kakao_symbol from "@/assets/kakao_symbol.svg";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -36,6 +37,12 @@ const Description = styled.p`
   margin-bottom: 2rem;
 `;
 
+const SymbolImage = styled.img`
+  width: 20px;
+  height: 20px;
+  padding-right: 3px;
+`;
+
 const LoginModal: React.FC = () => {
   const { isLoginModalOpen, closeLoginModal } = useModal();
   const loginUrl = import.meta.env.VITE_LOGIN_URL;
@@ -55,8 +62,9 @@ const LoginModal: React.FC = () => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         <Title>세션이 만료되었습니다.</Title>
         <Description>다시 로그인해주세요. </Description>
-        <Button theme="kakao" onClick={handleLogin}>
-          Login with Kakao
+        <Button theme="kakao" size="long" onClick={handleLogin}>
+        <SymbolImage src={kakao_symbol} alt="Login" />
+          카카오 로그인
         </Button>
       </ModalContent>
     </ModalOverlay>
