@@ -59,20 +59,6 @@ const StyledInput = styled.input`
   }
 `;
 
-const ToggleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between;
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-`;
-
-const ToggleSwitch = styled.input`
-  width: 20px;
-  height: 20px;
-`;
-
 export interface CalendarEvent {
   id: string;
   title: string;
