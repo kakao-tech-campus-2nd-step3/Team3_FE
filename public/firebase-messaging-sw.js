@@ -25,7 +25,19 @@ messaging.onBackgroundMessage((payload) => {
   const notificationOptions = {
     body: payload.notification.body,
     icon: "/icon.png", // 아이콘 이미지 경로
+    data: { click_action: payload.data.click_action } // 클릭 시 이동할 URL을 data에 추가
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// 알림 클릭 이벤트 리스너 추가
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close(); // 알림 닫기
+  
+  // 알림에 설정된 URL로 이동
+  const targetUrl = event.notification.data.click_action || "https://splanet.co.kr/";
+  event.waitUntil(
+    clients.openWindow(targetUrl)
+  );
 });
