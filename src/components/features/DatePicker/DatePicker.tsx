@@ -1,10 +1,13 @@
-import { forwardRef, InputHTMLAttributes } from "react";
-import styled from "@emotion/styled";
-import DatePicker from "react-datepicker";
-import { Global, css } from "@emotion/react";
-import "react-datepicker/dist/react-datepicker.css";
+'use client'
 
-// StyledInput 스타일 정의
+import React, { forwardRef, InputHTMLAttributes } from "react"
+import styled from "@emotion/styled"
+import DatePicker from "react-datepicker"
+import { Global, css } from "@emotion/react"
+import "react-datepicker/dist/react-datepicker.css"
+import { Calendar } from 'lucide-react'
+
+// StyledInput 스타일 정의 (unchanged)
 const StyledInput = styled.input`
   width: 100%;
   padding: 12px;
@@ -28,22 +31,25 @@ interface CustomDateInputProps extends InputHTMLAttributes<HTMLInputElement> {
 // DatePicker의 커스텀 입력 컴포넌트
 const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
   ({ value, onClick, placeholder }, ref) => (
-    <StyledInput
-      onClick={onClick}
-      ref={ref}
-      value={value}
-      readOnly
-      placeholder={placeholder} // placeholder를 직접 설정
-    />
-  ),
-);
+    <div className="relative">
+      <StyledInput
+        onClick={onClick}
+        ref={ref}
+        value={value}
+        readOnly
+        placeholder={placeholder}
+      />
+      <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+    </div>
+  )
+)
 
 interface ReactDatePickerProps {
   placeholderText: string;
   onDateChange: (date: Date | null) => void;
   selectedDate?: Date | null;
-  showTimeSelect?: boolean; // 시간 선택 기능
-  dateFormat?: string; // 날짜 포맷 설정
+  showTimeSelect?: boolean;
+  dateFormat?: string;
 }
 
 const ReactDatePicker = ({
@@ -56,7 +62,7 @@ const ReactDatePicker = ({
   const handleDateChange = (date: Date | null) => {
     if (date) {
       const utcDate = new Date(
-        date.getTime() - date.getTimezoneOffset() * 60000,
+        date.getTime() - date.getTimezoneOffset() * 60000
       );
       onDateChange(utcDate);
     } else {
@@ -68,96 +74,44 @@ const ReactDatePicker = ({
     <>
       <Global
         styles={css`
-          /* DatePicker 래퍼 스타일 */
-          .datepicker-wrapper {
-            width: 100%;
-            margin-left: -25px;
+          .react-datepicker {
+            font-family: 'Arial', sans-serif;
+            border-color: #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
           }
-
-          /* 전체 달력 스타일 */
-          .custom-calendar {
-            background-color: #f0f8ff;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 0.85rem;
-            margin-left: -5px;
-
-            /* 반응형 스타일 */
-            @media (max-width: 600px) {
-              font-size: 0.75rem;
-              max-width: 100vw;
-              max-height: 40vh;
-            }
-          }
-
-          /* 개별 날짜 스타일 */
-          .react-datepicker__day {
-            color: #333;
-            font-size: 0.9rem;
-            padding: 0.3rem;
-            border-radius: 50%;
-
-            &:hover {
-              background-color: #e6e6e6;
-            }
-
-            @media (max-width: 600px) {
-              padding: 0.2rem;
-            }
-          }
-
-          /* 오늘 날짜 스타일 */
-          .react-datepicker__day--today {
-            font-weight: bold;
-            border: 1px solid #6c63ff;
-            background-color: #f0e6ff;
-          }
-
-          /* 선택된 날짜 스타일 */
-          .react-datepicker__day--selected {
-            background-color: #6c63ff;
-            color: #fff;
-            border: 1px solid #6c63ff;
-          }
-
-          /* 헤더 스타일 */
           .react-datepicker__header {
-            background-color: #6c63ff;
-            color: #fff;
+            background-color: #f3f4f6;
             border-bottom: none;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            padding: 10px;
-
-            @media (max-width: 600px) {
-              padding: 8px;
-            }
           }
-
-          /* 월, 연도 네비게이션 화살표 */
-          .react-datepicker__navigation {
-            top: 12px;
-            border-color: #fff;
-
-            @media (max-width: 600px) {
-              top: 8px;
-            }
+          .react-datepicker__navigation-icon::before {
+            display: none;
           }
-
-          /* 시간 선택 스타일 */
-          .react-datepicker__time-container .react-datepicker__time {
-            background-color: #f0f8ff;
-            border-left: 1px solid #ccc;
-
-            @media (max-width: 600px) {
-              font-size: 0.75rem;
-            }
+          .react-datepicker__current-month,
+          .react-datepicker-time__header {
+            color: #374151;
+            font-weight: 600;
           }
-
-          .react-datepicker__time-container
-            .react-datepicker__time
-            .react-datepicker__time-box {
-            width: 100%;
+          .react-datepicker__day-name,
+          .react-datepicker__day {
+            color: #4b5563;
+          }
+          .react-datepicker__day:hover {
+            background-color: #e5e7eb;
+          }
+          .react-datepicker__day--selected,
+          .react-datepicker__day--keyboard-selected {
+            background-color: #39A7F7;
+            color: white;
+          }
+          .react-datepicker__day--selected:hover {
+            background-color: #2196f3;
+          }
+          .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+            background-color: #39A7F7;
+            color: white;
+          }
+          .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected:hover {
+            background-color: #2196f3;
           }
         `}
       />
@@ -165,12 +119,10 @@ const ReactDatePicker = ({
         placeholderText={placeholderText}
         onChange={handleDateChange}
         selected={selectedDate}
+        showTimeSelect={showTimeSelect}
         timeIntervals={10}
-        showTimeSelect={showTimeSelect} // 시간 선택 기능 활성화
-        dateFormat={dateFormat} // 날짜 포맷 설정
+        dateFormat={dateFormat}
         popperPlacement="bottom-start"
-        calendarClassName="custom-calendar"
-        wrapperClassName="datepicker-wrapper"
         customInput={<CustomDateInput placeholder={placeholderText} />}
       />
     </>
