@@ -53,7 +53,7 @@ const convertToSavePlanFormat = (event: CalendarEvent) => ({
   startDate: event.start.toISOString(),
   endDate: event.end.toISOString(),
   accessibility: event.accessibility ?? true,
-  isCompleted: event.complete ?? false,
+  isCompleted: event.isCompleted ?? false,
 });
 
 const PlanUpdate = () => {

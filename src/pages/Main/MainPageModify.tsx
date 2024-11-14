@@ -58,7 +58,7 @@ const ButtonGroup = styled.div`
 
 export default function PlanModifyPage() {
   const location = useLocation();
-  const { plans = [], teamName } = location.state || {};
+  const { plans = [] } = location.state || {};
   const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(plans);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [descriptionModalOpen, setIsDescriptionModalOpen] = useState(false);

@@ -1,5 +1,5 @@
 // src/pages/MainPage.tsx
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styled from "@emotion/styled";
 import { useNavigate, useLocation } from "react-router-dom";
 import CustomCalendar, {
@@ -11,7 +11,6 @@ import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Button from "@/components/common/Button/Button";
 import Modal from "@/components/common/Modal/Modal";
 import ReactDatePicker from "@/components/features/DatePicker/DatePicker";
-import RouterPath from "@/router/RouterPath";
 import { requestForToken, setupOnMessageListener } from "@/api/firebaseConfig";
 import { apiClient } from "@/api/instance";
 import useUserData from "@/api/hooks/useUserData";

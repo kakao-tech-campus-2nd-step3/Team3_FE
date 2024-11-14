@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axios, { AxiosError } from "axios";
+import axios  from "axios";
 import { Rings } from "react-loader-spinner";
 import CustomCalendar, {
   CalendarEvent,
