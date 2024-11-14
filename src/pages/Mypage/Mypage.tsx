@@ -68,7 +68,7 @@ const Card = styled(motion.div)`
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
   }
-
+  border: 1px solid #e5e7eb;
   ${breakpoints.mobile} {
     padding: 16px;
     margin-bottom: 12px;
@@ -76,6 +76,7 @@ const Card = styled(motion.div)`
 `;
 
 const ProfileCard = styled(motion.div)`
+  border: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;

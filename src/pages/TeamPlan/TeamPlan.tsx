@@ -111,7 +111,7 @@ const PlanCard = styled.div`
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
-
+  border: 1px solid #e5e7eb;
   ${breakpoints.mobile} {
     padding: 16px;
     flex-direction: row;
