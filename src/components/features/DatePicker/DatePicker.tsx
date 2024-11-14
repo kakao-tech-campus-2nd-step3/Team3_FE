@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef, InputHTMLAttributes } from "react";
+import { forwardRef, InputHTMLAttributes } from "react";
 import styled from "@emotion/styled";
 import DatePicker from "react-datepicker";
 import { Global, css } from "@emotion/react";
