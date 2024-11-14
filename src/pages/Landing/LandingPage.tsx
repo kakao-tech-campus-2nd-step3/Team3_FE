@@ -9,9 +9,9 @@ import Button from "@/components/common/Button/Button";
 import kakao_symbol from "@/assets/kakao_symbol.svg";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import step1SVG from "../../../assets/step1.svg";
-import step2SVG from "../../../assets/step2.svg";
-import step3SVG from "../../../assets/step3.svg";
+import step1SVG from "@/assets/step1.svg"
+import step2SVG from "@/assets/step2.svg"
+import step3SVG from "@/assets/step3.svg"
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -62,37 +62,71 @@ const TextSection = styled.div`
 const Title = styled(motion.h1)`
   font-size: 2.5rem;
   font-weight: bold;
-  color: #1f2937; /* text-gray-800 */
-  margin-bottom: 1.5rem;
-`;
+  color: #39A7F7;
+  margin-bottom: 1rem;
+`
 
 const Subtitle = styled(motion.p)`
-  font-size: 1.25rem;
-  color: #4b5563; /* text-gray-600 */
-  margin-bottom: 2rem;
-`;
+  font-size: 1.5rem;
+  color: #39A7F7;
+  margin-bottom: 1.5rem;
+`
 
 const Description = styled(motion.p)`
   font-size: 1.125rem;
-  color: #4b5563; /* text-gray-600 */
+  color: #4b5563;
   margin-bottom: 2rem;
-`;
+
+  span {
+    color: #39A7F7;
+  }
+`
 
 const AnimationContainer = styled.div`
   flex: 1;
   position: relative;
 `;
 
-const BackgroundCircle = styled(motion.div)<{ size: string; position: string }>`
-  width: ${(props) => props.size};
-  height: ${(props) => props.size};
+const BackgroundCircle = styled(motion.div)`
+  width: 30rem;
+  height: 30rem;
   background-color: #39a7f7;
   border-radius: 50%;
   position: absolute;
+  left: -15rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+  opacity: 0.1;
+`
+
+const OrbitingCircle = styled(motion.div)`
+  width: 2rem;
+  height: 2rem;
+  background-color: #39a7f7;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 1;
+`
+
+const PlanetRing = styled(motion.div)`
+  width: 34rem;
+  height: 34rem;
+  border: 2px solid #39a7f7;
+  border-radius: 50%;
+  position: absolute;
+  left: -17rem;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 0;
   opacity: 0.2;
-  ${(props) => props.position}
-`;
+`
+
+const StepSVG = styled.img`
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: 1rem;
+`
 
 const Card = styled(motion.div)`
   position: relative;
@@ -139,11 +173,13 @@ const FeatureTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  min-height: 60px;
 `;
 
 const FeatureDescription = styled.p`
   color: #4b5563; /* text-gray-600 */
   margin-bottom: 1rem;
+  min-height: 48px;
 `;
 
 const ImagePlaceholder = styled.div`
@@ -319,14 +355,14 @@ const LandingPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              내 목소리로 일정을 만들고 쉽게 관리해보세요!
+              Speak and plan it!
             </Subtitle>
             <Description
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              말만 하세요, 당신의 플랜을 책임져드립니다.
+              <span>내 목소리</span>로 일정을 만들고 쉽게 관리해보세요!
             </Description>
             <ButtonWrapper>
               <Button theme="kakao" size="long" onClick={handleLoginClick}>
@@ -340,30 +376,29 @@ const LandingPage: React.FC = () => {
           </TextSection>
 
           <AnimationContainer>
-            <BackgroundCircle
-              size="16rem"
-              position="top: 0; left: 0;"
+          <BackgroundCircle
               animate={{
-                scale: [1, 1.2, 1],
-                rotate: [0, 90, 0],
+                rotate: 360,
               }}
               transition={{
-                duration: 18,
+                duration: 60,
                 repeat: Infinity,
                 ease: "linear",
               }}
             />
-            <BackgroundCircle
-              size="12rem"
-              position="bottom: 0; right: 0;"
+            <PlanetRing />
+            <OrbitingCircle
               animate={{
-                scale: [1, 1.3, 1],
-                rotate: [0, -90, 0],
+                rotate: 360,
               }}
               transition={{
-                duration: 15,
+                duration: 10,
                 repeat: Infinity,
                 ease: "linear",
+              }}
+              style={{
+                left: 'calc(50% + 17rem * cos(0deg))',
+                top: 'calc(50% + 17rem * sin(0deg))',
               }}
             />
             <Card
@@ -441,10 +476,11 @@ const LandingPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
+                
                 <FeatureIcon as={step.icon} />
                 <FeatureTitle>{step.title}</FeatureTitle>
                 <FeatureDescription>{step.description}</FeatureDescription>
-                <ImagePlaceholder>이미지 {index + 1}</ImagePlaceholder>
+                <StepSVG src={index === 0 ? step1SVG : index === 1 ? step2SVG : step3SVG} alt={`Step ${index + 1}`} />
               </FeatureItem>
             ))}
           </GridContainer>
@@ -481,13 +517,13 @@ const LandingPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.6 }}
           >
             <SectionContainer>
-              <ImageContainer>
-                <span>소셜 플래닝 이미지</span>
-              </ImageContainer>
-              <SectionContent style={{ marginLeft: "2rem" }}>
+              <SectionContent>
                 <h2>소셜 플래닝</h2>
                 <p>원하는 회원과 친구를 맺고 일정을 공유해보세요.</p>
               </SectionContent>
+              <ImageContainer>
+                <span>소셜 플래닝 이미지</span>
+              </ImageContainer>
             </SectionContainer>
           </Section>
         </motion.section>
