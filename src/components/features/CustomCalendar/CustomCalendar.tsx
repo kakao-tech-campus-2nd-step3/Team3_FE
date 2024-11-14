@@ -108,6 +108,7 @@ const EventContent = ({
   eventInfo,
   handleDelete,
   handleEdit,
+  handleToggleComplete,
   isReadOnly,
 }: {
   eventInfo: EventContentArg;
@@ -119,6 +120,7 @@ const EventContent = ({
     accessibility: boolean | null,
     isCompleted: boolean | null,
   ) => void;
+  handleToggleComplete: (id: string) => void;
   isReadOnly: boolean;
 }) => {
   const { event, timeText } = eventInfo;
@@ -174,6 +176,8 @@ const EventContent = ({
       );
     } else if (option === "delete") {
       handleDelete(event.id);
+    } else if (option === "toggleComplete") {
+      handleToggleComplete(event.id);
     }
     setIsDropdownOpen(false);
   };
@@ -255,6 +259,24 @@ const EventContent = ({
           >
             삭제
           </div>
+          <div
+            css={[
+              dropdownItemStyles,
+              css`
+                color: green;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                &:hover {
+                  background-color: rgba(0, 255, 0, 0.1);
+                }
+              `,
+            ]}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOptionClick("toggleComplete");
+            }}
+          >
+            완료
+          </div>
         </>
       )}
     </div>
@@ -292,6 +314,7 @@ const renderEventContent = (
     accessibility: boolean | null,
     isCompleted: boolean | null,
   ) => void,
+  handleToggleComplete: (id: string) => void, 
   isReadOnly: boolean,
 ) => {
   if (currentView === "dayGridMonth") {
@@ -303,6 +326,7 @@ const renderEventContent = (
       eventInfo={eventInfo}
       handleDelete={handleDelete}
       handleEdit={handleEdit}
+      handleToggleComplete={handleToggleComplete}
       isReadOnly={isReadOnly}
     />
   );
@@ -379,6 +403,16 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     }
   };
 
+  const handleToggleComplete = useCallback(
+    (id: string) => {
+      const updatedPlans = plans.map((plan) =>
+        plan.id === id ? { ...plan, complete: !plan.complete } : plan
+      );
+      onPlanChange?.(updatedPlans);
+    },
+    [plans, onPlanChange]
+  );
+
   const handleResize = useCallback(() => {
     const isMobileNow =
       typeof window !== "undefined" && window.innerWidth <= breakpoints.sm;
@@ -436,9 +470,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         currentView,
         handleDelete,
         handleEdit,
+        handleToggleComplete,
         isReadOnly,
       ),
-    [handleDelete, handleEdit, isReadOnly, currentView],
+    [handleDelete, handleEdit, handleToggleComplete,isReadOnly, currentView],
   );
 
   return (
