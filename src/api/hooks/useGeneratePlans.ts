@@ -15,6 +15,9 @@ interface GptResponse {
   groupId: number;
   planCards: CalendarEvent[];
 }
+
+type GptResponseOrString = GptResponse | string;
+
 const convertToKST = (events: CalendarEvent[]): CalendarEvent[] => {
   return events.map((event) => ({
     ...event,
@@ -27,12 +30,18 @@ const convertToKST = (events: CalendarEvent[]): CalendarEvent[] => {
 const fetchGptData = async (
   url: string,
   { deviceId, text }: GptRequestParams,
-): Promise<GptResponse> => {
+): Promise<GptResponseOrString> => {
   const response = await apiClient.post(
     url,
     { text },
     { params: { deviceId } },
   );
+
+  // 응답이 문자열인지 확인하여 처리
+  if (typeof response.data === "string") {
+    return response.data; // 단순 문자열 응답 반환
+  }
+
   return {
     ...response.data,
     planCards: convertToKST(transformPlanData(response.data.planCards)), // 변환 함수 사용
@@ -41,49 +50,49 @@ const fetchGptData = async (
 
 // 레벨별 훅
 export const useGptLight = (
-  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, AxiosError, GptRequestParams>({
+  useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/light", params),
     ...options,
   });
 
 export const useGptModerate = (
-  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, AxiosError, GptRequestParams>({
+  useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/moderate", params),
     ...options,
   });
 
 export const useGptStrong = (
-  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, AxiosError, GptRequestParams>({
+  useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/member/strong", params),
     ...options,
   });
 
 export const useGptTrialLight = (
-  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, AxiosError, GptRequestParams>({
+  useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/trial/light", params),
     ...options,
   });
 
 export const useGptTrialModerate = (
-  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, AxiosError, GptRequestParams>({
+  useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/trial/moderate", params),
     ...options,
   });
 
 export const useGptTrialStrong = (
-  options?: UseMutationOptions<GptResponse, AxiosError, GptRequestParams>,
+  options?: UseMutationOptions<GptResponseOrString, AxiosError, GptRequestParams>,
 ) =>
-  useMutation<GptResponse, AxiosError, GptRequestParams>({
+  useMutation<GptResponseOrString, AxiosError, GptRequestParams>({
     mutationFn: (params) => fetchGptData("/api/gpt/trial/strong", params),
     ...options,
   });
