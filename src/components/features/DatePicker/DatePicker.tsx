@@ -64,8 +64,10 @@ CustomDateInput.displayName = "CustomDateInput";
 
 const ReactDatePicker = ({
   onDateChange,
+  placeholderText,
 }: {
   onDateChange: (date: string | null) => void;
+  placeholderText?: string;
 }) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
 
@@ -205,7 +207,7 @@ const ReactDatePicker = ({
             color: #333;
             font-size: 0.85rem;
             cursor: pointer;
-            background-color: #e6f7ff; /* 리스트 항목의 기본 배경색 */
+            background-color: #fff; /* 리스트 항목의 기본 배경색 */
             border-radius: 4px;
             margin: 2px 0;
 
@@ -225,6 +227,7 @@ const ReactDatePicker = ({
         timeInputLabel="Time:"
         dateFormat="yyyy/MM/dd HH:mm:ss"
         showTimeInput
+        placeholderText={placeholderText}
         customInput={<CustomDateInput />}
         wrapperClassName="datepicker-wrapper"
       />

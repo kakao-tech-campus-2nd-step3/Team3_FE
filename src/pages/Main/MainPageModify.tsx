@@ -260,8 +260,14 @@ export default function PlanModifyPage() {
                 setNewPlanData({ ...newPlanData, description: e.target.value })
               }
             />
-            <ReactDatePicker onDateChange={handleStartDateChange} />
-            <ReactDatePicker onDateChange={handleEndDateChange} />
+            <ReactDatePicker
+              placeholderText="시작 시간"
+              onDateChange={handleStartDateChange}
+            />
+            <ReactDatePicker
+              placeholderText="종료 시간"
+              onDateChange={handleEndDateChange}
+            />
             <Button onClick={handleAddPlanSubmit}>추가</Button>
           </ModalContainer>
         </Modal>
