@@ -35,7 +35,7 @@ const SubTitle = styled.h2`
   font-weight: normal;
   color: #4a5568;
   text-align: center;
-margin-bottom: 24px;
+  margin-bottom: 24px;
   min-height: 60px;
   ${breakpoints.tablet} {
     font-size: 20px;

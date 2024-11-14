@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import styled from "@emotion/styled";
 import { Mic, Calendar, Clock, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Global, css } from "@emotion/react";
 import logo from "@/assets/logo.svg";
 import Button from "@/components/common/Button/Button";
 import kakao_symbol from "@/assets/kakao_symbol.svg";
@@ -11,7 +12,6 @@ import RouterPath from "@/router/RouterPath";
 import step1SVG from "@/assets/step1.svg";
 import step2SVG from "@/assets/step2.svg";
 import step3SVG from "@/assets/step3.svg";
-import { Global, css } from "@emotion/react";
 
 const GlobalStyles = css`
   *,
@@ -24,7 +24,7 @@ const GlobalStyles = css`
 const PageContainer = styled.div`
   min-height: 100vh;
   background: linear-gradient(to bottom right, #f0f4fa, white);
-  overflow-x: hidden; 
+  overflow-x: hidden;
 `;
 
 const NavBar = styled.nav`
@@ -42,7 +42,7 @@ const Logo = styled.div`
   color: #39a7f7;
 
   img {
-    width: 150px; 
+    width: 150px;
   }
 `;
 
@@ -52,19 +52,19 @@ const MainContent = styled.main`
   padding: 3rem 1.5rem;
 
   @media (max-width: 768px) {
-    padding: 2rem 1rem; 
+    padding: 2rem 1rem;
   }
 `;
 
 const FlexContainer = styled.div`
   display: flex;
-  flex-direction: column; 
-  align-items: stretch; 
+  flex-direction: column;
+  align-items: stretch;
   margin-bottom: 5rem;
 
   @media (min-width: 1024px) {
     flex-direction: row;
-    align-items: center; 
+    align-items: center;
   }
 `;
 
@@ -72,11 +72,11 @@ const TextSection = styled.div`
   width: 100%;
   margin-bottom: 1.5rem;
   z-index: 10;
-  text-align: center; 
+  text-align: center;
 
   @media (min-width: 1024px) {
     margin-bottom: 0;
-    text-align: left; 
+    text-align: left;
   }
 `;
 
@@ -85,7 +85,6 @@ const Title = styled(motion.h1)`
   font-weight: bold;
   color: #39a7f7;
   margin-bottom: 1rem;
- 
 `;
 
 const Subtitle = styled(motion.p)`
@@ -109,9 +108,9 @@ const AnimationContainer = styled.div`
   display: flex;
   position: relative;
   margin-left: auto;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
 
   @media (min-width: 1024px) {
     justify-content: flex-end;
@@ -122,14 +121,14 @@ const AnimationContainer = styled.div`
 const AnimationGroup = styled.div`
   position: fixed;
   top: 15%;
-  left: -15%; 
+  left: -15%;
   width: 34rem;
   height: 34rem;
   z-index: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  pointer-events: none; 
+  pointer-events: none;
 `;
 
 const BackgroundCircle = styled(motion.div)`
@@ -169,7 +168,7 @@ const PlanetRing = styled(motion.div)`
 
 const StepSVG = styled.img`
   width: 100%;
-  max-width: 20rem; 
+  max-width: 20rem;
   height: auto;
   margin-bottom: 1rem;
 
@@ -180,7 +179,7 @@ const StepSVG = styled.img`
 
 const Card = styled(motion.div)`
   width: 100%;
-  max-width: 500px; 
+  max-width: 500px;
   position: relative;
   z-index: 10;
   background: white;
@@ -216,10 +215,10 @@ const GridContainer = styled.div`
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
-    padding: 0; 
+    padding: 0;
   }
 
-  box-sizing: border-box; 
+  box-sizing: border-box;
 `;
 
 const FeatureItem = styled(motion.div)`
@@ -228,14 +227,13 @@ const FeatureItem = styled(motion.div)`
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 100%; 
+  max-width: 100%;
   box-sizing: border-box;
 
   @media (min-width: 768px) {
     padding: 2rem;
   }
 
-  
   h3,
   p {
     word-wrap: break-word;
@@ -254,7 +252,7 @@ const FeatureTitle = styled.h3`
   font-weight: 600;
   margin-bottom: 0.5rem;
   min-height: 60px;
-  word-wrap: break-word; 
+  word-wrap: break-word;
 
   @media (min-width: 768px) {
     font-size: 1.5rem;
@@ -265,7 +263,7 @@ const FeatureDescription = styled.p`
   color: #4b5563;
   margin-bottom: 1rem;
   min-height: 48px;
-  word-wrap: break-word; 
+  word-wrap: break-word;
 `;
 
 const Footer = styled.footer`
@@ -320,7 +318,7 @@ const SectionContainer = styled.div<{ reverse?: boolean }>`
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  overflow: hidden; 
+  overflow: hidden;
 
   @media (min-width: 768px) {
     flex-direction: ${({ reverse }) => (reverse ? "row-reverse" : "row")};
@@ -382,7 +380,7 @@ const ButtonWrapper = styled.div`
   gap: 16px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; 
+  justify-content: center;
   @media (min-width: 1023px) {
     justify-content: flex-start;
   }
@@ -564,11 +562,7 @@ const LandingPage: React.FC = () => {
                 <FeatureDescription>{step.description}</FeatureDescription>
                 <StepSVG
                   src={
-                    index === 0
-                      ? step1SVG
-                      : index === 1
-                      ? step2SVG
-                      : step3SVG
+                    index === 0 ? step1SVG : index === 1 ? step2SVG : step3SVG
                   }
                   alt={`Step ${index + 1}`}
                 />

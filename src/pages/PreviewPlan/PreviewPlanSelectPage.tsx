@@ -115,9 +115,7 @@ const PreviewPlanSelectPage: React.FC = () => {
             // typeof moderateData === "string"
             //   ? `\n2번째 AI답변: ${moderateData}`
             //   : null,
-            typeof strongData === "string"
-              ? `${strongData}`
-              : null,
+            typeof strongData === "string" ? `${strongData}` : null,
           ]
             .filter((data) => data !== null)
             .join("\n");

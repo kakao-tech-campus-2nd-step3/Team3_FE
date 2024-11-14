@@ -156,7 +156,6 @@ const Spinner = styled.div`
   }
 `;
 
-
 export default function FriendDetailPage() {
   const { friendId } = useParams();
   const location = useLocation();
@@ -225,7 +224,14 @@ export default function FriendDetailPage() {
   if (isLoadingPlans || isLoadingComments) {
     return (
       <PageContainer>
-        <ContentWrapper style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <ContentWrapper
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
           <Spinner />
         </ContentWrapper>
       </PageContainer>
