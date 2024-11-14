@@ -90,6 +90,10 @@ const TeamPlanMakingPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleNextClick = async () => {
+    if (!transcript || transcript.trim() === "") {
+      alert("입력값이 필요합니다.");
+      return;
+    }
     navigate(RouterPath.TEAM_PLAN_SELECT, { state: { transcript } });
   };
 
