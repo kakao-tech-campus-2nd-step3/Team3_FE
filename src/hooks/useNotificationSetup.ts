@@ -1,47 +1,57 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { requestForToken, setupOnMessageListener } from "@/api/firebaseConfig";
 import { apiClient } from "@/api/instance";
 
-// 전역 상태
-let isInitialized = false;
-let fcmTokenRegistered = false;
+const FCM_TOKEN_KEY = "fcm_token";
 
-const FCM_TOKEN_KEY = "fcm_token"; // 로컬 스토리지 키
+// 모듈 레벨에서 전역 플래그 선언
+let isTokenRequestedGlobal = false;
 
 const useNotificationSetup = () => {
+  const tokenRequestedRef = useRef(false);
+
   useEffect(() => {
     const initializeFCM = async () => {
-      if (!isInitialized) {
-        console.log("Initializing FCM...");
-        isInitialized = true;
+      // 이미 토큰 요청이 진행 중이거나 완료된 경우 중복 실행 방지
+      if (isTokenRequestedGlobal || tokenRequestedRef.current) {
+        return;
+      }
 
-        if (!fcmTokenRegistered) {
+      try {
+        isTokenRequestedGlobal = true; // 전역 플래그 설정
+        tokenRequestedRef.current = true;
+
+        const existingToken = localStorage.getItem(FCM_TOKEN_KEY);
+        if (!existingToken) {
           const permission = await Notification.requestPermission();
           if (permission === "granted") {
             const fcmToken = await requestForToken();
             if (fcmToken) {
-              try {
-                await apiClient.post("/api/fcm/register", { token: fcmToken });
-                // 토큰을 로컬 스토리지에 저장
-                localStorage.setItem(FCM_TOKEN_KEY, fcmToken);
-                fcmTokenRegistered = true;
-                console.log("FCM token saved to localStorage:", fcmToken);
-              } catch (error) {
-                console.error("Failed to register FCM token:", error);
-              }
+              await apiClient.post("/api/fcm/register", { token: fcmToken });
+              localStorage.setItem(FCM_TOKEN_KEY, fcmToken);
+              console.log("New FCM token registered and saved:", fcmToken);
             }
           }
         }
 
+        // 메시지 리스너는 한 번만 설정
         setupOnMessageListener();
-        console.log("FCM initialization complete");
+      } catch (error) {
+        console.error("Failed to initialize FCM:", error);
+        // 에러 발생 시 다음 시도를 위해 플래그 초기화
+        isTokenRequestedGlobal = false;
+        tokenRequestedRef.current = false;
       }
     };
 
     initializeFCM();
+
+    // 컴포넌트 언마운트 시 cleanup
+    return () => {
+      tokenRequestedRef.current = false;
+    };
   }, []);
 
-  // 토큰을 가져오는 유틸리티 함수 추가
   const getFCMToken = () => {
     return localStorage.getItem(FCM_TOKEN_KEY);
   };
