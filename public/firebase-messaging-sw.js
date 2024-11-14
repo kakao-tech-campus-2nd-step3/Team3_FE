@@ -24,7 +24,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "/icon.png", // 아이콘 이미지 경로
+    icon: "./src/assets/icon.png", // 아이콘 이미지 경로
     data: { click_action: payload.data.click_action } // 클릭 시 이동할 URL을 data에 추가
   };
 
