@@ -21,7 +21,7 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
   isRecording,
 }) => {
   return (
-    <ButtonContainer onClick={isRecording ? onStopClick : onStartClick}>
+    <ButtonContainer style={{ maxWidth: "58px", maxHeight: "58px" }} onClick={isRecording ? onStopClick : onStartClick}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="58px" 
@@ -29,6 +29,7 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
         viewBox="0 0 92.045 90"
         fill="none"
         overflow="visible"
+        style={{ maxWidth: "58px", maxHeight: "58px" }}
       >
         <Circle cx="46.0225" cy="45" rx="46.0225" ry="45" />
         <AnimatePresence>

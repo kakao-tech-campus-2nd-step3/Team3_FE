@@ -20,11 +20,6 @@ export const ButtonContainer = styled(motion.button)`
   &:focus {
     outline: none;
   }
-  
-  @supports (-webkit-touch-callout: none) {
-    width: 58px !important;
-    height: 58px !important;
-  }
     
 `;
 
@@ -55,8 +50,4 @@ export const Wave = styled(motion.div)`
   border-radius: 5px;
   width: 4px;
   height: 8px;
-
-  @supports (-webkit-touch-callout: none) {
-    height: 8px;
-  }
 `;
