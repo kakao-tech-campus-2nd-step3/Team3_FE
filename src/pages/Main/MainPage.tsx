@@ -30,15 +30,13 @@ const ButtonWrapper = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 100%;
   padding: 20px;
   background-color: white;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 15px;
-  box-sizing: border-box;
 `;
 
 const Title = styled.h2`
@@ -47,12 +45,7 @@ const Title = styled.h2`
   color: #333;
   margin-bottom: 20px;
 `;
-const ContentWrapper = styled.main`
-  flex-grow: 1;
-  padding: 32px;
-  overflow: auto;
-  box-sizing: border-box;
-`;
+
 const StyledInput = styled.input`
   width: 100%;
   padding: 12px;
@@ -61,10 +54,17 @@ const StyledInput = styled.input`
   border-radius: 8px;
   font-size: 1rem;
   &:focus {
-    outline: none; /* focus:outline-none */
+    outline: none;
     border-color: #2196f3; /* focus:border-[#2196F3] */
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); /* focus:ring-2 focus:ring-[#2196F3] */
   }
+`;
+
+const ContentWrapper = styled.main`
+  flex-grow: 1;
+  padding: 32px;
+  overflow: auto;
+  box-sizing: border-box;
 `;
 
 const Spinner = styled.div`
