@@ -53,10 +53,11 @@ const StyledInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  margin-left: -10px;
   &:focus {
     outline: none;
-    border-color: #2196f3; /* focus:border-[#2196F3] */
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); /* focus:ring-2 focus:ring-[#2196F3] */
+    border-color: #39a7f7;
+    box-shadow: 0 0 0 2px #338bd0;
   }
 `;
 
