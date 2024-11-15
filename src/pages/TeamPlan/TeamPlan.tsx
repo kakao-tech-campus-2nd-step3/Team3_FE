@@ -175,7 +175,6 @@ const EmptyMessage = styled.div`
   text-align: center;
   color: #999;
   font-size: 16px;
-  margin-top: 20px;
 
   ${breakpoints.mobile} {
     font-size: 14px;
@@ -230,6 +229,13 @@ const Spinner = styled.div`
       transform: rotate(360deg);
     }
   }
+`;
+
+const EmptyMessageContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 `;
 
 export default function TeamPlanPage() {
@@ -394,9 +400,10 @@ export default function TeamPlanPage() {
         ))}
       </CardGrid>
     ) : (
-      <EmptyMessage>받은 요청이 없습니다.</EmptyMessage>
+      <EmptyMessageContainer>
+        <EmptyMessage>받은 요청이 없습니다.</EmptyMessage>
+      </EmptyMessageContainer>
     );
-
   // 보낸 요청 렌더링
   const renderedSentInvitations =
     adminTeams.length > 0 ? (
@@ -407,7 +414,7 @@ export default function TeamPlanPage() {
 
           if (isLoading) {
             return (
-              <PageContainer>
+              <PageContainer key={`loading-${team.id}`}>
                 <ContentWrapper
                   style={{
                     display: "flex",
@@ -422,7 +429,9 @@ export default function TeamPlanPage() {
             );
           }
 
-          if (teamInvitations.length === 0) return null;
+          if (teamInvitations.length === 0) {
+            return null;
+          }
 
           const handleCancelInvitation = (invitationId: number) => {
             if (window.confirm("초대를 취소하시겠습니까?")) {
@@ -460,9 +469,18 @@ export default function TeamPlanPage() {
             </PlanCard>
           );
         })}
+        {adminTeams.every(
+          (_, index) => (sentInvitationsQueries[index].data || []).length === 0,
+        ) && (
+          <EmptyMessageContainer>
+            <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>
+          </EmptyMessageContainer>
+        )}
       </CardGrid>
     ) : (
-      <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>
+      <EmptyMessageContainer>
+        <EmptyMessage>보낸 요청이 없습니다.</EmptyMessage>
+      </EmptyMessageContainer>
     );
 
   if (isLoadingTeams || isLoadingInvitations) return <div>Loading...</div>;
