@@ -12,12 +12,43 @@ import List from "@/components/common/List/List";
 import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
 import useAuth from "@/hooks/useAuth";
-import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import useNotificationSetup from "@/api/hooks/useFcmUpdate";
 import { requestForToken } from "@/api/firebaseConfig";
 import useFcmOffsetUpdate from "@/api/hooks/useFcmOffsetUpdate";
 
+// 알림 설정 안내 문구를 표시하는 훅
+const useNotificationSetup = () => {
+  const openNotificationSettings = () => {
+    const { userAgent } = navigator;
+    if (userAgent.includes("Edg")) {
+      alert(
+        "Edge 설정에서 알림을 활성화해주세요:\n설정 > 쿠키 및 사이트 권한 > 알림",
+      );
+    } else if (userAgent.includes("Chrome")) {
+      alert(
+        "Chrome 설정에서 알림을 활성화해주세요:\n설정 > 개인정보 및 보안 > 사이트 설정 > 알림",
+      );
+    } else if (
+      userAgent.includes("Safari") &&
+      !userAgent.includes("Chrome") &&
+      !userAgent.includes("Edg")
+    ) {
+      alert(
+        "Safari 설정에서 알림을 활성화해주세요:\nmacOS에서는 Safari > 설정 > 알림\niOS에서는 설정 > Safari > 알림",
+      );
+    } else if (userAgent.includes("Firefox")) {
+      alert(
+        "Firefox 설정에서 알림을 활성화해주세요:\n설정 페이지에서 개인정보 및 보안 > 권한 > 알림",
+      );
+    } else {
+      alert("알림을 활성화하려면 브라우저 설정을 확인해주세요.");
+    }
+  };
+
+  return { openNotificationSettings };
+};
+
+// 스타일드 컴포넌트 정의
 const PageWrapper = styled.div`
   display: flex;
   min-height: 100vh;
@@ -145,7 +176,6 @@ const DeleteButtonWrapper = styled.div`
   }
 `;
 
-// StyledSelect를 래퍼 함수로 정의하여 제네릭 타입을 명시적으로 설정
 const StyledSelect = styled((props: SelectProps<string>) => (
   <Select {...props} />
 ))`
@@ -203,271 +233,143 @@ export default function MyPage() {
   const { userData, handleDeleteAccount, handleSubscription } = useUserData();
   const { setAuthState } = useAuth();
   const navigate = useNavigate();
-  const fcmUpdateMutation = useNotificationSetup();
+  const { openNotificationSettings } = useNotificationSetup();
   const fcmOffsetUpdateMutation = useFcmOffsetUpdate();
   const [notificationOffset, setNotificationOffset] = useState<string>(() => {
     return localStorage.getItem(FCM_OFFSET_KEY) || "0";
   });
 
-  // 초기 알림 상태 설정
   useEffect(() => {
     const savedToken = localStorage.getItem(FCM_TOKEN_KEY);
     setNotificationEnabled(!!savedToken);
   }, []);
 
+  const handleNotificationToggle = async () => {
+    try {
+      const newState = !isNotificationEnabled;
+
+      if (newState) {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          openNotificationSettings();
+          return;
+        }
+
+        const newToken = await requestForToken();
+        if (!newToken) {
+          throw new Error("알림 토큰 발급 실패");
+        }
+
+        localStorage.setItem(FCM_TOKEN_KEY, newToken);
+        setNotificationEnabled(true);
+      } else {
+        const currentToken = localStorage.getItem(FCM_TOKEN_KEY);
+        if (currentToken) {
+          localStorage.removeItem(FCM_TOKEN_KEY);
+          localStorage.removeItem(FCM_OFFSET_KEY);
+          setNotificationEnabled(false);
+        }
+      }
+    } catch (error) {
+      alert("알림 설정 변경에 실패했습니다.");
+      setNotificationEnabled(!isNotificationEnabled);
+    }
+  };
+
   const handleOffsetChange = async (event: SelectChangeEvent<string>) => {
     const newOffset = event.target.value;
 
     try {
-      // 토큰 가져오기
       const currentToken = localStorage.getItem(FCM_TOKEN_KEY);
 
       if (!currentToken) {
         throw new Error("FCM 토큰이 없습니다. 알림을 다시 활성화해주세요.");
       }
 
-      if (newOffset === "0") {
-        setNotificationOffset(newOffset);
-        return;
-      }
-
-      // 서버에 알림 시간 업데이트 요청
       await fcmOffsetUpdateMutation.mutateAsync({
         token: currentToken,
         notificationOffset: parseInt(newOffset, 10),
       });
 
-      // 성공 시 로컬 상태 업데이트
       setNotificationOffset(newOffset);
       localStorage.setItem(FCM_OFFSET_KEY, newOffset);
-      console.log("알림 시간이 변경되었습니다:", newOffset);
-    } catch (error: any) {
-      console.error("알림 시간 설정 중 오류 발생:", error);
-      alert(
-        `알림 시간 설정에 실패했습니다. ${error.response?.data?.message || error.message}`,
-      );
-      // 에러 발생 시 이전 값으로 되돌리기
+    } catch (error) {
+      alert("알림 시간 설정에 실패했습니다.");
       const previousOffset = localStorage.getItem(FCM_OFFSET_KEY) || "0";
       setNotificationOffset(previousOffset);
     }
-  };
-
-  const handleNotificationToggle = async () => {
-    try {
-      const newState = !isNotificationEnabled;
-      console.log("현재 알림 상태:", isNotificationEnabled);
-      console.log("토글 후 상태가 될 값:", newState);
-
-      if (newState) {
-        // 알림 활성화
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") {
-          alert(
-            "알림 권한이 필요합니다. 브라우저 설정에서 알림을 허용해주세요.",
-          );
-          return;
-        }
-
-        // FCM 토큰 새로 발급
-        const newToken = await requestForToken();
-        if (!newToken) {
-          throw new Error("알림 토큰 발급 실패");
-        }
-
-        console.log("새로운 FCM 토큰:", newToken);
-
-        // 토큰으로 알림 활성화 요청
-        await fcmUpdateMutation.mutateAsync({
-          token: newToken,
-          isNotificationEnabled: true,
-        });
-
-        // 성공 시 토큰 저장 및 상태 업데이트
-        localStorage.setItem(FCM_TOKEN_KEY, newToken);
-        setNotificationEnabled(true);
-        console.log("알림이 활성화되었습니다.");
-      } else {
-        // 알림 비활성화
-        const currentToken = localStorage.getItem(FCM_TOKEN_KEY);
-        if (currentToken) {
-          await fcmUpdateMutation.mutateAsync({
-            token: currentToken,
-            isNotificationEnabled: false,
-          });
-          localStorage.removeItem(FCM_TOKEN_KEY);
-          localStorage.removeItem(FCM_OFFSET_KEY);
-          setNotificationEnabled(false);
-          console.log("알림이 비활성화되었습니다.");
-        }
-      }
-    } catch (error: any) {
-      console.error("알림 설정 변경 중 오류 발생:", error);
-      console.error("서버 응답:", error.response?.data);
-      console.error("상태 코드:", error.response?.status);
-      alert(
-        `알림 설정 변경에 실패했습니다. ${error.response?.data?.message || error.message}`,
-      );
-      setNotificationEnabled(!isNotificationEnabled);
-    }
-  };
-
-  const handleSubscriptionClick = () => {
-    if (userData.isPremium) {
-      alert("이미 구독중입니다.");
-    } else {
-      handleSubscription();
-    }
-  };
-
-  const handleLogout = () => {
-    setAuthState({ isAuthenticated: false });
-    localStorage.removeItem("authState");
-    navigate(RouterPath.HOME);
   };
 
   return (
     <PageWrapper>
       <ContentWrapper>
         <Heading>마이페이지</Heading>
-
-        <ProfileCard
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <ProfileCard>
           <List
             name={userData.nickname}
             date={userData.isPremium ? "프리미엄 회원" : "일반 회원"}
           />
         </ProfileCard>
-
         <GridLayout>
-          <Card
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
+          <Card>
             <CardHeader>
               <CreditCardIcon fontSize="small" style={{ color: "#4a5568" }} />
               <CardTitle>구독정보</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button size="small" onClick={handleSubscriptionClick}>
+              <Button size="small" onClick={handleSubscription}>
                 결제 요청
               </Button>
             </CardContent>
           </Card>
-
-          <Card
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            style={{
-              opacity: isNotificationEnabled ? 1 : 0.6,
-              transition: "opacity 0.3s ease",
-            }}
-          >
+          <Card>
             <CardHeader>
               <NotificationsIcon
                 fontSize="small"
-                style={{
-                  color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
-                }}
+                style={{ color: isNotificationEnabled ? "#4a5568" : "#9ca3af" }}
               />
               <CardTitle
-                style={{
-                  color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
-                }}
+                style={{ color: isNotificationEnabled ? "#4a5568" : "#9ca3af" }}
               >
                 알림설정
               </CardTitle>
-
               <Switch
                 checked={isNotificationEnabled}
                 onChange={handleNotificationToggle}
                 color="primary"
-                disabled={fcmUpdateMutation.isPending}
               />
             </CardHeader>
             <CardContent>
               {isNotificationEnabled && (
-                <div>
-                  <FormControl fullWidth size="small">
-                    <StyledSelect
-                      value={notificationOffset}
-                      onChange={handleOffsetChange}
-                      displayEmpty
-                      disabled={fcmOffsetUpdateMutation.isPending}
-                      renderValue={(selected) => {
-                        if (selected === "0") {
-                          return (
-                            <span style={{ color: "#9ca3af" }}>알림 설정</span>
-                          );
-                        }
-                        return `${selected}분 전`;
-                      }}
-                    >
-                      <StyledMenuItem value="0">알림 설정</StyledMenuItem>
-                      <StyledMenuItem value="5">5분 전</StyledMenuItem>
-                      <StyledMenuItem value="10">10분 전</StyledMenuItem>
-                      <StyledMenuItem value="15">15분 전</StyledMenuItem>
-                      <StyledMenuItem value="20">20분 전</StyledMenuItem>
-                      <StyledMenuItem value="25">25분 전</StyledMenuItem>
-                      <StyledMenuItem value="30">30분 전</StyledMenuItem>
-                    </StyledSelect>
-                  </FormControl>
-
-                  {/* 로딩 중 표시 */}
-                  {fcmOffsetUpdateMutation.isPending && (
-                    <div
-                      style={{
-                        color: "#4a5568",
-                        fontSize: "12px",
-                        marginTop: "8px",
-                      }}
-                    >
-                      알림 시간을 변경하는 중...
-                    </div>
-                  )}
-
-                  {/* 성공 메시지 */}
-                  {fcmOffsetUpdateMutation.isSuccess &&
-                    notificationOffset !== "0" && (
-                      <div
-                        style={{
-                          color: "#059669",
-                          fontSize: "12px",
-                          marginTop: "8px",
-                        }}
-                      >
-                        알림이 {notificationOffset}분 전으로 설정되었습니다.
-                      </div>
-                    )}
-
-                  {/* 에러 메시지 */}
-                  {fcmOffsetUpdateMutation.isError && (
-                    <div
-                      style={{
-                        color: "#DC2626",
-                        fontSize: "12px",
-                        marginTop: "8px",
-                      }}
-                    >
-                      알림 시간 설정에 실패했습니다.
-                    </div>
-                  )}
-                </div>
+                <FormControl fullWidth size="small">
+                  <StyledSelect
+                    value={notificationOffset}
+                    onChange={handleOffsetChange}
+                    displayEmpty
+                  >
+                    <StyledMenuItem value="0">알림 설정</StyledMenuItem>
+                    <StyledMenuItem value="5">5분 전</StyledMenuItem>
+                    <StyledMenuItem value="10">10분 전</StyledMenuItem>
+                    <StyledMenuItem value="15">15분 전</StyledMenuItem>
+                    <StyledMenuItem value="20">20분 전</StyledMenuItem>
+                    <StyledMenuItem value="25">25분 전</StyledMenuItem>
+                    <StyledMenuItem value="30">30분 전</StyledMenuItem>
+                  </StyledSelect>
+                </FormControl>
               )}
             </CardContent>
           </Card>
         </GridLayout>
-
         <DeleteButtonWrapper>
-          <Button onClick={handleLogout} size="small" theme="primary">
-            로그아웃
-          </Button>
           <Button onClick={handleDeleteAccount} size="small" theme="secondary">
             회원 탈퇴
+          </Button>
+          <Button
+            onClick={() => setAuthState({ isAuthenticated: false })}
+            size="small"
+            theme="primary"
+          >
+            로그아웃
           </Button>
         </DeleteButtonWrapper>
       </ContentWrapper>

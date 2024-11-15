@@ -10,34 +10,6 @@ let isTokenRequestedGlobal = false;
 const useNotificationSetup = () => {
   const tokenRequestedRef = useRef(false);
 
-  // 브라우저별 알림 설정 안내 메시지
-  const openNotificationSettings = () => {
-    const { userAgent } = navigator;
-    if (userAgent.includes("Edg")) {
-      alert(
-        "Edge 설정에서 알림을 활성화해주세요:\n설정 > 쿠키 및 사이트 권한 > 알림",
-      );
-    } else if (userAgent.includes("Chrome")) {
-      alert(
-        "Chrome 설정에서 알림을 활성화해주세요:\n설정 > 개인정보 및 보안 > 사이트 설정 > 알림",
-      );
-    } else if (
-      userAgent.includes("Safari") &&
-      !userAgent.includes("Chrome") &&
-      !userAgent.includes("Edg")
-    ) {
-      alert(
-        "Safari 설정에서 알림을 활성화해주세요:\nmacOS에서는 Safari > 설정 > 알림\niOS에서는 설정 > Safari > 알림",
-      );
-    } else if (userAgent.includes("Firefox")) {
-      alert(
-        "Firefox 설정에서 알림을 활성화해주세요:\n설정 페이지에서 개인정보 및 보안 > 권한 > 알림",
-      );
-    } else {
-      alert("알림을 활성화하려면 브라우저 설정을 확인해주세요.");
-    }
-  };
-
   useEffect(() => {
     const initializeFCM = async () => {
       // 알림 API 지원 여부 확인
@@ -58,7 +30,6 @@ const useNotificationSetup = () => {
         const existingToken = localStorage.getItem(FCM_TOKEN_KEY);
         if (!existingToken) {
           if (Notification.permission === "denied") {
-            openNotificationSettings();
             return;
           }
 
@@ -74,7 +45,6 @@ const useNotificationSetup = () => {
             alert(
               "알림 권한이 거부되었습니다. 브라우저 설정에서 알림을 활성화해주세요.",
             );
-            openNotificationSettings();
           }
         }
 
@@ -101,7 +71,6 @@ const useNotificationSetup = () => {
 
   return {
     getFCMToken,
-    openNotificationSettings,
   };
 };
 
