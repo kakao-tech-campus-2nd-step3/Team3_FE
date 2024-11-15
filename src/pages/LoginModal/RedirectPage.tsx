@@ -53,7 +53,7 @@ const OAuthRedirectHandler = () => {
     if (authState.isAuthenticated) {
       setTimeout(() => {
         navigate(RouterPath.MAIN);
-      }, 5000); // 500ms 지연
+      }, 500); // 500ms 지연
     }
   }, [authState, navigate]);
 
