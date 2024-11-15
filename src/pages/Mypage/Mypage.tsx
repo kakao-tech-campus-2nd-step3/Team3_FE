@@ -1,4 +1,3 @@
-// src/pages/MyPage.tsx
 import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
@@ -12,7 +11,7 @@ import useUserData from "@/api/hooks/useUserData";
 import useAuth from "@/hooks/useAuth";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import useFcmUpdate from "@/api/hooks/useFcmUpdate";
+import useNotificationSetup from "@/api/hooks/useFcmUpdate"; // useNotificationSetup 훅을 사용
 import { requestForToken } from "@/api/firebaseConfig";
 
 const PageWrapper = styled.div`
@@ -28,7 +27,7 @@ const PageWrapper = styled.div`
 
 const ContentWrapper = styled.main`
   flex-grow: 1;
-  padding: 32px; /* p-8 */
+  padding: 32px;
   overflow: auto;
 
   ${breakpoints.mobile} {
@@ -37,10 +36,10 @@ const ContentWrapper = styled.main`
 `;
 
 const Heading = styled.h1`
-  font-size: 24px; /* text-3xl */
-  font-weight: 600; /* font-semibold */
-  margin-bottom: 24px; /* mb-6 */
-  color: #2d3748; /* text-gray-800 */
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #2d3748;
 
   ${breakpoints.mobile} {
     font-size: 20px;
@@ -51,7 +50,7 @@ const Heading = styled.h1`
 const GridLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px; /* gap-6 */
+  gap: 24px;
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
@@ -59,14 +58,15 @@ const GridLayout = styled.div`
 `;
 
 const Card = styled(motion.div)`
-  background-color: #ffffff; /* bg-white */
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow-md */
-  padding: 24px; /* p-6 */
-  transition: box-shadow 0.2s; /* transition-shadow duration-200 */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: box-shadow 0.2s;
   margin-bottom: 18px;
+
   &:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
 
   ${breakpoints.mobile} {
@@ -79,14 +79,15 @@ const ProfileCard = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffffff; /* bg-white */
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow-md */
-  padding: 24px; /* p-6 */
-  transition: box-shadow 0.2s; /* transition-shadow duration-200 */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: box-shadow 0.2s;
   margin-bottom: 18px;
+
   &:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
 
   ${breakpoints.mobile} {
@@ -100,7 +101,7 @@ const ProfileCard = styled(motion.div)`
 const CardHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 16px; /* mb-4 */
+  margin-bottom: 16px;
 
   ${breakpoints.mobile} {
     margin-bottom: 8px;
@@ -109,10 +110,10 @@ const CardHeader = styled.div`
 
 const CardTitle = styled.h3`
   margin: 0;
-  margin-left: 8px; /* ml-2 */
-  font-size: 18px; /* text-xl */
-  font-weight: 600; /* font-semibold */
-  color: #4a5568; /* text-gray-700 */
+  margin-left: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #4a5568;
 
   ${breakpoints.mobile} {
     font-size: 16px;
@@ -121,7 +122,7 @@ const CardTitle = styled.h3`
 
 const CardContent = styled.div`
   font-size: 14px;
-  color: #4a5568; /* text-gray-700 */
+  color: #4a5568;
 
   ${breakpoints.mobile} {
     font-size: 13px;
@@ -131,7 +132,7 @@ const CardContent = styled.div`
 const DeleteButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 24px; /* mt-6 */
+  margin-top: 24px;
   gap: 10px;
 
   ${breakpoints.mobile} {
@@ -140,60 +141,75 @@ const DeleteButtonWrapper = styled.div`
   }
 `;
 
+const FCM_TOKEN_KEY = "fcm_token";
+
 export default function MyPage() {
   const [isNotificationEnabled, setNotificationEnabled] = useState(false);
   const { userData, handleDeleteAccount, handleSubscription } = useUserData();
   const { setAuthState } = useAuth();
   const navigate = useNavigate();
-  const { mutateAsync: updateFcm } = useFcmUpdate();
+  const fcmUpdateMutation = useNotificationSetup();
 
   // 초기 알림 상태 설정
   useEffect(() => {
-    const storedToken = localStorage.getItem("fcmToken");
-    setNotificationEnabled(!!storedToken);
+    const savedToken = localStorage.getItem(FCM_TOKEN_KEY);
+    setNotificationEnabled(!!savedToken);
   }, []);
 
   const handleNotificationToggle = async () => {
     try {
       const newState = !isNotificationEnabled;
+      console.log("현재 알림 상태:", isNotificationEnabled);
+      console.log("토글 후 상태가 될 값:", newState);
 
       if (newState) {
-        // 알림 켜기
+        // 알림 활성화
         const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          const fcmToken = await requestForToken();
-          if (fcmToken) {
-            await updateFcm({
-              token: fcmToken,
-              isNotificatioinEnabled: true,
-            });
-            localStorage.setItem("fcmToken", fcmToken);
-            setNotificationEnabled(true);
-            console.log("알람이 활성화 되었습니다.");
-          }
-        } else {
+        if (permission !== "granted") {
           alert(
             "알림 권한이 필요합니다. 브라우저 설정에서 알림을 허용해주세요.",
           );
-          setNotificationEnabled(false);
+          return;
         }
+
+        // FCM 토큰 새로 발급
+        const newToken = await requestForToken();
+        if (!newToken) {
+          throw new Error("알림 토큰 발급 실패");
+        }
+
+        console.log("새로운 FCM 토큰:", newToken);
+
+        // 토큰으로 알림 활성화 요청
+        await fcmUpdateMutation.mutateAsync({
+          token: newToken,
+          isNotificationEnabled: true,
+        });
+
+        // 성공 시 토큰 저장 및 상태 업데이트
+        localStorage.setItem(FCM_TOKEN_KEY, newToken);
+        setNotificationEnabled(true);
+        console.log("알림이 활성화되었습니다.");
       } else {
-        // 알람 끄기
-        const currentToken = localStorage.getItem("fcmToken");
+        // 알림 비활성화
+        const currentToken = localStorage.getItem(FCM_TOKEN_KEY);
         if (currentToken) {
-          await updateFcm({
+          await fcmUpdateMutation.mutateAsync({
             token: currentToken,
-            isNotificatioinEnabled: false,
+            isNotificationEnabled: false,
           });
-          localStorage.removeItem("fcmToken");
+          localStorage.removeItem(FCM_TOKEN_KEY);
+          setNotificationEnabled(false);
+          console.log("알림이 비활성화되었습니다.");
         }
-        setNotificationEnabled(false);
-        console.log("알람이 비활성화 되었습니다.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("알림 설정 변경 중 오류 발생:", error);
-      alert("알림 설정 변경에 실패했습니다.");
-      // 상태를 이전 값으로 되돌림
+      console.error("서버 응답:", error.response?.data);
+      console.error("상태 코드:", error.response?.status);
+      alert(
+        `알림 설정 변경에 실패했습니다. ${error.response?.data?.message || error.message}`,
+      );
       setNotificationEnabled(!isNotificationEnabled);
     }
   };
@@ -207,11 +223,8 @@ export default function MyPage() {
   };
 
   const handleLogout = () => {
-    // 로그아웃 시 상태와 로컬 스토리지 초기화
     setAuthState({ isAuthenticated: false });
     localStorage.removeItem("authState");
-
-    // 헤더의 인증 토큰 제거
     navigate(RouterPath.HOME);
   };
 
@@ -220,7 +233,6 @@ export default function MyPage() {
       <ContentWrapper>
         <Heading>마이페이지</Heading>
 
-        {/* 프로필 카드 */}
         <ProfileCard
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -232,9 +244,7 @@ export default function MyPage() {
           />
         </ProfileCard>
 
-        {/* 정보 카드 그리드 */}
         <GridLayout>
-          {/* 구독정보 카드 */}
           <Card
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -250,7 +260,7 @@ export default function MyPage() {
               </Button>
             </CardContent>
           </Card>
-          {/* 알림설정 카드 */}
+
           <Card
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -294,22 +304,20 @@ export default function MyPage() {
                   checked={isNotificationEnabled}
                   onChange={handleNotificationToggle}
                   color="primary"
+                  disabled={fcmUpdateMutation.isPending}
                 />
               </div>
-              {!isNotificationEnabled && (
+              {fcmUpdateMutation.isError && (
                 <div
-                  style={{
-                    marginTop: "8px",
-                    fontSize: "12px",
-                    color: "#9ca3af",
-                  }}
-                />
+                  style={{ color: "red", fontSize: "12px", marginTop: "8px" }}
+                >
+                  알림 설정 변경에 실패했습니다.
+                </div>
               )}
             </CardContent>
           </Card>
         </GridLayout>
 
-        {/* 회원 탈퇴 버튼 */}
         <DeleteButtonWrapper>
           <Button onClick={handleLogout} size="small" theme="primary">
             로그아웃
