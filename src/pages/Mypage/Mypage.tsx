@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Switch from "@mui/material/Switch";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
 import { useNavigate } from "react-router-dom";
 import List from "@/components/common/List/List";
 import Button from "@/components/common/Button/Button";
@@ -11,7 +14,7 @@ import useUserData from "@/api/hooks/useUserData";
 import useAuth from "@/hooks/useAuth";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import useNotificationSetup from "@/api/hooks/useFcmUpdate"; // useNotificationSetup 훅을 사용
+import useNotificationSetup from "@/api/hooks/useFcmUpdate";
 import { requestForToken } from "@/api/firebaseConfig";
 
 const PageWrapper = styled.div`
@@ -149,12 +152,19 @@ export default function MyPage() {
   const { setAuthState } = useAuth();
   const navigate = useNavigate();
   const fcmUpdateMutation = useNotificationSetup();
+  const [notificationOffset, setNotificationOffset] = useState<number>(0);
 
   // 초기 알림 상태 설정
   useEffect(() => {
     const savedToken = localStorage.getItem(FCM_TOKEN_KEY);
     setNotificationEnabled(!!savedToken);
   }, []);
+
+  const handleOffsetChange = (event: SelectChangeEvent<number>) => {
+    const newOffset = event.target.value as number;
+    setNotificationOffset(newOffset);
+    console.log("알림 시간이 변경되었습니다:", newOffset);
+  };
 
   const handleNotificationToggle = async () => {
     try {
@@ -284,22 +294,13 @@ export default function MyPage() {
               >
                 알림설정
               </CardTitle>
-            </CardHeader>
-            <CardContent>
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  gap: "16px",
                 }}
               >
-                <span
-                  style={{
-                    color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
-                  }}
-                >
-                  알림 {isNotificationEnabled ? "켜짐" : "꺼짐"}
-                </span>
                 <Switch
                   checked={isNotificationEnabled}
                   onChange={handleNotificationToggle}
@@ -307,6 +308,27 @@ export default function MyPage() {
                   disabled={fcmUpdateMutation.isPending}
                 />
               </div>
+            </CardHeader>
+            <CardContent>
+              {isNotificationEnabled && (
+                <div>
+                  <FormControl fullWidth size="small">
+                    <Select
+                      value={notificationOffset}
+                      onChange={handleOffsetChange}
+                      displayEmpty
+                    >
+                      <MenuItem value={0}>알림 설정</MenuItem>
+                      <MenuItem value={5}>5분 전</MenuItem>
+                      <MenuItem value={10}>10분 전</MenuItem>
+                      <MenuItem value={15}>15분 전</MenuItem>
+                      <MenuItem value={20}>20분 전</MenuItem>
+                      <MenuItem value={25}>25분 전</MenuItem>
+                      <MenuItem value={30}>30분 전</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+              )}
               {fcmUpdateMutation.isError && (
                 <div
                   style={{ color: "red", fontSize: "12px", marginTop: "8px" }}
