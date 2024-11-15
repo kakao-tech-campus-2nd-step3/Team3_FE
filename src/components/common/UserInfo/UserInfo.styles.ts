@@ -6,7 +6,6 @@ export const UserInfoWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  background-color: #f5f5f5;
   border-radius: 12px;
   padding: 10px;
   width: 76px;

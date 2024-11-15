@@ -1,11 +1,11 @@
-// Button.tsx
+// src/components/common/Button/Button.tsx
 import React from "react";
 import StyledButton from "./StyledButton.styles";
 import { Props } from "./Button.types";
 
 const Button: React.FC<Props> = ({
   theme = "primary",
-  size = "responsive", // 기본값 responsive
+  size = "responsive",
   onClick,
   disabled,
   type,
