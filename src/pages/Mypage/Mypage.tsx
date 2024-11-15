@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Switch from "@mui/material/Switch";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select, { SelectChangeEvent, SelectProps } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useNotificationSetup from "@/api/hooks/useFcmUpdate";
 import { requestForToken } from "@/api/firebaseConfig";
+import useFcmOffsetUpdate from "@/api/hooks/useFcmOffsetUpdate";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -144,6 +145,56 @@ const DeleteButtonWrapper = styled.div`
   }
 `;
 
+// StyledSelect를 래퍼 함수로 정의하여 제네릭 타입을 명시적으로 설정
+const StyledSelect = styled((props: SelectProps<string>) => (
+  <Select {...props} />
+))`
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 14px;
+
+  .MuiSelect-select {
+    padding: 12px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+
+    &:focus {
+      background-color: #f8fafc;
+      border-color: #3182ce;
+    }
+  }
+
+  .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+
+  &:hover .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+
+  &.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+`;
+
+const StyledMenuItem = styled(MenuItem)`
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #4a5568;
+
+  &:hover {
+    background-color: #f8fafc;
+  }
+
+  &.Mui-selected {
+    background-color: #ebf8ff;
+
+    &:hover {
+      background-color: #ebf8ff;
+    }
+  }
+`;
+
 const FCM_TOKEN_KEY = "fcm_token";
 
 export default function MyPage() {
@@ -152,7 +203,8 @@ export default function MyPage() {
   const { setAuthState } = useAuth();
   const navigate = useNavigate();
   const fcmUpdateMutation = useNotificationSetup();
-  const [notificationOffset, setNotificationOffset] = useState<number>(0);
+  const fcmOffsetUpdateMutation = useFcmOffsetUpdate();
+  const [notificationOffset, setNotificationOffset] = useState<string>("0"); // string으로 변경
 
   // 초기 알림 상태 설정
   useEffect(() => {
@@ -160,10 +212,42 @@ export default function MyPage() {
     setNotificationEnabled(!!savedToken);
   }, []);
 
-  const handleOffsetChange = (event: SelectChangeEvent<number>) => {
-    const newOffset = event.target.value as number;
-    setNotificationOffset(newOffset);
-    console.log("알림 시간이 변경되었습니다:", newOffset);
+  const handleOffsetChange = async (
+    event: SelectChangeEvent<string>,
+    child: React.ReactNode,
+  ) => {
+    const newOffset = event.target.value;
+
+    try {
+      // 토큰 가져오기
+      const currentToken = localStorage.getItem(FCM_TOKEN_KEY);
+
+      if (!currentToken) {
+        throw new Error("FCM 토큰이 없습니다. 알림을 다시 활성화해주세요.");
+      }
+
+      if (newOffset === "0") {
+        setNotificationOffset(newOffset);
+        return;
+      }
+
+      // 서버에 알림 시간 업데이트 요청
+      await fcmOffsetUpdateMutation.mutateAsync({
+        token: currentToken,
+        notificationOffset: parseInt(newOffset, 10),
+      });
+
+      // 성공 시 로컬 상태 업데이트
+      setNotificationOffset(newOffset);
+      console.log("알림 시간이 변경되었습니다:", newOffset);
+    } catch (error: any) {
+      console.error("알림 시간 설정 중 오류 발생:", error);
+      alert(
+        `알림 시간 설정에 실패했습니다. ${error.response?.data?.message || error.message}`,
+      );
+      // 에러 발생 시 이전 값으로 되돌리기
+      setNotificationOffset(notificationOffset);
+    }
   };
 
   const handleNotificationToggle = async () => {
@@ -294,46 +378,81 @@ export default function MyPage() {
               >
                 알림설정
               </CardTitle>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "16px",
-                }}
-              >
-                <Switch
-                  checked={isNotificationEnabled}
-                  onChange={handleNotificationToggle}
-                  color="primary"
-                  disabled={fcmUpdateMutation.isPending}
-                />
-              </div>
+
+              <Switch
+                checked={isNotificationEnabled}
+                onChange={handleNotificationToggle}
+                color="primary"
+                disabled={fcmUpdateMutation.isPending}
+              />
             </CardHeader>
             <CardContent>
               {isNotificationEnabled && (
                 <div>
                   <FormControl fullWidth size="small">
-                    <Select
+                    <StyledSelect
                       value={notificationOffset}
                       onChange={handleOffsetChange}
                       displayEmpty
+                      disabled={fcmOffsetUpdateMutation.isPending}
+                      renderValue={(selected) => {
+                        if (selected === "0") {
+                          return (
+                            <span style={{ color: "#9ca3af" }}>알림 설정</span>
+                          );
+                        }
+                        return `${selected}분 전`;
+                      }}
                     >
-                      <MenuItem value={0}>알림 설정</MenuItem>
-                      <MenuItem value={5}>5분 전</MenuItem>
-                      <MenuItem value={10}>10분 전</MenuItem>
-                      <MenuItem value={15}>15분 전</MenuItem>
-                      <MenuItem value={20}>20분 전</MenuItem>
-                      <MenuItem value={25}>25분 전</MenuItem>
-                      <MenuItem value={30}>30분 전</MenuItem>
-                    </Select>
+                      <StyledMenuItem value="0">알림 설정</StyledMenuItem>
+                      <StyledMenuItem value="5">5분 전</StyledMenuItem>
+                      <StyledMenuItem value="10">10분 전</StyledMenuItem>
+                      <StyledMenuItem value="15">15분 전</StyledMenuItem>
+                      <StyledMenuItem value="20">20분 전</StyledMenuItem>
+                      <StyledMenuItem value="25">25분 전</StyledMenuItem>
+                      <StyledMenuItem value="30">30분 전</StyledMenuItem>
+                    </StyledSelect>
                   </FormControl>
-                </div>
-              )}
-              {fcmUpdateMutation.isError && (
-                <div
-                  style={{ color: "red", fontSize: "12px", marginTop: "8px" }}
-                >
-                  알림 설정 변경에 실패했습니다.
+
+                  {/* 로딩 중 표시 */}
+                  {fcmOffsetUpdateMutation.isPending && (
+                    <div
+                      style={{
+                        color: "#4a5568",
+                        fontSize: "12px",
+                        marginTop: "8px",
+                      }}
+                    >
+                      알림 시간을 변경하는 중...
+                    </div>
+                  )}
+
+                  {/* 성공 메시지 */}
+                  {fcmOffsetUpdateMutation.isSuccess &&
+                    notificationOffset !== "0" && (
+                      <div
+                        style={{
+                          color: "#059669",
+                          fontSize: "12px",
+                          marginTop: "8px",
+                        }}
+                      >
+                        알림이 {notificationOffset}분 전으로 설정되었습니다.
+                      </div>
+                    )}
+
+                  {/* 에러 메시지 */}
+                  {fcmOffsetUpdateMutation.isError && (
+                    <div
+                      style={{
+                        color: "#DC2626",
+                        fontSize: "12px",
+                        marginTop: "8px",
+                      }}
+                    >
+                      알림 시간 설정에 실패했습니다.
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
