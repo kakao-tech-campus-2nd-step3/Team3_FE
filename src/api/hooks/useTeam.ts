@@ -5,7 +5,7 @@ import {
   useQueryClient,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { AxiosResponse, AxiosError } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 import { apiClient } from "@/api/instance";
 import {
   Team,
@@ -43,6 +43,20 @@ export const useDeleteTeam = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teams"] });
     },
+    onError: (error) => {
+      console.error("팀 삭제 오류:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 404) {
+          alert("해당 팀을 찾을 수 없습니다.");
+        } else if (error.response.status === 403) {
+          alert("팀 삭제 권한이 없습니다.");
+        } else {
+          alert("팀 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.");
+        }
+      } else {
+        alert("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해 주세요.");
+      }
+    },
   });
 };
 
@@ -54,7 +68,7 @@ export const useLeaveTeam = () => {
     mutationFn: async (teamId: number) => {
       const confirmed = window.confirm("정말로 팀에서 나가시겠습니까?");
       if (!confirmed) {
-        return; // 사용자가 취소를 누른 경우, 요청을 중단
+        return;
       }
       await apiClient.delete(`/api/teams/${teamId}/leave`);
     },

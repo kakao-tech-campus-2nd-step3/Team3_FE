@@ -1,6 +1,5 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { initializeApp } from "firebase/app";
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import {
   getMessaging,
   getToken,

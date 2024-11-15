@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Joyride, { Step } from "react-joyride";
 import Input from "@/components/common/Input/Input";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
@@ -48,6 +49,14 @@ const ButtonContainer = styled.div`
   margin-top: 32px;
 `;
 
+const planPageSteps: Step[] = [
+  {
+    target: ".input-area", // Input 컴포넌트 타겟
+    content:
+      "기존 일정, 할 일들의 예상 소요시간을 구체적으로 말해주시면 더 좋아요. ",
+  },
+];
+
 function MessageSliderWithAnimation() {
   const messages = [
     "일정의 예상 소요 시간을 말해주시면 더 정확해요.",
@@ -80,6 +89,30 @@ function MessageSliderWithAnimation() {
 }
 
 const PlanPage: React.FC = () => {
+  const [runGuide, setRunGuide] = useState(false); // 가이드 실행 여부
+  const [stepIndex, setStepIndex] = useState(0); // 현재 가이드 단계
+
+  const handleJoyrideCallback = (data: any) => {
+    const { status, action, index } = data;
+
+    if (status === "finished" || status === "skipped") {
+      localStorage.setItem("hasSeenPlanGuide", "true"); // 가이드 완료 상태 저장
+      setRunGuide(false);
+    }
+
+    if (action === "next") {
+      setStepIndex(index + 1); // 다음 단계로 이동
+    }
+  };
+
+  useEffect(() => {
+    // PlanPage 가이드를 처음 보는 경우 실행
+    const hasSeenGuide = localStorage.getItem("hasSeenPlanGuide");
+    if (!hasSeenGuide) {
+      setRunGuide(true);
+    }
+  }, []);
+
   const {
     transcript,
     setTranscript,
@@ -99,6 +132,32 @@ const PlanPage: React.FC = () => {
 
   return (
     <PlanPageContainer>
+      <Joyride
+        steps={planPageSteps}
+        continuous
+        showSkipButton
+        run={runGuide}
+        stepIndex={stepIndex}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            arrowColor: "#ffffff",
+            backgroundColor: "#ffffff",
+            overlayColor: "rgba(0, 0, 0, 0.5)",
+            primaryColor: "#39A7F7",
+            textColor: "#333333",
+            zIndex: 10000,
+          },
+        }}
+        locale={{
+          next: "다음", // Next 버튼
+          last: "마침", // Last 버튼
+          skip: "건너뛰기", // Skip 버튼
+          back: "뒤로", // Back 버튼
+          close: "닫기", // Close 버튼
+        }}
+      />
+
       <Title>플랜을 생성해보세요.</Title>
       <MessageSliderWithAnimation />
       <Input
@@ -107,6 +166,7 @@ const PlanPage: React.FC = () => {
           setTranscript(e.target.value)
         }
         placeholder="원하는 일정을 자유롭게 입력해보세요."
+        className="input-area"
       />
       <MicrophoneButton
         onStartClick={handleStartRecording}

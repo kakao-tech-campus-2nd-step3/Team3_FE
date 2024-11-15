@@ -23,6 +23,7 @@ import {
   eventItemStyles,
   dropdownItemStyles,
   dropdownMenuStyles,
+  eventItemTitleStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Modal from "@/components/common/Modal/Modal";
@@ -88,6 +89,7 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
+  className?: string;
 }
 
 const VIEW_MODES = {
@@ -97,9 +99,10 @@ const VIEW_MODES = {
 
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
+  const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000);
   if (event.isCompleted) return "completed";
-  if (event.start > now) return "upcoming";
-  if (!event.isCompleted && event.end < now) return "incomplete";
+  if (event.start > nowKST) return "upcoming";
+  if (!event.isCompleted && event.end < nowKST) return "incomplete";
   return "incomplete";
 };
 
@@ -231,6 +234,8 @@ const EventContent = ({
                 }
               `,
             ]}
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("edit");
@@ -257,6 +262,8 @@ const EventContent = ({
                 }
               `,
             ]}
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("delete");
@@ -283,9 +290,17 @@ const EventContent = ({
                 }
               `,
             ]}
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("toggleComplete");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleOptionClick("toggleComplete");
+              }
             }}
           >
             완료
@@ -308,7 +323,7 @@ const EventContent = ({
         style={{ position: "relative", cursor: "pointer" }}
       >
         <div>{timeText}</div>
-        <div>{event.title}</div>
+        <div css={eventItemTitleStyles}>{event.title}</div>
       </div>
       {isDropdownOpen && createPortal(DropdownMenu, document.body)}
     </>
@@ -357,6 +372,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   isReadOnly = false,
   onPlanChange,
   onDeletePlan,
+  className,
 }) => {
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" && window.innerWidth <= breakpoints.sm,
@@ -489,8 +505,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     [handleDelete, handleEdit, handleToggleComplete, isReadOnly, currentView],
   );
 
+  const mobileToolbar = {
+    left: "title",
+    center: "prev,next today",
+    right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
+  };
+
+  const desktopToolbar = {
+    left: "prev,next today",
+    center: "title",
+    right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
+  };
+
   return (
-    <div css={appContainerStyles}>
+    <div css={appContainerStyles} className={className}>
       {calendarOwner && <h1 css={appTitleStyles}>{calendarOwner}</h1>}
       <div css={calendarStyles}>
         <FullCalendar
@@ -515,11 +543,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           }}
           initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
           initialDate={currentDate}
-          headerToolbar={{
-            left: "prev,next,today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
-          }}
+          headerToolbar={isMobile ? mobileToolbar : desktopToolbar}
           locale={koLocale}
           slotDuration="00:10:00"
           slotLabelInterval="01:00:00"
@@ -546,7 +570,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           dayMaxEvents
           weekends
           firstDay={1}
-          timeZone="UTC"
+          timeZone="KST"
           events={parsedEvents}
           viewDidMount={({ view }) => setCurrentView(view.type)}
           datesSet={(dateInfo) => {

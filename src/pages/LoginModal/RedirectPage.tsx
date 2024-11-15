@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import RouterPath from "@/router/RouterPath";
+import { apiClient } from "@/api/instance";
 
 const OAuthRedirectHandler = () => {
   const navigate = useNavigate();
@@ -21,15 +22,15 @@ const OAuthRedirectHandler = () => {
         document.cookie = `access_token=${accessToken}; ${cookieOptions}`;
         document.cookie = `refresh_token=${refreshToken}; ${cookieOptions}`;
         document.cookie = `device_id=${deviceId}; ${cookieOptions}`;
-
+        apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         // 상태 업데이트
+
         const newAuthState = {
           isAuthenticated: true,
         };
         setAuthState(newAuthState);
         localStorage.setItem("authState", JSON.stringify(newAuthState));
         // axios 인스턴스 헤더에 토큰 추가
-        // apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
       } else {
         // 토큰이 없으면 메인 페이지로 리다이렉트
         navigate(RouterPath.HOME);
@@ -42,10 +43,12 @@ const OAuthRedirectHandler = () => {
 
   // authState가 업데이트되었을 때 메인 페이지로 리다이렉트
   useEffect(() => {
-    // console.log("현재 authState:", authState);
-    if (authState.isAuthenticated) {
-      navigate(RouterPath.MAIN);
-    }
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("access_token="))
+      ?.split("=")[1];
+    console.log("현재 access_token:", cookieValue);
+    navigate(RouterPath.MAIN);
   }, [authState, navigate]);
 
   return <div>리다이렉트 처리 중...</div>;
