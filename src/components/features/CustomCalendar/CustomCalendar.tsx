@@ -23,6 +23,7 @@ import {
   eventItemStyles,
   dropdownItemStyles,
   dropdownMenuStyles,
+  eventItemTitleStyles,
 } from "./CustomCalendar.styles";
 import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Modal from "@/components/common/Modal/Modal";
@@ -97,9 +98,10 @@ const VIEW_MODES = {
 
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
+  const nowKST = new Date(now.getTime() + (9 * 60 * 60 * 1000));
   if (event.isCompleted) return "completed";
-  if (event.start > now) return "upcoming";
-  if (!event.isCompleted && event.end < now) return "incomplete";
+  if (event.start > nowKST) return "upcoming";
+  if (!event.isCompleted && event.end < nowKST) return "incomplete";
   return "incomplete";
 };
 
@@ -308,7 +310,7 @@ const EventContent = ({
         style={{ position: "relative", cursor: "pointer" }}
       >
         <div>{timeText}</div>
-        <div>{event.title}</div>
+        <div css={eventItemTitleStyles}>{event.title}</div>
       </div>
       {isDropdownOpen && createPortal(DropdownMenu, document.body)}
     </>

@@ -188,6 +188,12 @@ export const eventItemStyles = (status: string, isDragging: boolean) => css`
   `}
 `;
 
+// 제목용
+export const eventItemTitleStyles = css`
+  font-size: 0.9rem; /* 원하는 크기로 조정 */
+  font-weight: bold;
+`;
+
 export const dropdownMenuStyles = css`
   position: absolute;
   top: 100%;
