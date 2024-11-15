@@ -1,75 +1,93 @@
+// src/pages/TeamPlan/TeamInvitePage.tsx
 /** @jsxImportSource @emotion/react */
 import { useState } from "react";
-import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button/Button";
 import { apiClient } from "@/api/instance";
 import RouterPath from "@/router/RouterPath";
 
-// Styles
 const PageContainer = styled.div`
-  width: 100%;
-  max-width: 1200px;
-  padding: 20px;
-  margin: 0 auto;
-`;
-
-const Title = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-`;
-
-const searchBarStyles = css`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 10px;
-  background: #f4f4f4;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  width: 100%;
+  padding: 32px;
+  min-height: 100vh;
   box-sizing: border-box;
 `;
 
-const searchInputStyles = css`
+const Title = styled.h1`
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  text-align: center;
+`;
+
+const TeamName = styled.h2`
+  font-size: 24px;
+  font-weight: normal;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #4a5568;
+`;
+
+const SearchBar = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f0f4fa;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 16px;
+`;
+
+const SearchInput = styled.input`
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 15.28px;
-  font-weight: 700;
-  color: #aab2c8;
+  font-size: 16px;
+  color: #2d3748;
   outline: none;
+
   &::placeholder {
-    color: #aab2c8;
+    color: #a0aec0;
   }
 `;
 
-const errorMessageStyles = css`
+const ErrorMessage = styled.div`
   color: red;
-  margin-top: 10px;
+  margin-bottom: 16px;
   text-align: center;
 `;
 
 const InviteList = styled.div`
-  margin-top: 20px;
-  font-weight: bold;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 24px;
 `;
 
 const InviteeItem = styled.div`
-  margin-top: 5px;
+  padding: 8px 12px;
+  background: #f0f4fa;
+  border-radius: 8px;
+  margin-bottom: 8px;
   font-size: 16px;
+  color: #2d3748;
+`;
+
+const FinishButton = styled(Button)`
+  margin-top: 32px;
 `;
 
 export default function TeamInvitePage() {
   const { state } = useLocation();
-  const { teamId } = state || {};
+  const { teamId, teamName } = state || {};
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [inviteList, setInviteList] = useState<string[]>([]); // 초대된 닉네임 목록
+  const [inviteList, setInviteList] = useState<string[]>([]);
 
   const handleInvite = async () => {
     if (!searchQuery.trim()) {
@@ -80,14 +98,16 @@ export default function TeamInvitePage() {
       await apiClient.post(`/api/teams/${teamId}/invite`, null, {
         params: { nickname: searchQuery.trim() },
       });
-      setInviteList((prevList) => [...prevList, searchQuery.trim()]); // 초대된 인원 목록 업데이트
-      setSearchQuery(""); // 입력창 초기화
-      setErrorMessage(null); // 에러 메시지 초기화
+      setInviteList((prevList) => [...prevList, searchQuery.trim()]);
+      setSearchQuery("");
+      setErrorMessage(null);
     } catch (error: any) {
       if (error.response) {
         switch (error.response.status) {
           case 400:
-            setErrorMessage("해당 유저는 이미 팀에 속해 있습니다.");
+            setErrorMessage(
+              "해당 유저는 이미 초대하였거나 팀에 속해 있습니다.",
+            );
             break;
           case 403:
             setErrorMessage("권한이 없습니다.");
@@ -106,15 +126,15 @@ export default function TeamInvitePage() {
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    setErrorMessage(null); // 입력할 때 에러 메시지 초기화
+    setErrorMessage(null);
   };
 
   return (
     <PageContainer>
       <Title>초대할 팀원을 검색해주세요</Title>
-      <div css={searchBarStyles}>
-        <input
-          css={searchInputStyles}
+      {teamName && <TeamName>팀 이름: {teamName}</TeamName>}
+      <SearchBar>
+        <SearchInput
           placeholder="닉네임 입력"
           value={searchQuery}
           onChange={handleSearchInputChange}
@@ -122,9 +142,9 @@ export default function TeamInvitePage() {
         <Button size="small" onClick={handleInvite}>
           추가
         </Button>
-      </div>
+      </SearchBar>
 
-      {errorMessage && <div css={errorMessageStyles}>{errorMessage}</div>}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
 
       <InviteList>
         <h3>초대한 사람들:</h3>
@@ -137,7 +157,9 @@ export default function TeamInvitePage() {
         )}
       </InviteList>
 
-      <Button onClick={() => navigate(RouterPath.TEAM_PLAN)}>마침</Button>
+      <FinishButton onClick={() => navigate(RouterPath.TEAM_PLAN)}>
+        마침
+      </FinishButton>
     </PageContainer>
   );
 }

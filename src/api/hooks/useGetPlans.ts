@@ -15,7 +15,7 @@ export const transformPlanData = (data: any[]): CalendarEvent[] => {
       ? new Date(plan.endDate)
       : new Date(plan.endTimestamp * 1000), // ISO와 timestamp 대응
     accessibility: plan.accessibility ?? true, // 기본값 설정
-    complete: plan.isCompleted ?? false,
+    isCompleted: plan.isCompleted ?? false,
     status: plan.isCompleted ? "completed" : "incomplete",
   }));
 };
@@ -30,7 +30,19 @@ export const fetchPlans = async (): Promise<CalendarEvent[]> => {
 export const useGetPlans = () => {
   return useQuery<CalendarEvent[], Error>({
     queryKey: ["plans"],
-    queryFn: fetchPlans,
+    queryFn: async () => {
+      const data = await fetchPlans(); // 변환된 데이터를 가져옴
+
+      // KST로 변환하는 로직 추가
+      const KSTOffset = 9 * 60 * 60 * 1000;
+      const dataInKST = data.map((plan) => ({
+        ...plan,
+        start: new Date(plan.start.getTime() + KSTOffset),
+        end: new Date(plan.end.getTime() + KSTOffset),
+      }));
+
+      return dataInKST;
+    },
   });
 };
 

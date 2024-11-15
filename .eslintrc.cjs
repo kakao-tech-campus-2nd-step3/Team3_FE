@@ -13,7 +13,7 @@ module.exports = {
   parserOptions: {
     project: "./tsconfig.json",
   },
-  ignorePatterns: ["dist", ".eslintrc.cjs"],
+  ignorePatterns: ["dist", ".eslintrc.cjs", "firebase-messaging-sw.js"],
   parser: "@typescript-eslint/parser",
   plugins: [
     "react-refresh",
@@ -36,11 +36,17 @@ module.exports = {
     "react/jsx-props-no-spreading": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/naming-convention": "off",
-    '@typescript-eslint/no-unused-vars': 'off',
+    "@typescript-eslint/no-unused-vars": "off",
     "jsx-a11y/click-events-have-key-events": "off",
     "no-underscore-dangle": "off",
     "no-alert": "off",
     "react-hooks/exhaustive-deps": "off",
+    "react/no-array-index-key": "off",
+    "no-nested-ternary": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "react/jsx-no-constructed-context-values": "off",
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
     "import/no-extraneous-dependencies": [
       "error",
       {

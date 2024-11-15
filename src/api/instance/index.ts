@@ -2,9 +2,9 @@
 import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig } from "axios";
 import { QueryClient } from "@tanstack/react-query";
-
+import EventEmitter from "events";
 // BASE URL 설정
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5173";
+const API_URL = import.meta.env.VITE_API_URL;
 // 쿠키에서 특정 토큰을 가져오는 로직
 const getCookie = (name: string) => {
   const value = `; ${document.cookie}`;
@@ -13,13 +13,17 @@ const getCookie = (name: string) => {
   return null;
 };
 
+export const authEventEmitter = new EventEmitter();
+
 // Axios 인스턴스 초기화 함수
 const initInstance = (axiosConfig: AxiosRequestConfig = {}): AxiosInstance => {
+  const accessToken = getCookie("access_token");
   const instance = axios.create({
     baseURL: API_URL,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       ...axiosConfig.headers,
     },
   });
@@ -31,18 +35,19 @@ const initInstance = (axiosConfig: AxiosRequestConfig = {}): AxiosInstance => {
       const originalRequest = error.config;
       if (
         error.response &&
-        error.response.status === 401 &&
+        (error.response.status === 401 || error.response.status === 403) &&
         !originalRequest._retry
       ) {
         originalRequest._retry = true;
         // 쿠키에서 리프레시 토큰 가져오기
         const refreshToken = getCookie("refresh_token");
+        const deviceId = getCookie("device_id");
 
         if (refreshToken) {
           try {
-            const { data } = await axios.post(`${API_URL}/token/refresh`, {
-              refresh_token: refreshToken,
-            });
+            const { data } = await axios.post(
+              `${API_URL}/api/token/refresh?refreshToken=${refreshToken}&deviceId=${deviceId}`,
+            );
             const newAccessToken = data;
 
             // 새로운 액세스 토큰을 쿠키에 저장
@@ -55,7 +60,10 @@ const initInstance = (axiosConfig: AxiosRequestConfig = {}): AxiosInstance => {
             return await instance(originalRequest);
           } catch (refreshError) {
             console.error("리프레시 토큰 갱신 실패:", refreshError);
+            authEventEmitter.emit("logout");
           }
+        } else {
+          authEventEmitter.emit("logout");
         }
       }
       return Promise.reject(error);

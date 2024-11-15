@@ -1,139 +1,140 @@
+// src/pages/TeamPlan/TeamPlanUpdatePage.tsx
 import styled from "@emotion/styled";
 import { useNavigate, useLocation } from "react-router-dom";
-import { keyframes } from "@emotion/react";
 import { useState, useEffect } from "react";
-import CustomCalendar from "@/components/features/CustomCalendar/CustomCalendar";
+import { motion, AnimatePresence } from "framer-motion";
+import CustomCalendar, {
+  CalendarEvent,
+} from "@/components/features/CustomCalendar/CustomCalendar";
 import Button from "@/components/common/Button/Button";
+import useCreatePlan from "@/api/hooks/useCreatePlan";
+import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import useSavePreviewPlan from "@/api/hooks/useSavePreviewPlan";
 
-// 슬라이드 애니메이션
-const slideDown = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
 const PlanUpdateContainer = styled.div`
-  display: grid;
-  align-items: center;
-  margin: 0 auto;
-  margin-top: 20px;
-`;
-const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  min-height: 100vh;
+  box-sizing: border-box;
 `;
-const CalendarContainer = styled.div`
-  margin-bottom: 40px;
-  ${breakpoints.mobile} {
-    margin-bottom: -50px;
-  }
+
+const TitleContainer = styled.div`
+  height: 70px;
+  margin-bottom: 24px;
 `;
-const StyledText = styled.p`
-  font-size: 30px;
+
+const StyledText = styled.h1`
+  font-size: 24px;
   font-weight: bold;
   text-align: center;
-  &.animate {
-    animation: ${slideDown} 1s ease-in-out;
-  }
+
   ${breakpoints.mobile} {
-    font-size: 18px;
-    white-space: pre-line;
+    font-size: 20px;
+    margin-top: 20px;
   }
 `;
-const StyledTextContainer = styled.div`
-  height: 70px;
-  margin-bottom: 20px;
+
+const CalendarContainer = styled.div`
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 24px;
 `;
+
 const ButtonContainer = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 130px;
-  margin-bottom: 30px;
-  ${breakpoints.mobile} {
-    gap: 30px;
-  }
+  gap: 16px;
 `;
+
+const convertToSavePlanFormat = (event: CalendarEvent) => ({
+  title: event.title,
+  description: event.description,
+  startDate: event.start.toISOString(),
+  endDate: event.end.toISOString(),
+  accessibility: event.accessibility ?? true,
+  isCompleted: event.isCompleted ?? false,
+});
+
 const PlanUpdate = () => {
   const TitleMessages = [
     "플랜을 수정하거나, 바로 저장하세요.",
-    "일정을 옮기고 크기를 조정하여\n원하는대로 플랜을 수정해보세요",
+    "일정을 옮기고 크기를 조정하여 원하는대로 플랜을 수정해보세요.",
   ];
-
+  const { state } = useLocation();
+  const { plans: initialPlans } = state || {};
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [animate, setAnimate] = useState(false);
+
+  const [modifiedPlans, setModifiedPlans] = useState<CalendarEvent[]>(
+    initialPlans || [],
+  );
+
+  const savePlanMutation = useCreatePlan();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMessageIndex((prevIndex) =>
         prevIndex === TitleMessages.length - 1 ? 0 : prevIndex + 1,
       );
-      setAnimate(true);
-      setTimeout(() => {
-        setAnimate(false);
-      }, 1000);
-    }, 5000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const selectedPlan = location.state?.selectedPlan || [];
-  const previewDeviceId = location.state?.deviceId;
-  const previewGroupId = location.state?.groupId;
-
-  const { mutate: savePreviewPlan } = useSavePreviewPlan();
+  const handlePlanChange = (plans: CalendarEvent[]) => {
+    setModifiedPlans(plans);
+  };
 
   const handleSave = async () => {
     try {
-      if (!selectedPlan || selectedPlan.length === 0) {
-        alert("저장할 플랜이 없습니다.");
-        return;
-      }
+      const savePlanPromises = modifiedPlans.map((plan) =>
+        savePlanMutation.mutateAsync({
+          plan: convertToSavePlanFormat(plan),
+        }),
+      );
 
-      if (!previewDeviceId || !previewGroupId) {
-        alert("디바이스 ID 또는 그룹 ID가 없습니다.");
-        return;
-      }
+      await Promise.all(savePlanPromises);
 
-      savePreviewPlan({
-        deviceId: previewDeviceId,
-        groupId: previewGroupId,
-        planDataList: selectedPlan,
-      });
+      alert("저장이 완료되었습니다!");
+      navigate(RouterPath.MAIN);
     } catch (error) {
-      console.error("플랜 저장 중 오류 발생:", error);
-      alert("플랜 저장에 실패했습니다. 다시 시도해주세요.");
+      console.error("저장 실패:", error);
+      alert("저장 중 오류가 발생했습니다.");
     }
   };
 
   return (
     <PlanUpdateContainer>
-      <ContentWrapper>
-        <StyledTextContainer>
-          <StyledText className={animate ? "animate" : ""}>
-            {TitleMessages[currentMessageIndex]}
-          </StyledText>
-        </StyledTextContainer>
+      <TitleContainer>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentMessageIndex}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5 }}
+          >
+            <StyledText>{TitleMessages[currentMessageIndex]}</StyledText>
+          </motion.div>
+        </AnimatePresence>
+      </TitleContainer>
 
-        <CalendarContainer>
-          <CustomCalendar plans={selectedPlan} />
-        </CalendarContainer>
-        <ButtonContainer>
-          <Button onClick={handleSave}>저장</Button>
-          <Button theme="secondary" onClick={() => navigate(-1)}>
-            취소
-          </Button>
-        </ButtonContainer>
-      </ContentWrapper>
+      <CalendarContainer>
+        <CustomCalendar
+          plans={modifiedPlans}
+          onPlanChange={handlePlanChange}
+          isReadOnly={false}
+        />
+      </CalendarContainer>
+
+      <ButtonContainer>
+        <Button onClick={handleSave}>저장</Button>
+        <Button theme="secondary" onClick={() => navigate(-1)}>
+          취소
+        </Button>
+      </ButtonContainer>
     </PlanUpdateContainer>
   );
 };
+
 export default PlanUpdate;
