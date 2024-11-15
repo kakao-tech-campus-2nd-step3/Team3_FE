@@ -15,11 +15,33 @@ export const calendarStyles = css`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: calc(100vh - 6.4rem - 40px);
+  height: calc(100vh - 6.4rem - 30px);
   min-height: 400px;
   max-height: 720px;
   font-size: 0.7rem;
+  
+  .fc-scroller {
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
 
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.3);
+      
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: rgba(0, 0, 0, 0.1);
+      
+    }
+  }
+
+  
   .fc-toolbar {
     flex-direction: row;
     align-items: center;
