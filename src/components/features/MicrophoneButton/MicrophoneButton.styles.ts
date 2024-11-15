@@ -22,11 +22,13 @@ export const ButtonContainer = styled(motion.button)`
   }
 `;
 
-export const Circle = styled(motion.ellipse)`
-  fill: #2196f3;
-  filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));
-  width: 58px;
-  height: 58px;
+export const CircleBackground = styled.div`
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: #2196f3;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  position: absolute;
 `;
 
 export const MicrophoneIcon = styled(motion.g)`

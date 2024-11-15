@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
 import { useNavigate, useLocation } from "react-router-dom";
+import Joyride, { Step, CallBackProps } from "react-joyride";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
@@ -11,9 +12,24 @@ import useDeletePlan from "@/api/hooks/useDeletePlan";
 import Button from "@/components/common/Button/Button";
 import Modal from "@/components/common/Modal/Modal";
 import ReactDatePicker from "@/components/features/DatePicker/DatePicker";
-import { requestForToken, setupOnMessageListener } from "@/api/firebaseConfig";
 import { apiClient } from "@/api/instance";
 import useUserData from "@/api/hooks/useUserData";
+import useNotificationSetup from "@/hooks/useNotificationSetup";
+
+const steps: Step[] = [
+  {
+    target: ".calendar-area", // 캘린더 영역
+    content: "플랜을 잡아당겨 옮기고, 클릭하여 수정해보세요.",
+  },
+  {
+    target: ".add-plan-button", // 플랜 추가 버튼
+    content: "여기에서 새로운 플랜을 추가할 수 있습니다.",
+  },
+  {
+    target: ".visit-button", // 댓글 조회 버튼
+    content: "본인의 계획표에 달린 댓글을 확인할 수 있습니다.",
+  },
+];
 
 const PageContainer = styled.div`
   background-color: #ffffff;
@@ -22,7 +38,7 @@ const PageContainer = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  gap: 20px;
+  gap: 40px;
   display: flex;
   flex-direction: row;
   margin-top: 20px;
@@ -30,15 +46,13 @@ const ButtonWrapper = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 100%;
   padding: 20px;
   background-color: white;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 15px;
-  box-sizing: border-box;
 `;
 
 const Title = styled.h2`
@@ -47,12 +61,7 @@ const Title = styled.h2`
   color: #333;
   margin-bottom: 20px;
 `;
-const ContentWrapper = styled.main`
-  flex-grow: 1;
-  padding: 32px;
-  overflow: auto;
-  box-sizing: border-box;
-`;
+
 const StyledInput = styled.input`
   width: 100%;
   padding: 12px;
@@ -60,11 +69,19 @@ const StyledInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  margin-left: -15px;
   &:focus {
-    outline: none; /* focus:outline-none */
-    border-color: #2196f3; /* focus:border-[#2196F3] */
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2); /* focus:ring-2 focus:ring-[#2196F3] */
+    outline: none;
+    border-color: #39a7f7;
+    box-shadow: 0 0 0 2px #338bd0;
   }
+`;
+
+const ContentWrapper = styled.main`
+  flex-grow: 1;
+  padding: 32px;
+  overflow: auto;
+  box-sizing: border-box;
 `;
 
 const Spinner = styled.div`
@@ -83,6 +100,8 @@ const Spinner = styled.div`
 `;
 
 export default function MainPage() {
+  useNotificationSetup();
+
   const location = useLocation();
   const navigate = useNavigate();
   const { data: fetchedPlans, isLoading, error, refetch } = useGetPlans();
@@ -99,84 +118,32 @@ export default function MainPage() {
   const { mutateAsync: createPlan } = useCreatePlan();
   const { mutateAsync: deletePlan } = useDeletePlan();
   const { userData } = useUserData();
-  const isTokenRegistered = useRef(false);
-  const hasMounted = useRef(false);
   const savePlanMutation = useCreatePlan();
   const isPlanSaved = useRef(false);
+  const [runGuide, setRunGuide] = useState(true);
+  const [stepIndex, setStepIndex] = useState(0);
 
-  // FCM 토큰 등록 함수
-  const registerFcmToken = async () => {
-    // 이미 토큰이 등록되어 있다면 종료
-    if (isTokenRegistered.current) {
-      console.log("이미 FCM 토큰이 등록되어 있습니다.");
-      return;
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status, action, index, lifecycle } = data;
+
+    console.log(data); // 디버깅용
+
+    if (status === "finished" || status === "skipped") {
+      // 모든 단계를 완료했거나 건너뛰었을 때 실행
+      localStorage.setItem("hasSeenGuide", "true");
+      setRunGuide(false); // 가이드 종료
+      setStepIndex(0); // 초기화
     }
 
-    // localStorage에서 토큰 확인
-    const storedToken = localStorage.getItem("fcmToken");
-    if (storedToken) {
-      console.log(
-        "저장된 FCM 토큰을 사용합니다:",
-        `${storedToken.slice(0, 10)}...`,
-      );
-      isTokenRegistered.current = true;
-      return;
-    }
-
-    try {
-      console.log("FCM 토큰 등록 시작...");
-      const permission = await Notification.requestPermission();
-      console.log("알림 권한 상태:", permission);
-
-      if (permission === "granted") {
-        const fcmToken = await requestForToken();
-        if (fcmToken) {
-          console.log("새로운 FCM 토큰 발급됨:", `${fcmToken.slice(0, 10)}...`);
-          await apiClient.post("/api/fcm/register", { token: fcmToken });
-          localStorage.setItem("fcmToken", fcmToken);
-          isTokenRegistered.current = true;
-          console.log("FCM 토큰 등록 완료");
-        } else {
-          console.warn("FCM 토큰이 null입니다.");
-        }
-      } else {
-        console.warn("알림 권한이 거부되었습니다.");
-      }
-    } catch (err) {
-      console.error("FCM 토큰 등록 중 오류 발생:", err);
+    if (action === "next" && lifecycle === "complete") {
+      setStepIndex(index + 1); // 다음 단계로 이동
     }
   };
-  // Notification functionality (기존 코드 유지)
-  useEffect(() => {
-    const registerFcmToken = async () => {
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        try {
-          const fcmToken = await requestForToken();
-          if (fcmToken) {
-            await apiClient.post("/api/fcm/register", { token: fcmToken });
-            console.log("FCM 토큰이 성공적으로 등록되었습니다.");
-          }
-        } catch (err) {
-          console.error("FCM 토큰 등록 중 오류 발생:", err);
-        }
-      } else {
-        console.log("알림 권한이 거부되었습니다.");
-      }
-    };
 
-    registerFcmToken();
-    setupOnMessageListener(); // Set up the listener for foreground messages
-  }, []);
-  // 앱 초기 마운트시에만 FCM 토큰 등록 및 리스너 설정
   useEffect(() => {
-    if (!hasMounted.current) {
-      console.log("FCM 초기화 시작...");
-      registerFcmToken().then(() => {
-        console.log("FCM 초기화 완료");
-        setupOnMessageListener();
-      });
-      hasMounted.current = true;
+    const hasSeenGuide = localStorage.getItem("hasSeenGuide");
+    if (hasSeenGuide) {
+      setRunGuide(false); // 이전에 가이드를 봤다면 실행하지 않음
     }
   }, []);
 
@@ -282,8 +249,8 @@ export default function MainPage() {
         accessibility: true,
         isCompleted: false,
       });
-    } catch (error) {
-      alert(`추가 중 오류 발생: ${error}`);
+    } catch (err) {
+      alert(`추가 중 오류 발생: ${err}`);
     }
   };
 
@@ -296,8 +263,8 @@ export default function MainPage() {
         setModifiedPlans((prevPlans) =>
           prevPlans.filter((plan) => plan.id !== planId),
         );
-      } catch (error) {
-        alert(`삭제 중 오류 발생: ${error}`);
+      } catch (err) {
+        alert(`삭제 중 오류 발생: ${err}`);
       }
     }
   };
@@ -324,8 +291,8 @@ export default function MainPage() {
       // 상태 업데이트
       setModifiedPlans(updatedPlans);
 
-      // 변경된 플랜들에 대해 서버에 업데이트
-      for (const plan of changedPlans) {
+      // Promise.all을 사용하여 모든 플랜을 병렬로 업데이트
+      const updatePlans = changedPlans.map(async (plan) => {
         try {
           await apiClient.put(`/api/plans/${plan.id}`, {
             title: plan.title,
@@ -336,13 +303,23 @@ export default function MainPage() {
             isCompleted: plan.isCompleted ?? false,
           });
           console.log(`플랜 ID ${plan.id}이 성공적으로 업데이트되었습니다.`);
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            alert(`플랜 업데이트 중 오류 발생: ${error.message}`);
+        } catch (err) {
+          if (err instanceof Error) {
+            alert(`플랜 업데이트 중 오류 발생: ${err.message}`);
           } else {
             alert("플랜 업데이트 중 알 수 없는 오류가 발생했습니다.");
           }
+          // 필요시 개별 에러를 처리하거나 다시 던질 수 있습니다.
+          throw err;
         }
+      });
+
+      try {
+        await Promise.all(updatePlans);
+        console.log("모든 플랜이 성공적으로 업데이트되었습니다.");
+      } catch (err) {
+        console.error("일부 플랜 업데이트에 실패했습니다.", error);
+        // 추가적인 에러 핸들링 로직을 여기에 작성할 수 있습니다.
       }
     },
     [modifiedPlans],
@@ -377,17 +354,52 @@ export default function MainPage() {
 
   return (
     <PageContainer>
+      <Joyride
+        steps={steps}
+        continuous
+        showSkipButton
+        run={runGuide}
+        stepIndex={stepIndex}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            arrowColor: "#ffffff",
+            backgroundColor: "#ffffff",
+            overlayColor: "rgba(0, 0, 0, 0.5)",
+            primaryColor: "#39A7F7",
+            textColor: "#333333",
+            zIndex: 10000,
+          },
+        }}
+        locale={{
+          next: "다음", // Next 버튼
+          last: "마침", // Last 버튼
+          skip: "건너뛰기", // Skip 버튼
+          back: "뒤로", // Back 버튼
+          close: "닫기", // Close 버튼
+        }}
+      />
+
       <CustomCalendar
         plans={modifiedPlans}
         isReadOnly={false}
         onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
+        className="calendar-area"
       />
       <ButtonWrapper>
-        <Button onClick={handleAddPlan} theme="secondary">
+        <Button
+          onClick={handleAddPlan}
+          theme="secondary"
+          className="add-plan-button"
+        >
           플랜 추가
         </Button>
-        <Button onClick={handleVisitClick} theme="secondary">
+        <Button
+          onClick={handleVisitClick}
+          theme="secondary"
+          className="visit-button"
+        >
           댓글 조회
         </Button>
       </ButtonWrapper>

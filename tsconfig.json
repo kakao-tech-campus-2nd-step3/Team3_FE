@@ -25,7 +25,7 @@
     "noFallthroughCasesInSwitch": true,
   },
 
-  "include": ["src"],
+  "include": ["src", "firebaseConfig.ts"],
   "exclude": ["public/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -39,7 +39,7 @@ const PageContainer = styled.div`
   background-color: #ffffff;
 
   ${breakpoints.mobile} {
-    padding: 16px;
+    padding: 10px;
   }
 `;
 
@@ -142,18 +142,24 @@ const SearchButton = styled.span`
 `;
 
 const FriendListContainer = styled.div`
+  grid-template-columns: 1fr 1fr;
   width: 100%;
   display: grid;
-  gap: 16px;
   box-sizing: border-box;
-  grid-template-columns: 1fr;
-
-  @media (min-width: ${breakpoints.lg}px) {
-    grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  ${breakpoints.tablet} {
+    grid-template-columns: 1fr;
+    width: 100%;
+    display: grid;
+    box-sizing: border-box;
   }
 
   ${breakpoints.mobile} {
     gap: 12px;
+    width: 100%;
+    display: grid;
+    box-sizing: border-box;
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -170,7 +176,7 @@ const FriendItemContainer = styled.div`
   &:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
-
+  border: 1px solid #e5e7eb;
   ${breakpoints.mobile} {
     padding: 12px;
     gap: 12px;
