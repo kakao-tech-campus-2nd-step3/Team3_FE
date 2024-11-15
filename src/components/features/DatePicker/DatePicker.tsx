@@ -14,7 +14,7 @@ const StyledInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
-  margin-left: -10px;
+  margin-left: -20px;
   &:focus {
     outline: none;
     border-color: #39a7f7;

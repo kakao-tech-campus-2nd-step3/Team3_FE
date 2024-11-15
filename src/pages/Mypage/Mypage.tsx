@@ -174,9 +174,28 @@ const DeleteButtonWrapper = styled.div`
     align-items: stretch;
   }
 `;
-
 const StyledSelect = styled((props: SelectProps<string>) => (
-  <Select {...props} />
+  <Select
+    {...props}
+    MenuProps={{
+      PaperProps: {
+        sx: {
+          borderRadius: "8px",
+          boxShadow:
+            "0px 4px 12px rgba(0, 0, 0, 0.1), 0px -4px 12px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          width: "100%", // 기본적으로 전체 너비 사용
+          maxWidth: "300px", // 최대 너비를 제한하여 큰 화면에서 너무 넓지 않게 설정
+          "@media (max-width: 600px)": {
+            maxWidth: "200px", // 작은 화면에서 너비를 줄이기
+          },
+          "@media (max-width: 400px)": {
+            maxWidth: "150px", // 더 작은 화면에서는 더 줄이기
+          },
+        },
+      },
+    }}
+  />
 ))`
   background-color: #f8fafc;
   border-radius: 8px;
@@ -189,7 +208,7 @@ const StyledSelect = styled((props: SelectProps<string>) => (
 
     &:focus {
       background-color: #f8fafc;
-      border-color: #3182ce;
+      border-color: #39a7f7;
     }
   }
 
@@ -212,18 +231,19 @@ const StyledMenuItem = styled(MenuItem)`
   color: #4a5568;
 
   &:hover {
-    background-color: #f8fafc;
+    background-color: #e2e8f0;
   }
 
   &.Mui-selected {
-    background-color: #ebf8ff;
+    background-color: #39a7f7;
+    color: white;
 
     &:hover {
-      background-color: #ebf8ff;
+      background-color: #3182ce;
+      color: white;
     }
   }
 `;
-
 const FCM_TOKEN_KEY = "fcm_token";
 const FCM_OFFSET_KEY = "fcm_offset";
 
