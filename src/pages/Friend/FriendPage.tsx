@@ -142,18 +142,24 @@ const SearchButton = styled.span`
 `;
 
 const FriendListContainer = styled.div`
+  grid-template-columns: 1fr 1fr;
   width: 100%;
-  display: grid;
-  gap: 16px;
-  box-sizing: border-box;
-  grid-template-columns: 1fr;
-
-  @media (min-width: ${breakpoints.lg}px) {
-    grid-template-columns: 1fr 1fr;
+    display: grid;
+    box-sizing: border-box;
+    gap:16px;
+  ${breakpoints.tablet} {
+    grid-template-columns: 1fr;
+    width: 100%;
+    display: grid;
+    box-sizing: border-box;
   }
 
   ${breakpoints.mobile} {
     gap: 12px;
+    width: 100%;
+    display: grid;
+    box-sizing: border-box;
+    grid-template-columns: 1fr;
   }
 `;
 

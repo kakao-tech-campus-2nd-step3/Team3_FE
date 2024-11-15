@@ -191,8 +191,9 @@ const Card = styled(motion.div)`
   flex-direction: column;
 
   @media (min-width: 768px) {
-    width: 70%;
+    width: 100%;
     padding: 2rem;
+    
   }
 `;
 
