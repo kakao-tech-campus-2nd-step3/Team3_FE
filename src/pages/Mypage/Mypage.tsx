@@ -196,6 +196,7 @@ const StyledMenuItem = styled(MenuItem)`
 `;
 
 const FCM_TOKEN_KEY = "fcm_token";
+const FCM_OFFSET_KEY = "fcm_offset";
 
 export default function MyPage() {
   const [isNotificationEnabled, setNotificationEnabled] = useState(false);
@@ -204,7 +205,9 @@ export default function MyPage() {
   const navigate = useNavigate();
   const fcmUpdateMutation = useNotificationSetup();
   const fcmOffsetUpdateMutation = useFcmOffsetUpdate();
-  const [notificationOffset, setNotificationOffset] = useState<string>("0"); // string으로 변경
+  const [notificationOffset, setNotificationOffset] = useState<string>(() => {
+    return localStorage.getItem(FCM_OFFSET_KEY) || "0";
+  });
 
   // 초기 알림 상태 설정
   useEffect(() => {
@@ -212,10 +215,7 @@ export default function MyPage() {
     setNotificationEnabled(!!savedToken);
   }, []);
 
-  const handleOffsetChange = async (
-    event: SelectChangeEvent<string>,
-    child: React.ReactNode,
-  ) => {
+  const handleOffsetChange = async (event: SelectChangeEvent<string>) => {
     const newOffset = event.target.value;
 
     try {
@@ -239,6 +239,7 @@ export default function MyPage() {
 
       // 성공 시 로컬 상태 업데이트
       setNotificationOffset(newOffset);
+      localStorage.setItem(FCM_OFFSET_KEY, newOffset);
       console.log("알림 시간이 변경되었습니다:", newOffset);
     } catch (error: any) {
       console.error("알림 시간 설정 중 오류 발생:", error);
@@ -246,7 +247,8 @@ export default function MyPage() {
         `알림 시간 설정에 실패했습니다. ${error.response?.data?.message || error.message}`,
       );
       // 에러 발생 시 이전 값으로 되돌리기
-      setNotificationOffset(notificationOffset);
+      const previousOffset = localStorage.getItem(FCM_OFFSET_KEY) || "0";
+      setNotificationOffset(previousOffset);
     }
   };
 
@@ -293,6 +295,7 @@ export default function MyPage() {
             isNotificationEnabled: false,
           });
           localStorage.removeItem(FCM_TOKEN_KEY);
+          localStorage.removeItem(FCM_OFFSET_KEY);
           setNotificationEnabled(false);
           console.log("알림이 비활성화되었습니다.");
         }
