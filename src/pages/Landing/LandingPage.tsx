@@ -9,9 +9,11 @@ import logo from "@/assets/logo.svg";
 import Button from "@/components/common/Button/Button";
 import kakao_symbol from "@/assets/kakao_symbol.svg";
 import RouterPath from "@/router/RouterPath";
-import step1SVG from "@/assets/step1.svg";
-import step2SVG from "@/assets/step2.svg";
-import step3SVG from "@/assets/step3.svg";
+import teamplan2 from "@/assets/teamplan2.png";
+import friends from "@/assets/friends.png";
+import step1GIF from "@/assets/making.gif"
+import step2GIF from "@/assets/selecting.gif"
+import step3GIF from "@/assets/dragging.gif"
 
 const GlobalStyles = css`
   *,
@@ -111,10 +113,11 @@ const AnimationContainer = styled.div`
   overflow-x: hidden;
   align-items: center;
   justify-content: center;
-
+  overflow: hidden;
   @media (min-width: 1024px) {
     justify-content: flex-end;
   }
+  
 `;
 
 /* AnimationGroup 및 자식 요소들 */
@@ -129,6 +132,9 @@ const AnimationGroup = styled.div`
   justify-content: center;
   align-items: center;
   pointer-events: none;
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const BackgroundCircle = styled(motion.div)`
@@ -189,7 +195,10 @@ const Card = styled(motion.div)`
   justify-content: center;
   display: flex;
   flex-direction: column;
-
+  overflow: hidden;
+   align-items: center; /* 수평 가운데 정렬 */
+  justify-content: center; /* 수직 가운데 정렬 */
+  text-align: center;
   @media (min-width: 768px) {
     width: 100%;
     padding: 2rem;
@@ -361,12 +370,32 @@ const SectionContent = styled.div`
 const ImageContainer = styled.div`
   width: 100%;
   height: 12rem;
-  background-color: #e2e8f0;
+  background-color: #ffffff;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  span {
+    color: #a0aec0;
+  }
+  overflow: hidden;
+  @media (min-width: 768px) {
+    width: 50%;
+    height: 16rem;
+    overflow: hidden;
+  }
+`;
 
+const ImageContainer2 = styled.div`
+  width: 100%;
+  height: 12rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
   span {
     color: #a0aec0;
   }
@@ -374,6 +403,8 @@ const ImageContainer = styled.div`
   @media (min-width: 768px) {
     width: 50%;
     height: 16rem;
+    padding: 40px;
+    overflow: hidden;
   }
 `;
 
@@ -562,11 +593,15 @@ const LandingPage: React.FC = () => {
                 <FeatureTitle>{step.title}</FeatureTitle>
                 <FeatureDescription>{step.description}</FeatureDescription>
                 <StepSVG
-                  src={
-                    index === 0 ? step1SVG : index === 1 ? step2SVG : step3SVG
-                  }
-                  alt={`Step ${index + 1}`}
-                />
+        src={
+          index === 0
+            ? step1GIF
+            : index === 1
+            ? step2GIF
+            : step3GIF
+        }
+        alt={`Step ${index + 1}`}
+      />
               </FeatureItem>
             ))}
           </GridContainer>
@@ -591,9 +626,10 @@ const LandingPage: React.FC = () => {
                   일정을 제안해 드립니다.
                 </p>
               </SectionContent>
-              <ImageContainer>
-                <span>팀플랜 이미지</span>
-              </ImageContainer>
+              <ImageContainer2>
+              <img src={teamplan2} alt="팀플랜 이미지" style={{ paddingTop: "1rem",
+    paddingBottom: "1rem",width: "100%", height: "auto", borderRadius: "0.5rem" }} />
+              </ImageContainer2>
             </SectionContainer>
           </Section>
 
@@ -608,7 +644,7 @@ const LandingPage: React.FC = () => {
                 <p>원하는 회원과 친구를 맺고 일정을 공유해보세요.</p>
               </SectionContent>
               <ImageContainer>
-                <span>소셜 플래닝 이미지</span>
+              <img src={friends} alt="소셜 플래닝 이미지" style={{ width: "100%", height: "auto", borderRadius: "0.5rem", backgroundColor: "white" }} />
               </ImageContainer>
             </SectionContainer>
           </Section>

@@ -89,6 +89,7 @@ interface CustomCalendarProps {
   isReadOnly?: boolean;
   onPlanChange?: (plans: CalendarEvent[]) => void;
   onDeletePlan?: (planId: string) => void;
+  className?: string;
 }
 
 const VIEW_MODES = {
@@ -359,6 +360,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   isReadOnly = false,
   onPlanChange,
   onDeletePlan,
+  className,
 }) => {
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" && window.innerWidth <= breakpoints.sm,
@@ -491,8 +493,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     [handleDelete, handleEdit, handleToggleComplete, isReadOnly, currentView],
   );
 
+  const mobileToolbar = {
+    left: "title",
+    center: "prev,next today",
+    right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
+  };
+
+  const desktopToolbar = {
+    left: "prev,next today",
+    center: "title",
+    right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
+  };
+
   return (
-    <div css={appContainerStyles}>
+    <div css={appContainerStyles} className={className}>
       {calendarOwner && <h1 css={appTitleStyles}>{calendarOwner}</h1>}
       <div css={calendarStyles}>
         <FullCalendar
@@ -517,11 +531,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
           }}
           initialView={isMobile ? VIEW_MODES.THREEDAY : VIEW_MODES.WEEK}
           initialDate={currentDate}
-          headerToolbar={{
-            left: "prev,next,today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay,timeGridThreeDay",
-          }}
+          headerToolbar={isMobile ? mobileToolbar : desktopToolbar}
           locale={koLocale}
           slotDuration="00:10:00"
           slotLabelInterval="01:00:00"

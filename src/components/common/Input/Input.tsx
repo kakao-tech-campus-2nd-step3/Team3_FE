@@ -6,11 +6,12 @@ export type Props = {
   value?: string;
   placeholder?: string;
   disabled?: boolean;
+  className? :string;
 };
 
-const Input: React.FC<Props> = ({ value, placeholder, onChange, ...props }) => {
+const Input: React.FC<Props> = ({ value, placeholder, onChange,className, ...props }) => {
   return (
-    <StyledInputContainer>
+    <StyledInputContainer className={className}>
       <StyledInput
         onChange={onChange}
         value={value}

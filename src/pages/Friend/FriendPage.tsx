@@ -39,7 +39,7 @@ const PageContainer = styled.div`
   background-color: #ffffff;
 
   ${breakpoints.mobile} {
-    padding: 16px;
+    padding: 10px;
   }
 `;
 

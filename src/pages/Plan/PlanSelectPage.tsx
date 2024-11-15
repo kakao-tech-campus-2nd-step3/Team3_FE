@@ -152,7 +152,7 @@ const PlanSelectPage: React.FC = () => {
             );
           }
         } else {
-          alert("예기치 못한 오류가 발생했습니다.");
+          alert("잘못된 응답이 발생했습니다.");
         }
         navigate(-1); // 이전 페이지로 이동
       } finally {

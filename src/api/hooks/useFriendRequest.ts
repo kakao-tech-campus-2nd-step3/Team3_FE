@@ -37,7 +37,6 @@ export const useAcceptFriendRequest = (requestId: number) => {
     mutationFn: () =>
       apiClient.post(`/api/friends/requests/${requestId}/accept`),
     onSuccess: () => {
-      alert("친구 요청을 수락했습니다.");
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] }); // 친구 요청 목록 갱신
     },
   });

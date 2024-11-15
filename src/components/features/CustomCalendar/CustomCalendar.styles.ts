@@ -16,10 +16,10 @@ export const calendarStyles = css`
   flex-direction: column;
   width: 100%;
   height: calc(100vh - 6.4rem - 30px);
-  min-height: 400px;
+  min-height: 500px;
   max-height: 720px;
   font-size: 0.7rem;
-  
+
   .fc-scroller {
     &::-webkit-scrollbar {
       width: 8px;

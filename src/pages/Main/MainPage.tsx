@@ -14,6 +14,22 @@ import ReactDatePicker from "@/components/features/DatePicker/DatePicker";
 import { requestForToken, setupOnMessageListener } from "@/api/firebaseConfig";
 import { apiClient } from "@/api/instance";
 import useUserData from "@/api/hooks/useUserData";
+import Joyride, {Step, CallBackProps} from "react-joyride";
+
+const steps: Step[] = [
+  {
+    target: ".calendar-area", // 캘린더 영역
+    content: "플랜을 잡아당겨 옮기고, 클릭하여 수정해보세요.",
+  },
+  {
+    target: ".add-plan-button", // 플랜 추가 버튼
+    content: "여기에서 새로운 플랜을 추가할 수 있습니다.",
+  },
+  {
+    target: ".visit-button", // 댓글 조회 버튼
+    content: "본인의 계획표에 달린 댓글을 확인할 수 있습니다.",
+  },
+];
 
 const PageContainer = styled.div`
   background-color: #ffffff;
@@ -22,7 +38,7 @@ const PageContainer = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  gap: 20px;
+  gap: 40px;
   display: flex;
   flex-direction: row;
   margin-top: 20px;
@@ -103,6 +119,32 @@ export default function MainPage() {
   const hasMounted = useRef(false);
   const savePlanMutation = useCreatePlan();
   const isPlanSaved = useRef(false);
+  const [runGuide, setRunGuide] = useState(true);
+  const [stepIndex, setStepIndex] = useState(0);
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status, action, index, lifecycle } = data;
+
+    console.log(data); // 디버깅용
+
+    if (status === "finished" || status === "skipped") {
+      // 모든 단계를 완료했거나 건너뛰었을 때 실행
+      localStorage.setItem("hasSeenGuide", "true");
+      setRunGuide(false); // 가이드 종료
+      setStepIndex(0); // 초기화
+    }
+
+    if (action === "next" && lifecycle === "complete") {
+      setStepIndex(index + 1); // 다음 단계로 이동
+    }
+  };
+
+  useEffect(() => {
+    const hasSeenGuide = localStorage.getItem("hasSeenGuide");
+    if (hasSeenGuide) {
+      setRunGuide(false); // 이전에 가이드를 봤다면 실행하지 않음
+    }
+  }, []);
 
   // FCM 토큰 등록 함수
   const registerFcmToken = async () => {
@@ -168,6 +210,7 @@ export default function MainPage() {
     registerFcmToken();
     setupOnMessageListener(); // Set up the listener for foreground messages
   }, []);
+
   // 앱 초기 마운트시에만 FCM 토큰 등록 및 리스너 설정
   useEffect(() => {
     if (!hasMounted.current) {
@@ -377,17 +420,45 @@ export default function MainPage() {
 
   return (
     <PageContainer>
+
+<Joyride
+        steps={steps}
+        continuous
+        showSkipButton
+        run={runGuide}
+        stepIndex={stepIndex}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            arrowColor: "#ffffff",
+            backgroundColor: "#ffffff",
+            overlayColor: "rgba(0, 0, 0, 0.5)",
+            primaryColor: "#39A7F7",
+            textColor: "#333333",
+            zIndex: 10000,
+          },
+        }}
+        locale={{
+          next: "다음", // Next 버튼
+          last: "마침", // Last 버튼
+          skip: "건너뛰기", // Skip 버튼
+          back: "뒤로", // Back 버튼
+          close: "닫기", // Close 버튼
+        }}
+      />
+
       <CustomCalendar
         plans={modifiedPlans}
         isReadOnly={false}
         onPlanChange={handlePlanChange}
         onDeletePlan={handleDeletePlan}
+        className="calendar-area"
       />
       <ButtonWrapper>
-        <Button onClick={handleAddPlan} theme="secondary">
+        <Button onClick={handleAddPlan} theme="secondary" className="add-plan-button">
           플랜 추가
         </Button>
-        <Button onClick={handleVisitClick} theme="secondary">
+        <Button onClick={handleVisitClick} theme="secondary" className="visit-button">
           댓글 조회
         </Button>
       </ButtonWrapper>

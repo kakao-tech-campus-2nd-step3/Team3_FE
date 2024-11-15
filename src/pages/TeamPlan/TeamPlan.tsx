@@ -17,6 +17,14 @@ import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
 import { apiClient } from "@/api/instance";
 import { TeamInvitation } from "@/types/types";
+import Joyride, {Step} from "react-joyride";
+
+const TeamPlanSteps: Step[] = [
+  {
+    target: ".team-plan-add-button",
+    content: "다같이 공유하는 팀플랜을 만들고 팀원을 초대해보세요. \n팀플랜 수정은 관리자 권한을 소유해야 가능합니다!",
+  },
+];
 
 const PageContainer = styled.div`
   display: flex;
@@ -244,6 +252,30 @@ export default function TeamPlanPage() {
   const cancelInvitationMutation = useCancelTeamInvitation();
   const [activeTab, setActiveTab] = useState("teamList");
   const [teamMembers, setTeamMembers] = useState<{ [key: number]: any[] }>({});
+  const [runGuide, setRunGuide] = useState(false); // 가이드 실행 여부
+  const [stepIndex, setStepIndex] = useState(0); // 현재 가이드 단계
+
+  const handleJoyrideCallback = (data: any) => {
+    const { status, action, index } = data;
+
+    if (status === "finished" || status === "skipped") {
+      localStorage.setItem("hasSeenTeamPlanGuide", "true"); // 가이드 완료 상태 저장
+      setRunGuide(false);
+    }
+
+    if (action === "next") {
+      setStepIndex(index + 1); // 다음 단계로 이동
+    }
+  };
+
+  useEffect(() => {
+    // PlanPage 가이드를 처음 보는 경우 실행
+    const hasSeenGuide = localStorage.getItem("hasSeenTeamPlanGuide");
+    if (!hasSeenGuide) {
+      setRunGuide(true);
+    }
+  }, []);
+
 
   const adminTeams = teams.filter((team) => {
     const members = teamMembers[team.id] || [];
@@ -469,10 +501,36 @@ export default function TeamPlanPage() {
 
   return (
     <PageContainer>
+      <Joyride
+        steps={TeamPlanSteps}
+        continuous
+        showSkipButton
+        run={runGuide}
+        stepIndex={stepIndex}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            arrowColor: "#ffffff",
+            backgroundColor: "#ffffff",
+            overlayColor: "rgba(0, 0, 0, 0.5)",
+            primaryColor: "#39A7F7",
+            textColor: "#333333",
+            zIndex: 10000,
+          },
+        }}
+        locale={{
+          next: "다음", // Next 버튼
+          last: "마침", // Last 버튼
+          skip: "건너뛰기", // Skip 버튼
+          back: "뒤로", // Back 버튼
+          close: "닫기", // Close 버튼
+        }}
+      />
+      
       <ContentWrapper>
         <Heading>팀 플랜</Heading>
         <ButtonWrapper>
-          <Button theme="primary" size="long" onClick={handleVisitMaking}>
+          <Button theme="primary" size="long" onClick={handleVisitMaking} className="team-plan-add-button">
             팀 플랜 추가하기
           </Button>
         </ButtonWrapper>

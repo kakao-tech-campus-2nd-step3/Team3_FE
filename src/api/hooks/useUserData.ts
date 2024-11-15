@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "@/api/instance";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const useUserData = () => {
   const [userData, setUserData] = useState({
