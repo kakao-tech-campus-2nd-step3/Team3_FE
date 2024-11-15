@@ -15,15 +15,23 @@ const useNotificationSetup = () => {
     const { userAgent } = navigator;
     if (userAgent.includes("Edg")) {
       alert(
-        "Edge 설정에서 알림을 활성화해주세요. \n설정 > 쿠키 및 사이트 권한 > 알림",
+        "Edge 설정에서 알림을 활성화해주세요:\n설정 > 쿠키 및 사이트 권한 > 알림",
       );
     } else if (userAgent.includes("Chrome")) {
       alert(
-        "Chrome 설정에서 알림을 활성화해주세요. \n설정 > 개인정보 및 보안 > 사이트 설정 > 알림",
+        "Chrome 설정에서 알림을 활성화해주세요:\n설정 > 개인정보 및 보안 > 사이트 설정 > 알림",
+      );
+    } else if (
+      userAgent.includes("Safari") &&
+      !userAgent.includes("Chrome") &&
+      !userAgent.includes("Edg")
+    ) {
+      alert(
+        "Safari 설정에서 알림을 활성화해주세요:\nmacOS에서는 Safari > 설정 > 알림\niOS에서는 설정 > Safari > 알림",
       );
     } else if (userAgent.includes("Firefox")) {
       alert(
-        "Firefox 설정에서 알림을 활성화해주세요. \n설정 페이지에서 개인정보 및 보안 > 권한 > 알림",
+        "Firefox 설정에서 알림을 활성화해주세요:\n설정 페이지에서 개인정보 및 보안 > 권한 > 알림",
       );
     } else {
       alert("알림을 활성화하려면 브라우저 설정을 확인해주세요.");
