@@ -40,10 +40,17 @@ const useUserData = () => {
       .then(() => {
         alert("구독이 완료되었습니다.");
       })
-      .catch((error) => console.error("error subscribtion:", error));
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          // 409 Conflict가 이미 구독 중 상태로 가정
+          alert("이미 구독중입니다.");
+        } else {
+          // 다른 에러의 경우
+          alert("구독 처리 중 오류가 발생했습니다.");
+        }
+        console.error("error subscription:", error);
+      });
   };
-
-
 
   const handleDeleteAccount = () => {
     // 회원 탈퇴 API 호출

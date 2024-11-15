@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import { Close } from "@mui/icons-material";
 import { useQueries } from "@tanstack/react-query";
+import Joyride, { Step } from "react-joyride";
 import {
   useFetchTeams,
   useDeleteTeam,
@@ -17,12 +18,12 @@ import Button from "@/components/common/Button/Button";
 import breakpoints from "@/variants/breakpoints";
 import { apiClient } from "@/api/instance";
 import { TeamInvitation } from "@/types/types";
-import Joyride, {Step} from "react-joyride";
 
 const TeamPlanSteps: Step[] = [
   {
     target: ".team-plan-add-button",
-    content: "다같이 공유하는 팀플랜을 만들고 팀원을 초대해보세요. \n팀플랜 수정은 관리자 권한을 소유해야 가능합니다!",
+    content:
+      "다같이 공유하는 팀플랜을 만들고 팀원을 초대해보세요. \n팀플랜 수정은 관리자 권한을 소유해야 가능합니다!",
   },
 ];
 
@@ -281,7 +282,6 @@ export default function TeamPlanPage() {
       setRunGuide(true);
     }
   }, []);
-
 
   const adminTeams = teams.filter((team) => {
     const members = teamMembers[team.id] || [];
@@ -544,11 +544,16 @@ export default function TeamPlanPage() {
           close: "닫기", // Close 버튼
         }}
       />
-      
+
       <ContentWrapper>
         <Heading>팀 플랜</Heading>
         <ButtonWrapper>
-          <Button theme="primary" size="long" onClick={handleVisitMaking} className="team-plan-add-button">
+          <Button
+            theme="primary"
+            size="long"
+            onClick={handleVisitMaking}
+            className="team-plan-add-button"
+          >
             팀 플랜 추가하기
           </Button>
         </ButtonWrapper>

@@ -144,9 +144,9 @@ const SearchButton = styled.span`
 const FriendListContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   width: 100%;
-    display: grid;
-    box-sizing: border-box;
-    gap:16px;
+  display: grid;
+  box-sizing: border-box;
+  gap: 16px;
   ${breakpoints.tablet} {
     grid-template-columns: 1fr;
     width: 100%;

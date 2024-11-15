@@ -57,7 +57,6 @@ export const useDeleteTeam = () => {
         alert("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해 주세요.");
       }
     },
-    
   });
 };
 
@@ -69,7 +68,7 @@ export const useLeaveTeam = () => {
     mutationFn: async (teamId: number) => {
       const confirmed = window.confirm("정말로 팀에서 나가시겠습니까?");
       if (!confirmed) {
-        return; 
+        return;
       }
       await apiClient.delete(`/api/teams/${teamId}/leave`);
     },

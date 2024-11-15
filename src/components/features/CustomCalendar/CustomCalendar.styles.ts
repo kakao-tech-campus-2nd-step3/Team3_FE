@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import breakpoints from "@/variants/breakpoints";
+
 export const appContainerStyles = css`
   margin: 0 auto;
   padding-bottom: 0.4rem;
@@ -28,7 +29,6 @@ export const calendarStyles = css`
 
     &::-webkit-scrollbar-thumb {
       background-color: rgba(0, 0, 0, 0.3);
-      
     }
 
     &::-webkit-scrollbar-thumb:hover {
@@ -37,19 +37,17 @@ export const calendarStyles = css`
 
     &::-webkit-scrollbar-track {
       background-color: rgba(0, 0, 0, 0.1);
-      
     }
   }
 
-  
   .fc-toolbar {
     flex-direction: row;
     align-items: center;
-    ${breakpoints.mobile}{
-    flex-direction: column;
+    ${breakpoints.mobile} {
+      flex-direction: column;
     }
   }
-  
+
   .fc-toolbar-chunk {
     margin-bottom: 0.5rem;
     display: flex;

@@ -99,7 +99,7 @@ const VIEW_MODES = {
 
 const calculateEventStatus = (event: CalendarEvent) => {
   const now = new Date();
-  const nowKST = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+  const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000);
   if (event.isCompleted) return "completed";
   if (event.start > nowKST) return "upcoming";
   if (!event.isCompleted && event.end < nowKST) return "incomplete";

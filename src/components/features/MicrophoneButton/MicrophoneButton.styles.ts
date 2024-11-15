@@ -20,7 +20,6 @@ export const ButtonContainer = styled(motion.button)`
   &:focus {
     outline: none;
   }
-    
 `;
 
 export const CircleBackground = styled.div`

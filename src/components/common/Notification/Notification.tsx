@@ -1,30 +1,30 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X, CheckCircle, AlertCircle, Info } from 'lucide-react'
-import styled from '@emotion/styled'
-import { css } from '@emotion/react'
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, CheckCircle, AlertCircle, Info } from "lucide-react";
+import styled from "@emotion/styled";
+import { css } from "@emotion/react";
 
-type NotificationType = 'success' | 'error' | 'info'
+type NotificationType = "success" | "error" | "info";
 
 interface NotificationProps {
-  type: NotificationType
-  message: string
-  duration?: number
-  onClose?: () => void
+  type: NotificationType;
+  message: string;
+  duration?: number;
+  onClose?: () => void;
 }
 
 const iconMap = {
   success: CheckCircle,
   error: AlertCircle,
   info: Info,
-}
+};
 
 const bgColorMap = {
-  success: '#38A169', // Green
-  error: '#E53E3E', // Red
-  info: '#3182CE', // Blue
-}
+  success: "#38A169", // Green
+  error: "#E53E3E", // Red
+  info: "#3182CE", // Blue
+};
 
 // Styled components
 const NotificationContainer = styled(motion.div)<{ type: NotificationType }>`
@@ -38,24 +38,24 @@ const NotificationContainer = styled(motion.div)<{ type: NotificationType }>`
   border-radius: 0.375rem;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   background-color: ${({ type }) => bgColorMap[type]};
-`
+`;
 
 const NotificationContent = styled.div`
   padding: 1rem;
   display: flex;
   align-items: start;
-`
+`;
 
 const IconContainer = styled.div`
   flex-shrink: 0;
-`
+`;
 
 const MessageContainer = styled.div`
   margin-left: 0.75rem;
   width: 0;
   flex-grow: 1;
   padding-top: 0.125rem;
-`
+`;
 
 const CloseButton = styled.button`
   margin-left: 1rem;
@@ -71,7 +71,7 @@ const CloseButton = styled.button`
     outline: none;
     box-shadow: 0 0 0 2px white;
   }
-`
+`;
 
 const srOnly = css`
   position: absolute;
@@ -82,7 +82,7 @@ const srOnly = css`
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
-`
+`;
 
 export default function Notification({
   type,
@@ -90,18 +90,18 @@ export default function Notification({
   duration = 5000,
   onClose,
 }: NotificationProps) {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsVisible(false)
-      onClose && onClose()
-    }, duration)
+      setIsVisible(false);
+      onClose && onClose();
+    }, duration);
 
-    return () => clearTimeout(timer)
-  }, [duration, onClose])
+    return () => clearTimeout(timer);
+  }, [duration, onClose]);
 
-  const Icon = iconMap[type]
+  const Icon = iconMap[type];
 
   return (
     <AnimatePresence>
@@ -117,12 +117,20 @@ export default function Notification({
               <Icon className="h-6 w-6" color="white" />
             </IconContainer>
             <MessageContainer>
-              <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'white' }}>{message}</p>
+              <p
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "white",
+                }}
+              >
+                {message}
+              </p>
             </MessageContainer>
             <CloseButton
               onClick={() => {
-                setIsVisible(false)
-                onClose && onClose()
+                setIsVisible(false);
+                onClose && onClose();
               }}
             >
               <span css={srOnly}>Close</span>
@@ -132,5 +140,5 @@ export default function Notification({
         </NotificationContainer>
       )}
     </AnimatePresence>
-  )
+  );
 }

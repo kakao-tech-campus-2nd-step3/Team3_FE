@@ -41,6 +41,12 @@ module.exports = {
     "no-underscore-dangle": "off",
     "no-alert": "off",
     "react-hooks/exhaustive-deps": "off",
+    "react/no-array-index-key": "off",
+    "no-nested-ternary": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "react/jsx-no-constructed-context-values": "off",
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
     "import/no-extraneous-dependencies": [
       "error",
       {

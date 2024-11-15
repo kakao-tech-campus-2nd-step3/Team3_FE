@@ -158,7 +158,7 @@ const CardTitle = styled.h3`
 const CardContent = styled.div`
   font-size: 14px;
   color: #4a5568;
-
+  height: 60px;
   ${breakpoints.mobile} {
     font-size: 13px;
   }

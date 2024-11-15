@@ -3,13 +3,13 @@ import styled from "@emotion/styled";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Joyride, { Step } from "react-joyride";
 import Input from "@/components/common/Input/Input";
 import Button from "@/components/common/Button/Button";
 import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
 import useVoiceHook from "@/hooks/useVoiceHook";
 import MicrophoneButton from "@/components/features/MicrophoneButton/MicrophoneButton";
-import Joyride, {Step} from "react-joyride";
 
 const PlanPageContainer = styled.div`
   display: flex;
@@ -52,7 +52,8 @@ const ButtonContainer = styled.div`
 const planPageSteps: Step[] = [
   {
     target: ".input-area", // Input 컴포넌트 타겟
-    content: "기존 일정, 할 일들의 예상 소요시간을 구체적으로 말해주시면 더 좋아요. ",
+    content:
+      "기존 일정, 할 일들의 예상 소요시간을 구체적으로 말해주시면 더 좋아요. ",
   },
 ];
 
@@ -131,8 +132,7 @@ const PlanPage: React.FC = () => {
 
   return (
     <PlanPageContainer>
-
-<Joyride
+      <Joyride
         steps={planPageSteps}
         continuous
         showSkipButton

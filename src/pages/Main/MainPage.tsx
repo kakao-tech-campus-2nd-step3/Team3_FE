@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
 import { useNavigate, useLocation } from "react-router-dom";
+import Joyride, { Step, CallBackProps } from "react-joyride";
 import CustomCalendar, {
   CalendarEvent,
 } from "@/components/features/CustomCalendar/CustomCalendar";
@@ -13,7 +14,7 @@ import Modal from "@/components/common/Modal/Modal";
 import ReactDatePicker from "@/components/features/DatePicker/DatePicker";
 import { apiClient } from "@/api/instance";
 import useUserData from "@/api/hooks/useUserData";
-import Joyride, {Step, CallBackProps} from "react-joyride";
+import useNotificationSetup from "@/hooks/useNotificationSetup";
 
 const steps: Step[] = [
   {
@@ -29,7 +30,6 @@ const steps: Step[] = [
     content: "본인의 계획표에 달린 댓글을 확인할 수 있습니다.",
   },
 ];
-import useNotificationSetup from "@/hooks/useNotificationSetup";
 
 const PageContainer = styled.div`
   background-color: #ffffff;
@@ -354,8 +354,7 @@ export default function MainPage() {
 
   return (
     <PageContainer>
-
-<Joyride
+      <Joyride
         steps={steps}
         continuous
         showSkipButton
@@ -389,10 +388,18 @@ export default function MainPage() {
         className="calendar-area"
       />
       <ButtonWrapper>
-        <Button onClick={handleAddPlan} theme="secondary" className="add-plan-button">
+        <Button
+          onClick={handleAddPlan}
+          theme="secondary"
+          className="add-plan-button"
+        >
           플랜 추가
         </Button>
-        <Button onClick={handleVisitClick} theme="secondary" className="visit-button">
+        <Button
+          onClick={handleVisitClick}
+          theme="secondary"
+          className="visit-button"
+        >
           댓글 조회
         </Button>
       </ButtonWrapper>
