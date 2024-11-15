@@ -7,7 +7,6 @@ import Switch from "@mui/material/Switch";
 import Select, { SelectChangeEvent, SelectProps } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import { useNavigate } from "react-router-dom";
 import List from "@/components/common/List/List";
 import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
@@ -232,7 +231,6 @@ export default function MyPage() {
   const [isNotificationEnabled, setNotificationEnabled] = useState(false);
   const { userData, handleDeleteAccount, handleSubscription } = useUserData();
   const { setAuthState } = useAuth();
-  const navigate = useNavigate();
   const { openNotificationSettings } = useNotificationSetup();
   const fcmOffsetUpdateMutation = useFcmOffsetUpdate();
   const [notificationOffset, setNotificationOffset] = useState<string>(() => {
