@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "@/api/instance";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const useUserData = () => {
   const [userData, setUserData] = useState({
@@ -34,7 +35,7 @@ const useUserData = () => {
 
   const handleSubscription = () => {
     apiClient
-      .post("/api/subscription/me/payment", {
+      .post("/api/subscription/me/subscribe", {
         type: "MONTHLY",
       })
       .then(() => {
@@ -42,6 +43,8 @@ const useUserData = () => {
       })
       .catch((error) => console.error("error subscribtion:", error));
   };
+
+
 
   const handleDeleteAccount = () => {
     // 회원 탈퇴 API 호출
@@ -52,7 +55,10 @@ const useUserData = () => {
           alert("회원 탈퇴가 완료되었습니다.");
           navigate("/");
         })
-        .catch((error) => console.error("Error deleting account:", error));
+        .catch((error) => {
+          console.error("Error deleting account:", error);
+          alert("회원 탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.");
+        });
     }
   };
 
