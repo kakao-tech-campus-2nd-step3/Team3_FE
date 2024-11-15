@@ -24,6 +24,8 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
     <ButtonContainer onClick={isRecording ? onStopClick : onStartClick}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
+        width="58px" 
+        height="58px"
         viewBox="0 0 92.045 90"
         fill="none"
         overflow="visible"
