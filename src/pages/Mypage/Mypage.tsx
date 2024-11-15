@@ -1,20 +1,53 @@
-// src/pages/MyPage.tsx
 import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Switch from "@mui/material/Switch";
-import { useNavigate } from "react-router-dom";
+import Select, { SelectChangeEvent, SelectProps } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
 import List from "@/components/common/List/List";
 import Button from "@/components/common/Button/Button";
 import useUserData from "@/api/hooks/useUserData";
 import useAuth from "@/hooks/useAuth";
-import RouterPath from "@/router/RouterPath";
 import breakpoints from "@/variants/breakpoints";
-import useFcmUpdate from "@/api/hooks/useFcmUpdate";
 import { requestForToken } from "@/api/firebaseConfig";
+import useFcmOffsetUpdate from "@/api/hooks/useFcmOffsetUpdate";
 
+// 알림 설정 안내 문구를 표시하는 훅
+const useNotificationSetup = () => {
+  const openNotificationSettings = () => {
+    const { userAgent } = navigator;
+    if (userAgent.includes("Edg")) {
+      alert(
+        "Edge 설정에서 알림을 활성화해주세요:\n설정 > 쿠키 및 사이트 권한 > 알림",
+      );
+    } else if (userAgent.includes("Chrome")) {
+      alert(
+        "Chrome 설정에서 알림을 활성화해주세요:\n설정 > 개인정보 및 보안 > 사이트 설정 > 알림",
+      );
+    } else if (
+      userAgent.includes("Safari") &&
+      !userAgent.includes("Chrome") &&
+      !userAgent.includes("Edg")
+    ) {
+      alert(
+        "Safari 설정에서 알림을 활성화해주세요:\nmacOS에서는 Safari > 설정 > 알림\niOS에서는 설정 > Safari > 알림",
+      );
+    } else if (userAgent.includes("Firefox")) {
+      alert(
+        "Firefox 설정에서 알림을 활성화해주세요:\n설정 페이지에서 개인정보 및 보안 > 권한 > 알림",
+      );
+    } else {
+      alert("알림을 활성화하려면 브라우저 설정을 확인해주세요.");
+    }
+  };
+
+  return { openNotificationSettings };
+};
+
+// 스타일드 컴포넌트 정의
 const PageWrapper = styled.div`
   display: flex;
   min-height: 100vh;
@@ -28,7 +61,7 @@ const PageWrapper = styled.div`
 
 const ContentWrapper = styled.main`
   flex-grow: 1;
-  padding: 32px; /* p-8 */
+  padding: 32px;
   overflow: auto;
 
   ${breakpoints.mobile} {
@@ -37,10 +70,10 @@ const ContentWrapper = styled.main`
 `;
 
 const Heading = styled.h1`
-  font-size: 24px; /* text-3xl */
-  font-weight: 600; /* font-semibold */
-  margin-bottom: 24px; /* mb-6 */
-  color: #2d3748; /* text-gray-800 */
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #2d3748;
 
   ${breakpoints.mobile} {
     font-size: 20px;
@@ -51,7 +84,7 @@ const Heading = styled.h1`
 const GridLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px; /* gap-6 */
+  gap: 24px;
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
@@ -59,14 +92,15 @@ const GridLayout = styled.div`
 `;
 
 const Card = styled(motion.div)`
-  background-color: #ffffff; /* bg-white */
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow-md */
-  padding: 24px; /* p-6 */
-  transition: box-shadow 0.2s; /* transition-shadow duration-200 */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: box-shadow 0.2s;
   margin-bottom: 18px;
+
   &:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
   border: 1px solid #e5e7eb;
   ${breakpoints.mobile} {
@@ -80,14 +114,15 @@ const ProfileCard = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ffffff; /* bg-white */
-  border-radius: 8px; /* rounded-lg */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow-md */
-  padding: 24px; /* p-6 */
-  transition: box-shadow 0.2s; /* transition-shadow duration-200 */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: box-shadow 0.2s;
   margin-bottom: 18px;
+
   &:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* hover:shadow-lg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   }
 
   ${breakpoints.mobile} {
@@ -101,7 +136,7 @@ const ProfileCard = styled(motion.div)`
 const CardHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 16px; /* mb-4 */
+  margin-bottom: 16px;
 
   ${breakpoints.mobile} {
     margin-bottom: 8px;
@@ -110,10 +145,10 @@ const CardHeader = styled.div`
 
 const CardTitle = styled.h3`
   margin: 0;
-  margin-left: 8px; /* ml-2 */
-  font-size: 18px; /* text-xl */
-  font-weight: 600; /* font-semibold */
-  color: #4a5568; /* text-gray-700 */
+  margin-left: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #4a5568;
 
   ${breakpoints.mobile} {
     font-size: 16px;
@@ -122,7 +157,7 @@ const CardTitle = styled.h3`
 
 const CardContent = styled.div`
   font-size: 14px;
-  color: #4a5568; /* text-gray-700 */
+  color: #4a5568;
 
   ${breakpoints.mobile} {
     font-size: 13px;
@@ -132,7 +167,7 @@ const CardContent = styled.div`
 const DeleteButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-top: 24px; /* mt-6 */
+  margin-top: 24px;
   gap: 10px;
 
   ${breakpoints.mobile} {
@@ -140,18 +175,92 @@ const DeleteButtonWrapper = styled.div`
     align-items: stretch;
   }
 `;
+const StyledSelect = styled((props: SelectProps<string>) => (
+  <Select
+    {...props}
+    MenuProps={{
+      PaperProps: {
+        sx: {
+          borderRadius: "8px",
+          boxShadow:
+            "0px 4px 12px rgba(0, 0, 0, 0.1), 0px -4px 12px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          width: "100%", // 기본적으로 전체 너비 사용
+          maxWidth: "300px", // 최대 너비를 제한하여 큰 화면에서 너무 넓지 않게 설정
+          "@media (max-width: 600px)": {
+            maxWidth: "200px", // 작은 화면에서 너비를 줄이기
+          },
+          "@media (max-width: 400px)": {
+            maxWidth: "150px", // 더 작은 화면에서는 더 줄이기
+          },
+        },
+      },
+    }}
+  />
+))`
+  background-color: #f8fafc;
+  border-radius: 8px;
+  font-size: 14px;
+
+  .MuiSelect-select {
+    padding: 12px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+
+    &:focus {
+      background-color: #f8fafc;
+      border-color: #39a7f7;
+    }
+  }
+
+  .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+
+  &:hover .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+
+  &.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+`;
+
+const StyledMenuItem = styled(MenuItem)`
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #4a5568;
+
+  &:hover {
+    background-color: #e2e8f0;
+  }
+
+  &.Mui-selected {
+    background-color: #39a7f7;
+    color: white;
+
+    &:hover {
+      background-color: #3182ce;
+      color: white;
+    }
+  }
+`;
+const FCM_TOKEN_KEY = "fcm_token";
+const FCM_OFFSET_KEY = "fcm_offset";
 
 export default function MyPage() {
   const [isNotificationEnabled, setNotificationEnabled] = useState(false);
   const { userData, handleDeleteAccount, handleSubscription } = useUserData();
   const { setAuthState } = useAuth();
-  const navigate = useNavigate();
-  const { mutateAsync: updateFcm } = useFcmUpdate();
+  const { openNotificationSettings } = useNotificationSetup();
+  const fcmOffsetUpdateMutation = useFcmOffsetUpdate();
+  const [notificationOffset, setNotificationOffset] = useState<string>(() => {
+    return localStorage.getItem(FCM_OFFSET_KEY) || "0";
+  });
 
-  // 초기 알림 상태 설정
   useEffect(() => {
-    const storedToken = localStorage.getItem("fcmToken");
-    setNotificationEnabled(!!storedToken);
+    const savedToken = localStorage.getItem(FCM_TOKEN_KEY);
+    setNotificationEnabled(!!savedToken);
   }, []);
 
   const handleNotificationToggle = async () => {
@@ -159,164 +268,127 @@ export default function MyPage() {
       const newState = !isNotificationEnabled;
 
       if (newState) {
-        // 알림 켜기
         const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          const fcmToken = await requestForToken();
-          if (fcmToken) {
-            await updateFcm({
-              token: fcmToken,
-              isNotificatioinEnabled: true,
-            });
-            localStorage.setItem("fcmToken", fcmToken);
-            setNotificationEnabled(true);
-            console.log("알람이 활성화 되었습니다.");
-          }
-        } else {
-          alert(
-            "알림 권한이 필요합니다. 브라우저 설정에서 알림을 허용해주세요.",
-          );
+        if (permission !== "granted") {
+          openNotificationSettings();
+          return;
+        }
+
+        const newToken = await requestForToken();
+        if (!newToken) {
+          throw new Error("알림 토큰 발급 실패");
+        }
+
+        localStorage.setItem(FCM_TOKEN_KEY, newToken);
+        setNotificationEnabled(true);
+      } else {
+        const currentToken = localStorage.getItem(FCM_TOKEN_KEY);
+        if (currentToken) {
+          localStorage.removeItem(FCM_TOKEN_KEY);
+          localStorage.removeItem(FCM_OFFSET_KEY);
           setNotificationEnabled(false);
         }
-      } else {
-        // 알람 끄기
-        const currentToken = localStorage.getItem("fcmToken");
-        if (currentToken) {
-          await updateFcm({
-            token: currentToken,
-            isNotificatioinEnabled: false,
-          });
-          localStorage.removeItem("fcmToken");
-        }
-        setNotificationEnabled(false);
-        console.log("알람이 비활성화 되었습니다.");
       }
     } catch (error) {
-      console.error("알림 설정 변경 중 오류 발생:", error);
       alert("알림 설정 변경에 실패했습니다.");
-      // 상태를 이전 값으로 되돌림
       setNotificationEnabled(!isNotificationEnabled);
     }
   };
 
-  const handleSubscriptionClick = () => {
-    if (userData.isPremium) {
-      alert("이미 구독중입니다.");
-    } else {
-      handleSubscription();
+  const handleOffsetChange = async (event: SelectChangeEvent<string>) => {
+    const newOffset = event.target.value;
+
+    try {
+      const currentToken = localStorage.getItem(FCM_TOKEN_KEY);
+
+      if (!currentToken) {
+        throw new Error("FCM 토큰이 없습니다. 알림을 다시 활성화해주세요.");
+      }
+
+      await fcmOffsetUpdateMutation.mutateAsync({
+        token: currentToken,
+        notificationOffset: parseInt(newOffset, 10),
+      });
+
+      setNotificationOffset(newOffset);
+      localStorage.setItem(FCM_OFFSET_KEY, newOffset);
+    } catch (error) {
+      alert("알림 시간 설정에 실패했습니다.");
+      const previousOffset = localStorage.getItem(FCM_OFFSET_KEY) || "0";
+      setNotificationOffset(previousOffset);
     }
-  };
-
-  const handleLogout = () => {
-    // 로그아웃 시 상태와 로컬 스토리지 초기화
-    setAuthState({ isAuthenticated: false });
-    localStorage.removeItem("authState");
-
-    // 헤더의 인증 토큰 제거
-    navigate(RouterPath.HOME);
   };
 
   return (
     <PageWrapper>
       <ContentWrapper>
         <Heading>마이페이지</Heading>
-
-        {/* 프로필 카드 */}
-        <ProfileCard
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <ProfileCard>
           <List
             name={userData.nickname}
             date={userData.isPremium ? "프리미엄 회원" : "일반 회원"}
           />
         </ProfileCard>
-
-        {/* 정보 카드 그리드 */}
         <GridLayout>
-          {/* 구독정보 카드 */}
-          <Card
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
+          <Card>
             <CardHeader>
               <CreditCardIcon fontSize="small" style={{ color: "#4a5568" }} />
               <CardTitle>구독정보</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button size="small" onClick={handleSubscriptionClick}>
+              <Button size="small" onClick={handleSubscription}>
                 결제 요청
               </Button>
             </CardContent>
           </Card>
-          {/* 알림설정 카드 */}
-          <Card
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            style={{
-              opacity: isNotificationEnabled ? 1 : 0.6,
-              transition: "opacity 0.3s ease",
-            }}
-          >
+          <Card>
             <CardHeader>
               <NotificationsIcon
                 fontSize="small"
-                style={{
-                  color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
-                }}
+                style={{ color: isNotificationEnabled ? "#4a5568" : "#9ca3af" }}
               />
               <CardTitle
-                style={{
-                  color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
-                }}
+                style={{ color: isNotificationEnabled ? "#4a5568" : "#9ca3af" }}
               >
                 알림설정
               </CardTitle>
+              <Switch
+                checked={isNotificationEnabled}
+                onChange={handleNotificationToggle}
+                color="primary"
+              />
             </CardHeader>
             <CardContent>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span
-                  style={{
-                    color: isNotificationEnabled ? "#4a5568" : "#9ca3af",
-                  }}
-                >
-                  알림 {isNotificationEnabled ? "켜짐" : "꺼짐"}
-                </span>
-                <Switch
-                  checked={isNotificationEnabled}
-                  onChange={handleNotificationToggle}
-                  color="primary"
-                />
-              </div>
-              {!isNotificationEnabled && (
-                <div
-                  style={{
-                    marginTop: "8px",
-                    fontSize: "12px",
-                    color: "#9ca3af",
-                  }}
-                />
+              {isNotificationEnabled && (
+                <FormControl fullWidth size="small">
+                  <StyledSelect
+                    value={notificationOffset}
+                    onChange={handleOffsetChange}
+                    displayEmpty
+                  >
+                    <StyledMenuItem value="0">알림 설정</StyledMenuItem>
+                    <StyledMenuItem value="5">5분 전</StyledMenuItem>
+                    <StyledMenuItem value="10">10분 전</StyledMenuItem>
+                    <StyledMenuItem value="15">15분 전</StyledMenuItem>
+                    <StyledMenuItem value="20">20분 전</StyledMenuItem>
+                    <StyledMenuItem value="25">25분 전</StyledMenuItem>
+                    <StyledMenuItem value="30">30분 전</StyledMenuItem>
+                  </StyledSelect>
+                </FormControl>
               )}
             </CardContent>
           </Card>
         </GridLayout>
-
-        {/* 회원 탈퇴 버튼 */}
         <DeleteButtonWrapper>
-          <Button onClick={handleLogout} size="small" theme="primary">
-            로그아웃
-          </Button>
           <Button onClick={handleDeleteAccount} size="small" theme="secondary">
             회원 탈퇴
+          </Button>
+          <Button
+            onClick={() => setAuthState({ isAuthenticated: false })}
+            size="small"
+            theme="primary"
+          >
+            로그아웃
           </Button>
         </DeleteButtonWrapper>
       </ContentWrapper>

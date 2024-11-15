@@ -9,11 +9,12 @@ import "react-datepicker/dist/react-datepicker.css";
 // StyledInput 스타일 정의
 const StyledInput = styled.input`
   width: 100%;
-  padding: 12px; /* 좌우 패딩을 동일하게 유지 */
+  padding: 12px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  margin-left: -20px;
   &:focus {
     outline: none;
     border-color: #39a7f7;
@@ -40,6 +41,20 @@ const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
   ),
 );
 
+// CustomInputWrapper를 만들어 CustomDateInput을 감싸기
+const CustomInputWrapper = forwardRef<HTMLInputElement, CustomDateInputProps>(
+  ({ value, onClick, placeholder }, ref) => (
+    <div className="datepicker-wrapper">
+      <CustomDateInput
+        onClick={onClick}
+        ref={ref}
+        value={value}
+        placeholder={placeholder}
+      />
+    </div>
+  ),
+);
+
 interface ReactDatePickerProps {
   placeholderText: string;
   onDateChange: (date: Date | null) => void;
@@ -48,7 +63,7 @@ interface ReactDatePickerProps {
   dateFormat?: string;
 }
 
-const ReactDatePickerComponent = ({
+const ReactDatePicker = ({
   placeholderText,
   onDateChange,
   selectedDate,
@@ -119,6 +134,10 @@ const ReactDatePickerComponent = ({
             li.react-datepicker__time-list-item--selected:hover {
             background-color: #2196f3;
           }
+          /* Custom styling for the wrapper to set full width */
+          .datepicker-wrapper {
+            width: 100%;
+          }
         `}
       />
       <DatePicker
@@ -132,10 +151,11 @@ const ReactDatePickerComponent = ({
           showTimeSelect ? "yyyy/MM/dd HH:mm" : dateFormat
         } /* 시간 선택 시 포맷 포함 */
         popperPlacement="bottom-start"
-        customInput={<CustomDateInput placeholder={placeholderText} />}
+        wrapperClassName="datepicker-wrapper" /* Wrapper class name */
+        customInput={<CustomInputWrapper placeholder={placeholderText} />}
       />
     </>
   );
 };
 
-export default ReactDatePickerComponent;
+export default ReactDatePicker;

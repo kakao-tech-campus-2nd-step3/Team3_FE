@@ -234,6 +234,8 @@ const EventContent = ({
                 }
               `,
             ]}
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("edit");
@@ -260,6 +262,8 @@ const EventContent = ({
                 }
               `,
             ]}
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("delete");
@@ -286,9 +290,17 @@ const EventContent = ({
                 }
               `,
             ]}
+            role="button"
+            tabIndex={0}
             onClick={(e) => {
               e.stopPropagation();
               handleOptionClick("toggleComplete");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleOptionClick("toggleComplete");
+              }
             }}
           >
             완료
