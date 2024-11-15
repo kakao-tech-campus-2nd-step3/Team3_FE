@@ -335,7 +335,7 @@ npm run dev
 
 ---
 
-<div align="center">
+
 
 ## 🛠 시스템 아키텍처
 
@@ -359,8 +359,45 @@ npm run dev
 </div>
 
 ---
+## 주요 기능 설계
+데이터 수정 및 상태 실시간 업데이트 
+드래그 앤 드롭, 완료 여부 토글 등을 통해 이벤트가 수정되었을 경우, 변경된 데이터를 서버로 전송합니다.
+```typescript
+const handlePlanChange = async (updatedPlans: CalendarEvent[]) => {
+  const changedPlans = updatedPlans.filter((updatedPlan) => {
+    const originalPlan = modifiedPlans.find(
+      (plan) => plan.id === updatedPlan.id
+    );
+    return (
+      originalPlan &&
+      originalPlan.start.getTime() !== updatedPlan.start.getTime()
+    );
+  });
 
-<div align="center">
+  if (changedPlans.length > 0) {
+    try {
+      await axios.post('/api/plans/update', { plans: changedPlans });
+      console.log('변경된 일정이 서버에 성공적으로 업데이트되었습니다.');
+    } catch (error) {
+      console.error('일정 업데이트 중 오류 발생:', error);
+    }
+  }
+};
+```
+
+이벤트 상태 계산
+calculateEventStatus 함수는 현재 시간과 이벤트 상태를 비교하여 완료 여부 및 상태를 계산하여 동적 스타일링을 구현하였습니다.
+```typescript
+const calculateEventStatus = (event: CalendarEvent) => {
+  const now = new Date();
+  const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  if (event.isCompleted) return "completed";
+  if (event.start > nowKST) return "upcoming";
+  if (!event.isCompleted && event.end < nowKST) return "incomplete";
+  return "incomplete";
+};
+```
+
 
 ## 🗂 데이터베이스 ERD
 
