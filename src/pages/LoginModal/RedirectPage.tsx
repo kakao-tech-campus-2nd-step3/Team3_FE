@@ -49,12 +49,9 @@ const OAuthRedirectHandler = () => {
       .split("; ")
       .find((row) => row.startsWith("access_token="))
       ?.split("=")[1];
-    console.log("현재 access_token:", cookieValue);
-    if (authState.isAuthenticated) {
-      setTimeout(() => {
+      console.log("현재 access_token:", cookieValue);
         navigate(RouterPath.MAIN);
-      }, 500); // 500ms 지연
-    }
+     
   }, [authState, navigate]);
 
   return <div>리다이렉트 처리 중...</div>;
