@@ -1,4 +1,4 @@
-<img width="1040" alt="image" src="https://github.com/user-attachments/assets/00dae09f-2c80-4f58-b866-8e23c9311eac"><h1 align="center">ᱝ Splanet ᱝ</h1>
+<h1 align="center">ᱝ Splanet ᱝ</h1>
 
 <div align="center" style="font-size:18px">
 <b>🥇카카오 테크 캠퍼스 2기 STEP3 최우수상🥇</b>
