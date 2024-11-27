@@ -148,7 +148,182 @@
 
 
 
-<div align="center">
+<div align="left">
+    
+## 설치 및 실행 방법
+
+### 1. 의존성 설치
+
+프로젝트를 실행하기 전에 필요한 모든 의존성을 설치합니다.
+
+```bash
+npm install
+```
+
+### 2. 개발 서버 실행
+```bash
+npm run dev
+```
+## 파일 구조
+```
+📦 src
+┣ 📂api
+┃ ┣ 📂hooks
+┃ ┃ ┣ 📜useCreatePlan.ts
+┃ ┃ ┣ 📜useCreateTeam.ts
+┃ ┃ ┣ 📜useDeleteFriend.ts
+┃ ┃ ┣ 📜useDeletePlan.ts
+┃ ┃ ┣ 📜useDeleteTeamPlan.ts
+┃ ┃ ┣ 📜useFcmOffsetUpdate.ts
+┃ ┃ ┣ 📜useFcmUpdate.ts
+┃ ┃ ┣ 📜useFriendRequest.ts
+┃ ┃ ┣ 📜useGenerateDeviceId.ts
+┃ ┃ ┣ 📜useGeneratePlans.ts
+┃ ┃ ┣ 📜useGetComments.ts
+┃ ┃ ┣ 📜useGetFriends.ts
+┃ ┃ ┣ 📜useGetPlans.ts
+┃ ┃ ┣ 📜useGetTeamPlan.ts
+┃ ┃ ┣ 📜useModifyPlans.ts
+┃ ┃ ┣ 📜useTeam.ts
+┃ ┃ ┣ 📜useTeamPlanSave.ts
+┃ ┃ ┣ 📜useUpdateTeamPlan.ts
+┃ ┃ ┗ 📜useUserData.ts
+┃ ┣ 📂instance
+┃ ┃ ┗ 📜index.ts
+┃ ┣ 📂mocks
+┃ ┃ ┣ 📜browser.ts
+┃ ┃ ┣ 📜comments.mock.ts
+┃ ┃ ┣ 📜friends.mock.ts
+┃ ┃ ┣ 📜login.mock.ts
+┃ ┃ ┣ 📜payments.mock.ts
+┃ ┃ ┣ 📜plans.mock.ts
+┃ ┃ ┣ 📜team.mock.ts
+┃ ┃ ┗ 📜users.mock.ts
+┃ ┗ 📜firebaseConfig.ts
+┣ 📂assets
+┃ ┣ 📜circle (1).svg
+┃ ┣ 📜defaultProfileImage.svg
+┃ ┣ 📜dragging.gif
+┃ ┣ 📜effect.svg
+┃ ┣ 📜favicon.ico
+┃ ┣ 📜friends.png
+┃ ┣ 📜icon.png
+┃ ┣ 📜kakao_symbol.svg
+┃ ┣ 📜Login.svg
+┃ ┣ 📜logo.svg
+┃ ┣ 📜making.gif
+┃ ┣ 📜mock2.svg
+┃ ┣ 📜selecting.gif
+┃ ┣ 📜step1.svg
+┃ ┣ 📜step2.svg
+┃ ┣ 📜step3.svg
+┃ ┣ 📜teamplan.png
+┃ ┗ 📜teamplan2.png
+┣ 📂components
+┃ ┣ 📂common
+┃ ┃ ┣ 📂AppGuide
+┃ ┃ ┃ ┗ 📜AppGuide.styles.ts
+┃ ┃ ┣ 📂Button
+┃ ┃ ┃ ┣ 📜Button.tsx
+┃ ┃ ┃ ┣ 📜Button.types.ts
+┃ ┃ ┃ ┗ 📜StyledButton.styles.ts
+┃ ┃ ┣ 📂CircleButton
+┃ ┃ ┃ ┗ 📜CircleButton.tsx
+┃ ┃ ┣ 📂Input
+┃ ┃ ┃ ┣ 📜Input.tsx
+┃ ┃ ┃ ┗ 📜StyledInput.styles.ts
+┃ ┃ ┣ 📂List
+┃ ┃ ┃ ┗ 📜List.tsx
+┃ ┃ ┣ 📂Modal
+┃ ┃ ┃ ┗ 📜Modal.tsx
+┃ ┃ ┣ 📂Notification
+┃ ┃ ┃ ┗ 📜Notification.tsx
+┃ ┃ ┣ 📂NumberButton
+┃ ┃ ┃ ┗ 📜NumberButton.tsx
+┃ ┃ ┣ 📂ProfileImage
+┃ ┃ ┃ ┣ 📜ProfileImage.tsx
+┃ ┃ ┃ ┗ 📜StyledImage.styles.ts
+┃ ┃ ┣ 📂Sidebar
+┃ ┃ ┃ ┣ 📜Sidebar.styles.ts
+┃ ┃ ┃ ┗ 📜Sidebar.tsx
+┃ ┃ ┣ 📂Spacing
+┃ ┃ ┃ ┗ 📜Spacing.tsx
+┃ ┃ ┣ 📂UnderlineTextField
+┃ ┃ ┃ ┗ 📜UnderlineTextField.tsx
+┃ ┃ ┗ 📂UserInfo
+┃ ┃ ┃ ┣ 📜UserInfo.styles.ts
+┃ ┃ ┃ ┗ 📜UserInfo.tsx
+┃ ┗ 📂features
+┃ ┃ ┣ 📂CustomCalendar
+┃ ┃ ┃ ┣ 📜CustomCalendar.styles.ts
+┃ ┃ ┃ ┗ 📜CustomCalendar.tsx
+┃ ┃ ┣ 📂DatePicker
+┃ ┃ ┃ ┣ 📜DatePicker.css
+┃ ┃ ┃ ┗ 📜DatePicker.tsx
+┃ ┃ ┣ 📂HowToUse
+┃ ┃ ┃ ┗ 📜HowToUse.tsx
+┃ ┃ ┣ 📂Introduce
+┃ ┃ ┃ ┗ 📜Introduce.tsx
+┃ ┃ ┣ 📂Layout
+┃ ┃ ┃ ┗ 📜Layout.tsx
+┃ ┃ ┣ 📂MicrophoneButton
+┃ ┃ ┃ ┣ 📜MicrophoneButton.styles.ts
+┃ ┃ ┃ ┗ 📜MicrophoneButton.tsx
+┃ ┃ ┣ 📂Navbar
+┃ ┃ ┃ ┗ 📜Navbar.tsx
+┃ ┃ ┗ 📂ProtectedRoute
+┃ ┃ ┃ ┗ 📜ProtectedRoute.tsx
+┣ 📂context
+┃ ┗ 📜LoginModalContext.tsx
+┣ 📂hooks
+┃ ┣ 📜useAuth.ts
+┃ ┣ 📜useNotificationSetup.ts
+┃ ┗ 📜useVoiceHook.ts
+┣ 📂pages
+┃ ┣ 📂Friend
+┃ ┃ ┣ 📜FriendDetailPage.tsx
+┃ ┃ ┗ 📜FriendPage.tsx
+┃ ┣ 📂Landing
+┃ ┃ ┗ 📜LandingPage.tsx
+┃ ┣ 📂LoginModal
+┃ ┃ ┣ 📜LoginModal.tsx
+┃ ┃ ┗ 📜RedirectPage.tsx
+┃ ┣ 📂Main
+┃ ┃ ┗ 📜MainPage.tsx
+┃ ┣ 📂Mypage
+┃ ┃ ┗ 📜Mypage.tsx
+┃ ┣ 📂Plan
+┃ ┃ ┣ 📜PlanPage.tsx
+┃ ┃ ┣ 📜PlanSelectPage.tsx
+┃ ┃ ┗ 📜PlanUpdate.tsx
+┃ ┣ 📂PreviewPlan
+┃ ┃ ┣ 📜PreviewPlanPage.tsx
+┃ ┃ ┣ 📜PreviewPlanSelectPage.tsx
+┃ ┃ ┗ 📜PreviewPlanUpdate.tsx
+┃ ┗ 📂TeamPlan
+┃ ┃ ┣ 📜TeamPlan.tsx
+┃ ┃ ┣ 📜TeamPlanDetail.tsx
+┃ ┃ ┣ 📜TeamPlanInvite.tsx
+┃ ┃ ┣ 📜TeamPlanMaking.tsx
+┃ ┃ ┣ 📜TeamPlanModify.tsx
+┃ ┃ ┣ 📜TeamPlanSelectPage.tsx
+┃ ┃ ┗ 📜TeamPlanUpdate.tsx
+┣ 📂provider
+┃ ┗ 📜AuthProvider.tsx
+┣ 📂router
+┃ ┣ 📜Router.tsx
+┃ ┗ 📜RouterPath.ts
+┣ 📂tests
+┣ 📂types
+┃ ┗ 📜types.ts
+┣ 📂variants
+┃ ┗ 📜breakpoints.ts
+┣ 📜App.css
+┣ 📜App.tsx
+┣ 📜index.css
+┣ 📜main.tsx
+┗ 📜vite-env.d.ts
+```
 
 ## 💻 기술 스택
 
@@ -164,7 +339,7 @@
 
 ---
 
-<div align="center">
+
 
 ## 🛠 시스템 아키텍처
 
@@ -181,203 +356,58 @@
 | **프론트엔드**     | 프론트엔드는 **Vercel에서 배포**되며, React와 Vite로 구성되어 있습니다.                                                                                                                                                         |
 | **백엔드**         | 백엔드는 AWS EC2 인스턴스에서 Docker 컨테이너로 배포됩니다. <br/>**MySQL(Amazon RDS)** 와 연동하여 데이터를 관리하며, Redis를 통해 캐싱 및 토큰을 처리합니다.                                                                                            |
 | **무중단 배포 (Blue-Green Deployment)** | **Elastic Load Balancer (ELB)** 를 사용하여 두 개의 백엔드 인스턴스(Blue와 Green)로 트래픽을 분산시켜 무중단 배포를 지원합니다. <br> 새로운 버전이 배포될 때, 먼저 하나의 서버 컨테이너가 업데이트되고, 이후 ELB를 통해 트래픽을 새 컨테이너로 전환하여 사용자에게 끊김 없는 서비스를 제공합니다. (다운타임 1초 미만) |
-| **CI/CD 파이프라인** | GitHub Actions를 통해 자동화된 CI/CD 파이프라인을 구성하였으며, 코드 업데이트가 발생할 때마다 Vercel과 EC2에서 자동으로 빌드 및 배포가 이루어집니다. 이를 통해 개발과 배포 과정의 효율성을 높였습니다.                                                                            |
+| **CI/CD 파이프라인** | GitHub Actions를 통해 자동화된 CI/CD 파이프라인을 구성하였으며, 코드 업데이트가 발생할 때마다 Vercel과 EC2에서 자동으로 빌드 및 배포가 이루어집니다. 이를 통해 개발과 배포 과정의 효율성을 높였습니다.      
+| **FullCalendar**| 데이터 수정 및 상태 실시간 업데이트 드래그 앤 드롭, 완료 여부 토글 등을 통해 이벤트가 수정되었을 경우, 변경된 데이터를 서버로 전송합니다.
+| **알림 기능**| 웹 푸시 알림은 Firebase Cloud Messaging(FCM)을 사용하여 실시간 알림 기능을 제공합니다. FCM 토큰은 클라이언트에서 생성 후 API를 통해 서버에 등록하며, 사용자 알림 설정은 토글 기능으로 관리됩니다. 서비스 워커를 통해 백그라운드 알림도 지원하며, 알림 아이콘과 내용을 커스터마이징할 수 있습니다. 이를 통해 사용자가 실시간으로 중요한 정보를 놓치지 않도록 도와주며, 사용자 만족도와 서비스 재방문율을 높일 수 있습니다. 또한, 알림을 통해 마케팅 효과를 극대화하고 사용자와의 소통을 강화할 수 있으며, 간편한 알림 설정으로 사용자 편의성도 증대할 수 있습니다.
 
 </div>
 
 ---
+## 주요 기능 설계
+데이터 수정 및 상태 실시간 업데이트 
+드래그 앤 드롭, 완료 여부 토글 등을 통해 이벤트가 수정되었을 경우, 변경된 데이터를 서버로 전송합니다.
+```typescript
+const handlePlanChange = async (updatedPlans: CalendarEvent[]) => {
+  const changedPlans = updatedPlans.filter((updatedPlan) => {
+    const originalPlan = modifiedPlans.find(
+      (plan) => plan.id === updatedPlan.id
+    );
+    return (
+      originalPlan &&
+      originalPlan.start.getTime() !== updatedPlan.start.getTime()
+    );
+  });
 
-<div align="center">
+  if (changedPlans.length > 0) {
+    try {
+      await axios.post('/api/plans/update', { plans: changedPlans });
+      console.log('변경된 일정이 서버에 성공적으로 업데이트되었습니다.');
+    } catch (error) {
+      console.error('일정 업데이트 중 오류 발생:', error);
+    }
+  }
+};
+```
+
+이벤트 상태 계산
+calculateEventStatus 함수는 현재 시간과 이벤트 상태를 비교하여 완료 여부 및 상태를 계산하여 동적 스타일링을 구현하였습니다.
+```typescript
+const calculateEventStatus = (event: CalendarEvent) => {
+  const now = new Date();
+  const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  if (event.isCompleted) return "completed";
+  if (event.start > nowKST) return "upcoming";
+  if (!event.isCompleted && event.end < nowKST) return "incomplete";
+  return "incomplete";
+};
+```
+
 
 ## 🗂 데이터베이스 ERD
 
 <div align="center">
     <img src="https://github.com/user-attachments/assets/ff018cd5-6c0d-42e1-bca1-792e4613d9bd" width="700" alt="ERD Diagram">
 </div>
-
-### 테이블 설명
-
-| 테이블                    | 설명                                                                                |
-|---------------------------|-----------------------------------------------------------------------------------|
-| **User**                  | 사용자 정보(`nickname`, `profile_image`, `kakao_id` 등)를 저장합니다.                         |
-| **친구 관계**             | `friend`와 `friend_request` 테이블을 통해 사용자 간 친구 관계를 관리합니다.                            |
-| **팀**                    | `team`, `team_user_relation`, `team_invitation` 테이블을 통해 사용자의 팀 생성, 가입, 역할을 관리합니다. |
-| **FCM 토큰**              | `fcm_token` 테이블로 푸시 알림 토큰을 관리하고, 알림 로그는 `notification_log` 테이블에 저장됩니다.            |
-| **계획(Plan)**            | `plan` 테이블은 개인 계획을, `team_plan` 테이블은 팀 내 계획을 관리하며, 계획 정보와 완료 여부를 기록합니다.           |
-| **구독(Subscription)**    | `subscription` 테이블은 사용자의 구독 상태를, `payment` 테이블은 구독 결제 내역을 기록합니다.                  |
-| **댓글(Comment)**         | `comment` 테이블에서 각 `user`에 작성된 댓글을 관리하며, 작성자와 유저 ID를 연결합니다.                        |
-
-</div>
-
----
-
-<div align="center">
-
-## 🔍 모니터링
-
-<img src="https://github.com/user-attachments/assets/1d0af14f-37dd-4948-8d4a-67546c34923a" width="700" alt="Monitoring Diagram">
-
-[🔍 모니터링 🔍](https://monitoring.splanet.co.kr/d/fe38bkz9ydkowa/8-splanet?from=now-7d&to=now&timezone=browser)
-
-#### 👀 Viewer Account 👀
-> **ID**: splanet  
-> **PW**: splanet3
->
-
-`Amazon CloudWatch`를 활용하여 시스템 성능을 모니터링하고, Log 그룹과 사용자 정의 Log를 생성해 서비스 상태와 오류 로그를 관리합니다.
-
-`Docker Compose`를 통해 웹 애플리케이션을 구성하며, 각 컨테이너의 내부 로그를 외부 파일로 동기화하여 **실시간 로그 수집**이 가능합니다.
-
-`Grafana`와 `Prometheus`를 결합하여 시각화된 대시보드를 제공하고, 애플리케이션 및 인프라스트럭처의 다양한 메트릭을 **실시간으로 모니터링**합니다.
-
-이를 통해 **CPU 사용량**, **메모리 사용량**, **네트워크 트래픽**, **요청 수** 등 주요 성능 지표를 직관적으로 파악할 수 있습니다.
-
-이러한 **모니터링 및 로그 관리 시스템**을 통해 시스템 안정성과 서비스 가용성을 높였습니다.
-
-
-</div>
-
-<div align="center">
-
-### 각 항목 설명
-
-| 항목                     | 설명                                                                 |
-|--------------------------|----------------------------------------------------------------------|
-| **MAU (Monthly Active Users)** | 최근 30일간의 월간 활성 사용자 수를 나타냅니다.    |
-| **DAU (Daily Active Users)** | 최근 7일간의 일간 활성 사용자 수를 나타냅니다.              |
-| **상태코드 지표**           | 1시간 기준으로 성공 요청(success_requests), 클라이언트 에러(client_error_requests), 리디렉션 요청(redirect_requests)의 비율을 나타냅니다. |
-| **동시 접속수**             | 최근 24시간 동안의 동시 접속 사용자 수를 표시합니다.                            |
-| **DB Connections**         | 데이터베이스 연결 상태를 나타냅니다. 특정 시간대에 연결 수가 증가하는 패턴을 보여줍니다. |
-| **DB 빈 공간**             | RDS의 **FreeStorageSpace** 지표로, 데이터베이스 인스턴스의 사용 가능한 저장 공간을 나타냅니다. |
-| **CPU 사용량**             | 시스템의 CPU 사용량을 나타내며, 시간대별 CPU 사용률 변화를 보여줍니다.              |
-| **네트워크 요청/수신**      | 네트워크 요청 수와 수신된 데이터를 시간대별로 나타내며, 요청 수의 변화를 시각적으로 제공합니다. |
-| **Request Count**          | API 요청 수를 나타냅니다. 최근 요청 수의 변화를 보여주는 그래프입니다.              |
-| **초당 읽기/쓰기 작업 수**  | 시스템에서 초당 읽기 및 쓰기 작업 수를 보여줍니다.  |
-| **경로별 요청 수**         | 각 API 경로별로 요청 수를 나타내며, 가장 많이 호출된 경로 순으로 정렬됩니다. ) |
-
-</div>
-
----
-
-<div align="center">
-
-## 🤖 AI 파인 튜닝
-
->Splanet은 OpenAI API를 활용하여 `chatGPT 4o mini` 모델을 기반으로 한 지능형 일정 관리 기능을 제공합니다.
->
->JSONL 형식의 학습 데이터를 사용하여 모델을 사용자 요구사항과 컨텍스트에 맞게 **fine-tunning** 을 진행하였습니다. 
->
-
-</div>
-
-<details>
-<summary> JSONL 학습 데이터 형식</summary>
-
-### 예시 입력
-
-```json
-{
-  "messages": [
-    {
-      "role": "user",
-      "content": "\"오늘 22시에 약속 있음\" 제공된 가이드라인을 따르지 않으면 페널티가 부과될 것입니다. 모든 지침을 주의깊게 읽고 그에 따라 행동하세요. (기존 startDate와 endDate사이에 일정을 생성하지 말아줘. 기존 startDate, endDate:[{\"startDate\": \"2024-11-13T18:30:00\", \"endDate\": \"2024-11-13T20:30:00\"}] 현재 시간 이후로 여유 있게 모든 일정을 완수할 수 있도록 계획해줘 . 시험이나 과제가 포함된 경우, 시험 당일이나 제출 당일이 아닌 전날까지 준비가 완료되도록 해줘 현재 시간:  (2024-11-13T20:41:00 기준). 모든 일정은 한국 시간(UTC+9)을 기준으로 설정해줘. 또한, 기존 일정을 생각하고 새로운 일정을 적당한 간격을 두고 배치해줘.)"
-    },
-    {
-      "role": "assistant",
-      "content": "{\"deviceId\": \"<USER_DEVICE_ID>\", \"groupId\": <GROUP_ID>, \"planCards\": [{\"title\": \"약속\", \"description\": \"오늘 22시에 시작하는 약속\", \"startDate\": \"2024-11-13T22:00:00\", \"endDate\": \"2024-11-13T23:00:00\", \"accessibility\": true, \"isCompleted\": false}]}"
-    }
-  ]
-}
-```
-
-### 주요 구성 요소
-1. **사용자 입력 (Role: `user`)**
-   - 사용자가 모델에 제공하는 프롬프트나 지시사항을 포함합니다.
-   - 일정 충돌 방지, 준비 마감 기한 등 구체적인 제약 조건을 포함합니다.
-
-2. **모델 응답 (Role: `assistant`)**
-   - 파인 튜닝된 모델의 JSON 형식 응답을 포함합니다.
-   - 예시 응답:
-     - `deviceId`: 사용자의 기기 식별자.
-     - `groupId`: 관련 그룹의 식별자(있는 경우).
-     - `planCards`: 일정 객체 배열로 구성.
-       - `title`: 이벤트 제목.
-       - `description`: 이벤트 설명.
-       - `startDate`: ISO 8601 형식의 이벤트 시작 시간.
-       - `endDate`: ISO 8601 형식의 이벤트 종료 시간.
-       - `accessibility`: 이벤트 접근 가능 여부.
-       - `isCompleted`: 이벤트 완료 여부.
-
-</details>
-
----
-
-<details>
-<summary> 파인 튜닝 가이드라인</summary>
-
-1. **학습 데이터 준비**
-   - 프롬프트와 응답이 JSONL 형식을 따르도록 보장합니다.
-   - 일정 충돌, 준비 마감 기한 등 다양한 사용자 시나리오를 포함하여 테스트합니다.
-
-2. **모델 파인 튜닝**
-   - 준비된 JSONL 데이터셋을 사용하여 OpenAI의 파인 튜닝 API로 학습시킵니다.
-
-3. **테스트 및 검증**
-   - 모델 응답을 검증하여 원하는 일정 관리 논리와 제약 조건에 부합하는지 확인합니다.
-
-</details>
-
----
-
-<details>
-<summary>응답 예시</summary>
-
-#### 응답 예시
-```json
-{
-  "deviceId": "<USER_DEVICE_ID>",
-  "groupId": "<GROUP_ID>",
-  "planCards": [
-    {
-      "title": "약속",
-      "description": "22시에 약속 나가기",
-      "startDate": "2024-11-13T22:00:00",
-      "endDate": "2024-11-13T23:00:00",
-      "accessibility": true,
-      "isCompleted": false
-    }
-  ]
-}
-```
-
-#### 파인 튜닝 방법
-1. JSONL 형식으로 학습 데이터를 생성합니다.
-2. OpenAI의 파인 튜닝 API를 사용하여 모델을 학습시킵니다.
-3. 모델을 배포하고 일정 관리 애플리케이션에 통합합니다.
-
-</details>
-
----
-
-위 과정을 통해 Splanet 향상된 일정 관리 기능을 제공할 수 있는 최적화된 파인 튜닝 모델을 구축할 수 있습니다.
-
----
-
-<div align="center">
-
-## 🔗 개발 관련 블로그
-
-| 설명 | 링크 | 설명 | 링크 |
-| --- | --- | --- | --- |
-| 웹 푸시 알림 - 스케줄링 쿼리 최적화 | [Blog](https://kanguk-room.notion.site/12c036cad7a88073b0a0e1098775c723?pvs=4) | GPT Model Fine-Tuning 과정 | [Blog](https://cobalt-macaroni-f0a.notion.site/Splanet-Fine-Tuning-12be61e098d78092ad05f9addeed7ea4?pvs=4) |
-| CLOVA Speech 실시간 스트리밍 | [Blog](https://kanguk-room.notion.site/STT-CLOVA-Speech-API-123036cad7a88098b644c957f8420080?pvs=4) | 모니터링 | [Blog](https://cobalt-macaroni-f0a.notion.site/Prometheus-Grafana-134e61e098d7804da8e6ef7fcdec80f2?pvs=4) |
-| Redis 사용기 | [Blog](https://medium.com/@kanguk.ku/redis-%EC%82%AC%EC%9A%A9%EA%B8%B0-4fd3695ab0c7) | 무중단 배포 구현 | [Blog](https://kanguk-room.notion.site/132036cad7a880e68d7bd8846b25f8a6?pvs=4) |
-
- **전체적인 내용을 담은 Medium**  [Medium](https://medium.com/@kanguk.ku/splanet-kakao-tech-campus-step3-66c6c9531eb7)
-
-</div>
-
----
 
 <div align="center">
 
